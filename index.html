@@ -1,1 +1,565 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Clinical Tools | Dr. Mit Panchani</title>
 
+<style>
+:root{
+  --bg:#0f1113;
+  --card:#16191d;
+  --inner:#0b0d10;
+  --border:#262a30;
+  --text:#e5e7eb;
+  --muted:#9ca3af;
+  --accent:#3b82f6;
+  --success:#064e3b;
+  --warn:#78350f;
+  --info:#1e3a8a;
+}
+
+*{box-sizing:border-box}
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--text);
+  font-family:system-ui,-apple-system,Segoe UI,Roboto;
+}
+main{
+  max-width:1000px;
+  margin:24px auto;
+  padding:16px;
+}
+
+h1{font-size:1.6rem;margin-bottom:4px}
+.sub{color:var(--muted);font-size:.9rem;margin-bottom:16px}
+
+/* MODE */
+.mode-toggle{display:flex;gap:12px;margin-bottom:18px}
+.mode-btn{
+  flex:1;padding:14px;border-radius:14px;
+  border:1px solid var(--border);
+  background:var(--card);color:var(--muted);
+  font-weight:600;cursor:pointer
+}
+.mode-btn.active{background:#fff;color:#000}
+
+/* SEARCH */
+.search input{
+  width:100%;padding:14px;border-radius:12px;
+  border:1px solid var(--border);
+  background:#0b0d0f;color:var(--text);
+  margin-bottom:14px
+}
+
+/* GLOBAL SORT BAR */
+.tabs{
+  display:flex;gap:10px;margin:0 0 18px;overflow-x:auto
+}
+.tabs::-webkit-scrollbar{display:none}
+.tab{
+  padding:8px 14px;border-radius:999px;
+  border:1px solid var(--border);
+  background:var(--card);
+  color:var(--muted);
+  cursor:pointer;font-size:.85rem;
+  white-space:nowrap
+}
+.tab.active{background:#fff;color:#000;font-weight:600}
+
+/* TOOL */
+.tool{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:14px;
+  margin-bottom:14px;
+  overflow:hidden
+}
+.tool summary{
+  list-style:none;padding:16px;
+  cursor:pointer;display:flex;
+  justify-content:space-between
+}
+.tool summary::-webkit-details-marker{display:none}
+.tool-title{font-weight:600}
+.tool-sub{font-size:.8rem;color:var(--muted)}
+.tool-body{padding:16px;border-top:1px solid var(--border)}
+
+/* STEPS */
+.step{
+  background:var(--inner);
+  border:1px solid var(--border);
+  border-radius:12px;
+  padding:14px;margin-bottom:14px
+}
+.step-title{font-weight:600;margin-bottom:8px}
+.options{display:flex;gap:10px}
+.options button{
+  flex:1;padding:12px;border-radius:10px;
+  border:1px solid var(--border);
+  background:#111827;color:var(--text);
+  cursor:pointer;font-weight:600
+}
+.options button.selected{
+  background:var(--accent);
+  border-color:var(--accent)
+}
+
+/* RESULT */
+.result{
+  padding:14px;border-radius:12px;
+  font-weight:700;margin-top:12px
+}
+.success{background:var(--success);color:#d1fae5}
+.warn{background:var(--warn);color:#fde68a}
+.info{background:var(--info);color:#dbeafe}
+
+.monitor{
+  margin-top:12px;padding:12px;
+  border-radius:12px;
+  border:1px dashed var(--border);
+  font-size:.9rem;color:var(--muted)
+}
+
+.hidden{display:none}
+</style>
+</head>
+
+<body>
+<main>
+
+<h1>Clinical Tools</h1>
+<div class="sub">Quick OPD decision support</div>
+
+<!-- MODE -->
+<div class="mode-toggle">
+  <button class="mode-btn active" onclick="switchMode('general',this)">General / Adult</button>
+  <button class="mode-btn" onclick="switchMode('preg',this)">Pregnancy</button>
+</div>
+
+<!-- SEARCH -->
+<div class="search">
+  <input id="searchInput" placeholder="Search tools…">
+</div>
+
+<!-- GLOBAL SORT BAR -->
+<div class="tabs" id="global-tabs">
+  <div class="tab active" data-filter="all">All</div>
+  <div class="tab" data-filter="hepato">Hepatology</div>
+  <div class="tab" data-filter="cardio">Cardiology</div>
+  <div class="tab" data-filter="resp">Respiratory</div>
+  <div class="tab" data-filter="nephro">Nephrology</div>
+  <div class="tab" data-filter="endocrine">Endocrine</div>
+  <div class="tab" data-filter="obstetric">Obstetric</div>
+</div>
+
+<!-- ================= GENERAL ================= -->
+<div id="general-tools">
+
+<details class="tool" data-system="hepato">
+<summary>
+  <div>
+    <div class="tool-title">Hepatitis B – Chronic Infection</div>
+    <div class="tool-sub">Adult (Non-pregnant)</div>
+  </div>
+  <div>▾</div>
+</summary>
+
+<div class="tool-body">
+
+<div class="step">
+  <div class="step-title">Step 1 – HBeAg status</div>
+  <div class="options">
+    <button onclick="select(this);show('g2')">Positive</button>
+    <button onclick="select(this);show('g2')">Negative</button>
+  </div>
+</div>
+
+<div class="step hidden" id="g2">
+  <div class="step-title">Step 2 – HBV DNA</div>
+  <div class="options">
+    <button onclick="select(this);hbvDNA('high')">&gt; 20,000 IU/mL</button>
+    <button onclick="select(this);hbvDNA('low')">≤ 20,000 IU/mL</button>
+  </div>
+</div>
+
+<div class="step hidden" id="g3">
+  <div class="step-title">Step 3 – Cirrhosis</div>
+  <div class="options">
+    <button onclick="select(this);treat()">Yes</button>
+    <button onclick="select(this);show('g4')">No</button>
+  </div>
+</div>
+
+<div class="step hidden" id="g4">
+  <div class="step-title">Step 4 – ALT</div>
+  <div class="options">
+    <button onclick="select(this);treat()">ALT &gt; 2× ULN</button>
+    <button onclick="select(this);monitor()">ALT ≤ 2× ULN</button>
+  </div>
+</div>
+
+<div id="result" class="hidden"></div>
+<div id="monitor" class="monitor hidden"></div>
+
+</div>
+</details>
+<details class="tool" data-system="nephro">
+<summary>
+  <div>
+    <div class="tool-title">eGFR Calculator (CKD-EPI 2021)</div>
+    <div class="tool-sub">Creatinine-based, race-free</div>
+  </div>
+  <div>▾</div>
+</summary>
+
+<div class="tool-body">
+
+<div class="step">
+  <div class="step-title">Patient details</div>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+    <input id="egfr-age" type="number" placeholder="Age (years)"
+      style="padding:12px;border-radius:10px;border:1px solid var(--border);
+             background:#0b0d0f;color:var(--text)">
+    <input id="egfr-creat" type="number" step="0.01" placeholder="Serum Creatinine (mg/dL)"
+      style="padding:12px;border-radius:10px;border:1px solid var(--border);
+             background:#0b0d0f;color:var(--text)">
+  </div>
+
+  <div class="options" style="margin-top:12px">
+    <button onclick="calcEGFR('male')">Male</button>
+    <button onclick="calcEGFR('female')">Female</button>
+  </div>
+</div>
+
+<div id="egfr-result" class="hidden"></div>
+
+</div>
+</details>
+
+<script>
+function calcEGFR(sex){
+  const age = parseFloat(document.getElementById('egfr-age').value);
+  const scr = parseFloat(document.getElementById('egfr-creat').value);
+  const resultBox = document.getElementById('egfr-result');
+
+  if(!age || !scr){
+    resultBox.className = 'result warn';
+    resultBox.textContent = 'Please enter valid age and creatinine values.';
+    resultBox.classList.remove('hidden');
+    return;
+  }
+
+  // CKD-EPI 2021 (race-free)
+  let k, alpha;
+  if(sex === 'female'){
+    k = 0.7;
+    alpha = -0.241;
+  } else {
+    k = 0.9;
+    alpha = -0.302;
+  }
+
+  const minScr = Math.min(scr / k, 1);
+  const maxScr = Math.max(scr / k, 1);
+
+  const egfr =
+    142 *
+    Math.pow(minScr, alpha) *
+    Math.pow(maxScr, -1.200) *
+    Math.pow(0.9938, age) *
+    (sex === 'female' ? 1.012 : 1);
+
+  const egfrVal = Math.round(egfr);
+
+  let stage = '';
+  let cls = 'info';
+
+  if(egfrVal >= 90){ stage = 'G1 (Normal or high)'; cls='success'; }
+  else if(egfrVal >= 60){ stage = 'G2 (Mildly decreased)'; cls='info'; }
+  else if(egfrVal >= 45){ stage = 'G3a (Mild–Moderate)'; cls='warn'; }
+  else if(egfrVal >= 30){ stage = 'G3b (Moderate–Severe)'; cls='warn'; }
+  else if(egfrVal >= 15){ stage = 'G4 (Severely decreased)'; cls='warn'; }
+  else { stage = 'G5 (Kidney failure)'; cls='warn'; }
+
+  resultBox.className = 'result ' + cls;
+  resultBox.innerHTML = `
+    eGFR ≈ <strong>${egfrVal} mL/min/1.73 m²</strong><br>
+    CKD Stage: <b>${stage}</b>
+  `;
+  resultBox.classList.remove('hidden');
+}
+</script>
+<details class="tool" data-system="endocrine">
+<summary>
+  <div>
+    <div class="tool-title">BMI Calculator</div>
+    <div class="tool-sub">Weight & Height (Indian units)</div>
+  </div>
+  <div>▾</div>
+</summary>
+
+<div class="tool-body">
+
+<div class="step">
+  <div class="step-title">Enter details</div>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+    <input id="bmi-weight" type="number" step="0.1" placeholder="Weight (kg)"
+      style="padding:12px;border-radius:10px;border:1px solid var(--border);
+             background:#0b0d0f;color:var(--text)">
+    <input id="bmi-height" type="number" step="0.1" placeholder="Height (cm)"
+      style="padding:12px;border-radius:10px;border:1px solid var(--border);
+             background:#0b0d0f;color:var(--text)">
+  </div>
+
+  <div class="options" style="margin-top:12px">
+    <button onclick="calcBMI()">Calculate BMI</button>
+  </div>
+</div>
+
+<div id="bmi-result" class="hidden"></div>
+
+</div>
+</details>
+
+<script>
+function calcBMI(){
+  const wt = parseFloat(document.getElementById('bmi-weight').value);
+  const htCm = parseFloat(document.getElementById('bmi-height').value);
+  const res = document.getElementById('bmi-result');
+
+  if(!wt || !htCm){
+    res.className = 'result warn';
+    res.textContent = 'Please enter valid weight and height.';
+    res.classList.remove('hidden');
+    return;
+  }
+
+  const htM = htCm / 100;
+  const bmi = wt / (htM * htM);
+  const bmiVal = bmi.toFixed(1);
+
+  let category = '';
+  let cls = 'info';
+
+  // Indian/WHO cutoffs
+  if(bmi < 18.5){
+    category = 'Underweight';
+    cls = 'warn';
+  } else if(bmi < 23){
+    category = 'Normal';
+    cls = 'success';
+  } else if(bmi < 25){
+    category = 'Overweight (At risk – Indian cutoff)';
+    cls = 'warn';
+  } else if(bmi < 30){
+    category = 'Obese (Class I)';
+    cls = 'warn';
+  } else {
+    category = 'Obese (Class II / III)';
+    cls = 'warn';
+  }
+
+  res.className = 'result ' + cls;
+  res.innerHTML = `
+    BMI = <strong>${bmiVal} kg/m²</strong><br>
+    Category: <b>${category}</b>
+    <div style="margin-top:8px;font-size:0.8rem;color:#9ca3af">
+      Indian risk threshold: BMI ≥ 23 kg/m²
+    </div>
+  `;
+  res.classList.remove('hidden');
+}
+</script>
+<details class="tool" data-system="endocrine">
+<summary>
+  <div>
+    <div class="tool-title">Thyroxine Dose Normalizer</div>
+    <div class="tool-sub">Convert weekly variable dosing → daily dose</div>
+  </div>
+  <div>▾</div>
+</summary>
+
+<div class="tool-body">
+
+<div class="step">
+  <div class="step-title">Current prescription</div>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+    <input id="thyroxine-strength" type="number" step="12.5"
+      placeholder="Tablet strength (mcg)"
+      style="padding:12px;border-radius:10px;border:1px solid var(--border);
+             background:#0b0d0f;color:var(--text)">
+
+    <input id="thyroxine-weekly" type="number" step="1"
+      placeholder="Total tablets per week"
+      style="padding:12px;border-radius:10px;border:1px solid var(--border);
+             background:#0b0d0f;color:var(--text)">
+  </div>
+
+  <div class="options" style="margin-top:12px">
+    <button onclick="calcThyroxine()">Calculate daily dose</button>
+  </div>
+</div>
+
+<div id="thyroxine-result" class="hidden"></div>
+
+</div>
+</details>
+
+<script>
+function calcThyroxine(){
+  const strength = parseFloat(document.getElementById('thyroxine-strength').value);
+  const weeklyTabs = parseFloat(document.getElementById('thyroxine-weekly').value);
+  const res = document.getElementById('thyroxine-result');
+
+  if(!strength || !weeklyTabs){
+    res.className = 'result warn';
+    res.textContent = 'Please enter valid tablet strength and weekly tablet count.';
+    res.classList.remove('hidden');
+    return;
+  }
+
+  const weeklyDose = strength * weeklyTabs; // mcg/week
+  const dailyExact = weeklyDose / 7;
+
+  // Round to nearest 12.5 mcg (practical tablet division)
+  const dailyRounded = Math.round(dailyExact / 12.5) * 12.5;
+
+  res.className = 'result success';
+  res.innerHTML = `
+    Weekly dose = <b>${weeklyDose.toFixed(1)} mcg</b><br>
+    Exact daily equivalent = ${dailyExact.toFixed(1)} mcg/day<br><br>
+    <strong>Suggested daily dose ≈ ${dailyRounded} mcg</strong>
+
+    <div style="margin-top:8px;font-size:0.8rem;color:#9ca3af">
+      Rounded to nearest 12.5 mcg for practical dosing.<br>
+      Adjust further based on TSH (6–8 weeks).
+    </div>
+  `;
+  res.classList.remove('hidden');
+}
+</script>
+
+</div>
+
+<!-- ================= PREGNANCY ================= -->
+<div id="preg-tools" class="hidden">
+
+<details class="tool" data-system="obstetric">
+<summary>
+  <div>
+    <div class="tool-title">Hepatitis B in Pregnancy</div>
+    <div class="tool-sub">Vertical transmission prevention</div>
+  </div>
+  <div>▾</div>
+</summary>
+
+<div class="tool-body">
+
+<div class="step">
+  <div class="step-title">HBV DNA</div>
+  <div class="options">
+    <button onclick="pregHBV(true)">≥ 200,000 IU/mL</button>
+    <button onclick="pregHBV(false)">&lt; 200,000 IU/mL</button>
+  </div>
+</div>
+
+<div id="preg-result" class="hidden"></div>
+
+</div>
+</details>
+</div>
+
+</main>
+
+<script>
+/* MODE */
+function switchMode(mode,btn){
+  document.querySelectorAll('.mode-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('general-tools').style.display = mode==='general'?'block':'none';
+  document.getElementById('preg-tools').style.display = mode==='preg'?'block':'none';
+  applyFilters();
+}
+
+/* SEARCH + SORT (UNIFIED) */
+const searchInput=document.getElementById('searchInput');
+searchInput.addEventListener('input',applyFilters);
+
+document.querySelectorAll('#global-tabs .tab').forEach(tab=>{
+  tab.onclick=()=>{
+    document.querySelectorAll('#global-tabs .tab').forEach(t=>t.classList.remove('active'));
+    tab.classList.add('active');
+    applyFilters();
+  };
+});
+
+function applyFilters(){
+  const q=searchInput.value.toLowerCase();
+  const filter=document.querySelector('#global-tabs .tab.active').dataset.filter;
+  const container=document.getElementById('preg-tools').style.display==='block'
+    ? document.getElementById('preg-tools')
+    : document.getElementById('general-tools');
+
+  container.querySelectorAll('.tool').forEach(tool=>{
+    const okText=tool.innerText.toLowerCase().includes(q);
+    const okFilter=filter==='all'||tool.dataset.system===filter;
+    tool.style.display=okText&&okFilter?'block':'none';
+  });
+}
+
+/* COMMON */
+function select(btn){
+  btn.parentElement.querySelectorAll('button').forEach(b=>b.classList.remove('selected'));
+  btn.classList.add('selected');
+}
+function show(id){document.getElementById(id).classList.remove('hidden')}
+
+/* GENERAL HBV LOGIC (CORRECTED) */
+function hbvDNA(level){
+  if(level==='low'){monitor();return;}
+  show('g3');
+}
+function monitor(){
+  const r=document.getElementById('result');
+  const m=document.getElementById('monitor');
+  r.className='result warn';
+  r.textContent='No treatment now';
+  r.classList.remove('hidden');
+  m.textContent='Monitor ALT 3–6 monthly · HBV DNA 6–12 monthly';
+  m.classList.remove('hidden');
+}
+function treat(){
+  const r=document.getElementById('result');
+  const m=document.getElementById('monitor');
+  m.classList.add('hidden');
+  r.className='result success';
+  r.innerHTML=`
+    <strong>START ANTIVIRAL TREATMENT</strong><br><br>
+    <b>Recommended drugs:</b>
+    <ul>
+      <li>Tenofovir disoproxil fumarate (TDF)</li>
+      <li>Entecavir</li>
+    </ul>
+    <small>Avoid Lamivudine monotherapy due to resistance.</small>
+  `;
+  r.classList.remove('hidden');
+}
+
+/* PREGNANCY */
+function pregHBV(high){
+  const r=document.getElementById('preg-result');
+  r.className='result '+(high?'success':'info');
+  r.innerHTML=high
+    ? 'START Tenofovir at 28–32 weeks → Stop 4 weeks postpartum.<br>Infant: HBIG + Vaccine'
+    : 'No maternal antiviral.<br>Infant: HBIG + Vaccine';
+  r.classList.remove('hidden');
+}
+</script>
+
+</body>
+</html>
