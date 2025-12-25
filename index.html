@@ -1,0 +1,917 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Clinical Tools | Dr. Mit Panchani</title>
+
+<style>
+:root{
+  --bg:#0f1113;
+  --card:#16191d;
+  --inner:#0b0d10;
+  --border:#262a30;
+  --text:#e5e7eb;
+  --muted:#9ca3af;
+  --accent:#3b82f6;
+  --success:#064e3b;
+  --warn:#78350f;
+  --info:#1e3a8a;
+}
+
+*{box-sizing:border-box}
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--text);
+  font-family:system-ui,-apple-system,Segoe UI,Roboto;
+}
+main{
+  max-width:1000px;
+  margin:24px auto;
+  padding:16px;
+}
+
+h1{font-size:1.6rem;margin-bottom:4px}
+.sub{color:var(--muted);font-size:.9rem;margin-bottom:16px}
+
+/* MODE */
+.mode-toggle{display:flex;gap:12px;margin-bottom:18px}
+.mode-btn{
+  flex:1;padding:14px;border-radius:14px;
+  border:1px solid var(--border);
+  background:var(--card);color:var(--muted);
+  font-weight:600;cursor:pointer
+}
+.mode-btn.active{background:#fff;color:#000}
+
+/* SEARCH */
+.search input{
+  width:100%;padding:14px;border-radius:12px;
+  border:1px solid var(--border);
+  background:#0b0d0f;color:var(--text);
+  margin-bottom:14px
+}
+
+/* GLOBAL SORT BAR */
+.tabs{
+  display:flex;gap:10px;margin:0 0 18px;overflow-x:auto
+}
+.tabs::-webkit-scrollbar{display:none}
+.tab{
+  padding:8px 14px;border-radius:999px;
+  border:1px solid var(--border);
+  background:var(--card);
+  color:var(--muted);
+  cursor:pointer;font-size:.85rem;
+  white-space:nowrap
+}
+.tab.active{background:#fff;color:#000;font-weight:600}
+
+/* TOOL */
+.tool{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:14px;
+  margin-bottom:14px;
+  overflow:hidden
+}
+.tool summary{
+  list-style:none;padding:16px;
+  cursor:pointer;display:flex;
+  justify-content:space-between
+}
+.tool summary::-webkit-details-marker{display:none}
+.tool-title{font-weight:600}
+.tool-sub{font-size:.8rem;color:var(--muted)}
+.tool-body{padding:16px;border-top:1px solid var(--border)}
+
+/* STEPS */
+.step{
+  background:var(--inner);
+  border:1px solid var(--border);
+  border-radius:12px;
+  padding:14px;margin-bottom:14px
+}
+.step-title{font-weight:600;margin-bottom:8px}
+.options{display:flex;gap:10px}
+.options button{
+  flex:1;padding:12px;border-radius:10px;
+  border:1px solid var(--border);
+  background:#111827;color:var(--text);
+  cursor:pointer;font-weight:600
+}
+.options button.selected{
+  background:var(--accent);
+  border-color:var(--accent)
+}
+
+/* RESULT */
+.result{
+  padding:14px;border-radius:12px;
+  font-weight:700;margin-top:12px
+}
+.success{background:var(--success);color:#d1fae5}
+.warn{background:var(--warn);color:#fde68a}
+.info{background:var(--info);color:#dbeafe}
+
+.monitor{
+  margin-top:12px;padding:12px;
+  border-radius:12px;
+  border:1px dashed var(--border);
+  font-size:.9rem;color:var(--muted)
+}
+
+.hidden{display:none}
+</style>
+</head>
+
+<body>
+<main>
+
+<h1>Clinical Tools</h1>
+<div class="sub">Quick OPD decision support</div>
+
+<!-- MODE -->
+<div class="mode-toggle">
+  <button class="mode-btn active" onclick="switchMode('general',this)">General / Adult</button>
+  <button class="mode-btn" onclick="switchMode('preg',this)">Pregnancy</button>
+</div>
+
+<!-- SEARCH -->
+<div class="search">
+  <input id="searchInput" placeholder="Search tools…">
+</div>
+
+<!-- GLOBAL SORT BAR -->
+<div class="tabs" id="global-tabs">
+  <div class="tab active" data-filter="all">All</div>
+  <div class="tab" data-filter="hepato">Hepatology</div>
+  <div class="tab" data-filter="cardio">Cardiology</div>
+  <div class="tab" data-filter="resp">Respiratory</div>
+  <div class="tab" data-filter="Hematology">Hematology</div>
+  <div class="tab" data-filter="nephro">Nephrology</div>
+  <div class="tab" data-filter="endocrine">Endocrine</div>
+  <div class="tab" data-filter="obstetric">Obstetric</div>
+</div>
+
+<!-- ================= GENERAL ================= -->
+<div id="general-tools">
+
+<details class="tool" data-system="hepato">
+<summary>
+  <div>
+    <div class="tool-title">Hepatitis B – Chronic Infection</div>
+    <div class="tool-sub">Adult (Non-pregnant)</div>
+  </div>
+  <div>▾</div>
+</summary>
+
+<div class="tool-body">
+
+<div class="step">
+  <div class="step-title">Step 1 – HBeAg status</div>
+  <div class="options">
+    <button onclick="select(this);show('g2')">Positive</button>
+    <button onclick="select(this);show('g2')">Negative</button>
+  </div>
+</div>
+
+<div class="step hidden" id="g2">
+  <div class="step-title">Step 2 – HBV DNA</div>
+  <div class="options">
+    <button onclick="select(this);hbvDNA('high')">&gt; 20,000 IU/mL</button>
+    <button onclick="select(this);hbvDNA('low')">≤ 20,000 IU/mL</button>
+  </div>
+</div>
+
+<div class="step hidden" id="g3">
+  <div class="step-title">Step 3 – Cirrhosis</div>
+  <div class="options">
+    <button onclick="select(this);treat()">Yes</button>
+    <button onclick="select(this);show('g4')">No</button>
+  </div>
+</div>
+
+<div class="step hidden" id="g4">
+  <div class="step-title">Step 4 – ALT</div>
+  <div class="options">
+    <button onclick="select(this);treat()">ALT &gt; 2× ULN</button>
+    <button onclick="select(this);monitor()">ALT ≤ 2× ULN</button>
+  </div>
+</div>
+
+<div id="result" class="hidden"></div>
+<div id="monitor" class="monitor hidden"></div>
+
+</div>
+</details>
+<details class="tool" data-system="nephro">
+<summary>
+  <div>
+    <div class="tool-title">eGFR Calculator (CKD-EPI 2021)</div>
+    <div class="tool-sub">Creatinine-based, race-free</div>
+  </div>
+  <div>▾</div>
+</summary>
+
+<div class="tool-body">
+
+<div class="step">
+  <div class="step-title">Patient details</div>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+    <input id="egfr-age" type="number" placeholder="Age (years)"
+      style="padding:12px;border-radius:10px;border:1px solid var(--border);
+             background:#0b0d0f;color:var(--text)">
+    <input id="egfr-creat" type="number" step="0.01" placeholder="Serum Creatinine (mg/dL)"
+      style="padding:12px;border-radius:10px;border:1px solid var(--border);
+             background:#0b0d0f;color:var(--text)">
+  </div>
+
+  <div class="options" style="margin-top:12px">
+    <button onclick="calcEGFR('male')">Male</button>
+    <button onclick="calcEGFR('female')">Female</button>
+  </div>
+</div>
+
+<div id="egfr-result" class="hidden"></div>
+
+</div>
+</details>
+
+<script>
+function calcEGFR(sex){
+  const age = parseFloat(document.getElementById('egfr-age').value);
+  const scr = parseFloat(document.getElementById('egfr-creat').value);
+  const resultBox = document.getElementById('egfr-result');
+
+  if(!age || !scr){
+    resultBox.className = 'result warn';
+    resultBox.textContent = 'Please enter valid age and creatinine values.';
+    resultBox.classList.remove('hidden');
+    return;
+  }
+
+  // CKD-EPI 2021 (race-free)
+  let k, alpha;
+  if(sex === 'female'){
+    k = 0.7;
+    alpha = -0.241;
+  } else {
+    k = 0.9;
+    alpha = -0.302;
+  }
+
+  const minScr = Math.min(scr / k, 1);
+  const maxScr = Math.max(scr / k, 1);
+
+  const egfr =
+    142 *
+    Math.pow(minScr, alpha) *
+    Math.pow(maxScr, -1.200) *
+    Math.pow(0.9938, age) *
+    (sex === 'female' ? 1.012 : 1);
+
+  const egfrVal = Math.round(egfr);
+
+  let stage = '';
+  let cls = 'info';
+
+  if(egfrVal >= 90){ stage = 'G1 (Normal or high)'; cls='success'; }
+  else if(egfrVal >= 60){ stage = 'G2 (Mildly decreased)'; cls='info'; }
+  else if(egfrVal >= 45){ stage = 'G3a (Mild–Moderate)'; cls='warn'; }
+  else if(egfrVal >= 30){ stage = 'G3b (Moderate–Severe)'; cls='warn'; }
+  else if(egfrVal >= 15){ stage = 'G4 (Severely decreased)'; cls='warn'; }
+  else { stage = 'G5 (Kidney failure)'; cls='warn'; }
+
+  resultBox.className = 'result ' + cls;
+  resultBox.innerHTML = `
+    eGFR ≈ <strong>${egfrVal} mL/min/1.73 m²</strong><br>
+    CKD Stage: <b>${stage}</b>
+  `;
+  resultBox.classList.remove('hidden');
+}
+</script>
+<details class="tool" data-system="endocrine">
+<summary>
+  <div>
+    <div class="tool-title">BMI Calculator</div>
+    <div class="tool-sub">Weight & Height (Indian units)</div>
+  </div>
+  <div>▾</div>
+</summary>
+
+<div class="tool-body">
+
+<div class="step">
+  <div class="step-title">Enter details</div>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+    <input id="bmi-weight" type="number" step="0.1" placeholder="Weight (kg)"
+      style="padding:12px;border-radius:10px;border:1px solid var(--border);
+             background:#0b0d0f;color:var(--text)">
+    <input id="bmi-height" type="number" step="0.1" placeholder="Height (cm)"
+      style="padding:12px;border-radius:10px;border:1px solid var(--border);
+             background:#0b0d0f;color:var(--text)">
+  </div>
+
+  <div class="options" style="margin-top:12px">
+    <button onclick="calcBMI()">Calculate BMI</button>
+  </div>
+</div>
+
+<div id="bmi-result" class="hidden"></div>
+
+</div>
+</details>
+
+<script>
+function calcBMI(){
+  const wt = parseFloat(document.getElementById('bmi-weight').value);
+  const htCm = parseFloat(document.getElementById('bmi-height').value);
+  const res = document.getElementById('bmi-result');
+
+  if(!wt || !htCm){
+    res.className = 'result warn';
+    res.textContent = 'Please enter valid weight and height.';
+    res.classList.remove('hidden');
+    return;
+  }
+
+  const htM = htCm / 100;
+  const bmi = wt / (htM * htM);
+  const bmiVal = bmi.toFixed(1);
+
+  let category = '';
+  let cls = 'info';
+
+  // Indian/WHO cutoffs
+  if(bmi < 18.5){
+    category = 'Underweight';
+    cls = 'warn';
+  } else if(bmi < 23){
+    category = 'Normal';
+    cls = 'success';
+  } else if(bmi < 25){
+    category = 'Overweight (At risk – Indian cutoff)';
+    cls = 'warn';
+  } else if(bmi < 30){
+    category = 'Obese (Class I)';
+    cls = 'warn';
+  } else {
+    category = 'Obese (Class II / III)';
+    cls = 'warn';
+  }
+
+  res.className = 'result ' + cls;
+  res.innerHTML = `
+    BMI = <strong>${bmiVal} kg/m²</strong><br>
+    Category: <b>${category}</b>
+    <div style="margin-top:8px;font-size:0.8rem;color:#9ca3af">
+      Indian risk threshold: BMI ≥ 23 kg/m²
+    </div>
+  `;
+  res.classList.remove('hidden');
+}
+</script>
+<details class="tool" data-system="endocrine">
+<summary>
+  <div>
+    <div class="tool-title">Thyroxine Dose Calculator</div>
+    <div class="tool-sub">Convert weekly variable dosing → daily dose</div>
+  </div>
+  <div>▾</div>
+</summary>
+
+<div class="tool-body">
+
+<div class="step">
+  <div class="step-title">Current prescription</div>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+    <input id="thyroxine-strength" type="number" step="12.5"
+      placeholder="Tablet strength (mcg)"
+      style="padding:12px;border-radius:10px;border:1px solid var(--border);
+             background:#0b0d0f;color:var(--text)">
+
+    <input id="thyroxine-weekly" type="number" step="1"
+      placeholder="Total tablets per week"
+      style="padding:12px;border-radius:10px;border:1px solid var(--border);
+             background:#0b0d0f;color:var(--text)">
+  </div>
+
+  <div class="options" style="margin-top:12px">
+    <button onclick="calcThyroxine()">Calculate daily dose</button>
+  </div>
+</div>
+
+<div id="thyroxine-result" class="hidden"></div>
+
+</div>
+</details>
+
+<script>
+function calcThyroxine(){
+  const strength = parseFloat(document.getElementById('thyroxine-strength').value);
+  const weeklyTabs = parseFloat(document.getElementById('thyroxine-weekly').value);
+  const res = document.getElementById('thyroxine-result');
+
+  if(!strength || !weeklyTabs){
+    res.className = 'result warn';
+    res.textContent = 'Please enter valid tablet strength and weekly tablet count.';
+    res.classList.remove('hidden');
+    return;
+  }
+
+  const weeklyDose = strength * weeklyTabs; // mcg/week
+  const dailyExact = weeklyDose / 7;
+
+  // Round to nearest 12.5 mcg (practical tablet division)
+  const dailyRounded = Math.round(dailyExact / 12.5) * 12.5;
+
+  res.className = 'result success';
+  res.innerHTML = `
+    Weekly dose = <b>${weeklyDose.toFixed(1)} mcg</b><br>
+    Exact daily equivalent = ${dailyExact.toFixed(1)} mcg/day<br><br>
+    <strong>Suggested daily dose ≈ ${dailyRounded} mcg</strong>
+
+    <div style="margin-top:8px;font-size:0.8rem;color:#9ca3af">
+      Rounded to nearest 12.5 mcg for practical dosing.<br>
+      Adjust further based on TSH (6–8 weeks).
+    </div>
+  `;
+  res.classList.remove('hidden');
+}
+</script>
+
+<!-- ================= tools block below  this ================= -->
+
+<details class="tool" data-system="cardio">
+  <summary>
+    <div>
+      <div class="tool-title">Mean Arterial Pressure (MAP)</div>
+      <div class="tool-sub">Hemodynamic assessment & BP emergencies</div>
+    </div>
+    <div>▾</div>
+  </summary>
+
+  <div class="tool-body">
+
+    <!-- INPUTS -->
+    <div class="step">
+      <div class="step-title">Enter Blood Pressure</div>
+
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <input id="sbp" type="number" placeholder="SBP (mmHg)"
+          style="flex:1;padding:12px;border-radius:10px;border:1px solid var(--border);background:#0b0d10;color:#fff">
+        <input id="dbp" type="number" placeholder="DBP (mmHg)"
+          style="flex:1;padding:12px;border-radius:10px;border:1px solid var(--border);background:#0b0d10;color:#fff">
+      </div>
+
+      <button onclick="calcMAP()" style="
+        margin-top:12px;
+        width:100%;
+        padding:12px;
+        border-radius:10px;
+        border:none;
+        background:var(--accent);
+        color:#fff;
+        font-weight:600;
+        cursor:pointer">
+        Calculate MAP
+      </button>
+    </div>
+
+    <!-- RESULT -->
+    <div id="map-result" class="result info hidden"></div>
+
+    <!-- INFORMATION -->
+    <div class="monitor">
+      <b>Normal MAP:</b><br>
+      • 70–100 mmHg (adequate organ perfusion)<br><br>
+
+      <b>Hypertensive Urgency:</b><br>
+      • Reduce BP gradually over 24–48 hours<br>
+      • No immediate MAP target<br>
+      • Avoid rapid reduction<br><br>
+
+      <b>Hypertensive Emergency:</b><br>
+      • Reduce MAP by <b>≤25%</b> in first 1 hour<br>
+      • Then target BP ≈ 160/100 mmHg over next 2–6 hours<br>
+      • Further gradual reduction over 24–48 hours
+    </div>
+
+  </div>
+</details>
+
+<script>
+function calcMAP(){
+  const sbp = parseFloat(document.getElementById('sbp').value);
+  const dbp = parseFloat(document.getElementById('dbp').value);
+  const r = document.getElementById('map-result');
+
+  if(isNaN(sbp) || isNaN(dbp) || sbp <= dbp){
+    r.className = 'result warn';
+    r.textContent = 'Please enter valid SBP and DBP values.';
+    r.classList.remove('hidden');
+    return;
+  }
+
+  const map = Math.round((dbp + (sbp - dbp)/3)*10)/10;
+
+  r.className = 'result success';
+  r.innerHTML = `Calculated MAP: <b>${map} mmHg</b>`;
+  r.classList.remove('hidden');
+}
+</script>
+
+<!-- ================= LDL CALCULATOR ================= -->
+<details class="tool" data-system="cardio">
+  <summary>
+    <div>
+      <div class="tool-title">LDL Cholesterol Calculator</div>
+      <div class="tool-sub">Embedded from existing calculator</div>
+    </div>
+    <div>▾</div>
+  </summary>
+
+  <div class="tool-body">
+
+    <div style="
+      width:100%;
+      height:520px;
+      border:1px solid #262a30;
+      border-radius:12px;
+      overflow:hidden;
+      background:#0f1113;
+    ">
+      <iframe
+        src="https://drmjp93-ldlcal.netlify.app"
+        style="width:100%;height:100%;border:0;"
+        loading="lazy"
+        referrerpolicy="no-referrer"
+      ></iframe>
+    </div>
+
+  </div>
+</details>
+
+<!-- ================= GCS CALCULATOR ================= -->
+<details class="tool" data-system="neuro">
+  <summary>
+    <div>
+      <div class="tool-title">Glasgow Coma Scale (GCS)</div>
+      <div class="tool-sub">Level of consciousness assessment</div>
+    </div>
+    <div>▾</div>
+  </summary>
+
+  <div class="tool-body">
+
+    <!-- EYE -->
+    <div class="step">
+      <div class="step-title">Eye Opening (E)</div>
+      <div class="options">
+        <button onclick="setGCS('eye',4,this)">Spontaneous (4)</button>
+        <button onclick="setGCS('eye',3,this)">To speech (3)</button>
+        <button onclick="setGCS('eye',2,this)">To pain (2)</button>
+        <button onclick="setGCS('eye',1,this)">None (1)</button>
+      </div>
+    </div>
+
+    <!-- VERBAL -->
+    <div class="step">
+      <div class="step-title">Verbal Response (V)</div>
+      <div class="options">
+        <button onclick="setGCS('verbal',5,this)">Oriented (5)</button>
+        <button onclick="setGCS('verbal',4,this)">Confused (4)</button>
+        <button onclick="setGCS('verbal',3,this)">Inappropriate (3)</button>
+        <button onclick="setGCS('verbal',2,this)">Incomprehensible (2)</button>
+        <button onclick="setGCS('verbal',1,this)">None (1)</button>
+      </div>
+    </div>
+
+    <!-- MOTOR -->
+    <div class="step">
+      <div class="step-title">Motor Response (M)</div>
+      <div class="options">
+        <button onclick="setGCS('motor',6,this)">Obeys commands (6)</button>
+        <button onclick="setGCS('motor',5,this)">Localizes pain (5)</button>
+        <button onclick="setGCS('motor',4,this)">Withdraws (4)</button>
+        <button onclick="setGCS('motor',3,this)">Flexion (3)</button>
+        <button onclick="setGCS('motor',2,this)">Extension (2)</button>
+        <button onclick="setGCS('motor',1,this)">None (1)</button>
+      </div>
+    </div>
+
+    <!-- RESULT -->
+    <div id="gcs-result" class="result hidden"></div>
+
+    <!-- INTERPRETATION -->
+    <div id="gcs-info" class="monitor hidden"></div>
+
+  </div>
+</details>
+
+<script>
+const gcsScore = { eye: 0, verbal: 0, motor: 0 };
+
+function setGCS(type, value, btn){
+  btn.parentElement.querySelectorAll('button')
+    .forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+
+  gcsScore[type] = value;
+  calculateGCS();
+}
+
+function calculateGCS(){
+  const total = gcsScore.eye + gcsScore.verbal + gcsScore.motor;
+  if(total === 0) return;
+
+  const result = document.getElementById('gcs-result');
+  const info = document.getElementById('gcs-info');
+
+  result.className = 'result ' + (total <= 8 ? 'warn' : total <= 12 ? 'info' : 'success');
+  result.innerHTML = `<strong>GCS = ${total}</strong>`;
+  result.classList.remove('hidden');
+
+  let interpretation = '';
+  if(total <= 8){
+    interpretation = 'Severe head injury → Consider airway protection & ICU care.';
+  } else if(total <= 12){
+    interpretation = 'Moderate head injury → Close monitoring required.';
+  } else {
+    interpretation = 'Mild head injury → Continue observation.';
+  }
+
+  info.textContent = interpretation;
+  info.classList.remove('hidden');
+}
+</script>
+
+<!-- ================= MENTZER INDEX ================= -->
+<details class="tool" data-system="Hematology">
+  <summary>
+    <div>
+      <div class="tool-title">Mentzer Index</div>
+      <div class="tool-sub">Thalassemia trait vs Iron Deficiency Anemia</div>
+    </div>
+    <div>▾</div>
+  </summary>
+
+  <div class="tool-body">
+
+    <!-- INPUT -->
+    <div class="step">
+      <div class="step-title">Enter CBC Values</div>
+
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <input
+          id="mentzer-mcv"
+          type="number"
+          placeholder="MCV (fL)"
+          style="flex:1;padding:12px;border-radius:10px;
+          border:1px solid var(--border);background:#0b0d10;color:var(--text)"
+        >
+
+        <input
+          id="mentzer-rbc"
+          type="number"
+          step="0.1"
+          placeholder="RBC (million/µL)"
+          style="flex:1;padding:12px;border-radius:10px;
+          border:1px solid var(--border);background:#0b0d10;color:var(--text)"
+        >
+      </div>
+
+      <button
+        onclick="(function(){
+          const mcv = Number(document.getElementById('mentzer-mcv').value);
+          const rbc = Number(document.getElementById('mentzer-rbc').value);
+          const result = document.getElementById('mentzer-result');
+
+          if(!mcv || !rbc || rbc <= 0){
+            result.className = 'result warn';
+            result.textContent = 'Please enter valid MCV and RBC values.';
+            result.classList.remove('hidden');
+            return;
+          }
+
+          const index = (mcv / rbc).toFixed(1);
+
+          if(index < 13){
+            result.className = 'result success';
+            result.innerHTML =
+              '<strong>Mentzer Index = ' + index +
+              '</strong><br>Suggestive of <b>Thalassemia trait</b>';
+          } else {
+            result.className = 'result warn';
+            result.innerHTML =
+              '<strong>Mentzer Index = ' + index +
+              '</strong><br>Suggestive of <b>Iron Deficiency Anemia</b>';
+          }
+
+          result.classList.remove('hidden');
+        })()"
+        style="
+          margin-top:14px;
+          width:100%;
+          padding:12px;
+          border-radius:10px;
+          border:none;
+          background:var(--accent);
+          color:#fff;
+          font-weight:700;
+          cursor:pointer
+        ">
+        Calculate Mentzer Index
+      </button>
+    </div>
+
+    <!-- RESULT -->
+    <div id="mentzer-result" class="result hidden"></div>
+
+    <!-- INTERPRETATION -->
+    <div class="monitor">
+      <b>Formula:</b> MCV ÷ RBC count<br><br>
+
+      <b>&lt; 13</b> → Thalassemia trait likely<br>
+      <b>&gt; 13</b> → Iron Deficiency Anemia likely<br><br>
+
+      <span style="color:var(--muted);font-size:0.85rem">
+        Screening tool only — confirm with iron studies / Hb electrophoresis
+      </span>
+    </div>
+
+  </div>
+</details>
+
+
+
+<!-- ================= tools block above this ================= -->
+</div>
+
+<!-- ================= PREGNANCY ================= -->
+<div id="preg-tools" class="hidden">
+
+<details class="tool" data-system="obstetric">
+<summary>
+  <div>
+    <div class="tool-title">Hepatitis B in Pregnancy</div>
+    <div class="tool-sub">Vertical transmission prevention</div>
+  </div>
+  <div>▾</div>
+</summary>
+
+<div class="tool-body">
+
+<div class="step">
+  <div class="step-title">HBV DNA</div>
+  <div class="options">
+    <button onclick="pregHBV(true)">≥ 200,000 IU/mL</button>
+    <button onclick="pregHBV(false)">&lt; 200,000 IU/mL</button>
+  </div>
+</div>
+
+<div id="preg-result" class="hidden"></div>
+
+</div>
+</details>
+</div>
+
+</main>
+
+<script>
+/* MODE */
+function switchMode(mode,btn){
+  document.querySelectorAll('.mode-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('general-tools').style.display = mode==='general'?'block':'none';
+  document.getElementById('preg-tools').style.display = mode==='preg'?'block':'none';
+  applyFilters();
+}
+
+/* SEARCH + SORT (UNIFIED) */
+const searchInput=document.getElementById('searchInput');
+searchInput.addEventListener('input',applyFilters);
+
+document.querySelectorAll('#global-tabs .tab').forEach(tab=>{
+  tab.onclick=()=>{
+    document.querySelectorAll('#global-tabs .tab').forEach(t=>t.classList.remove('active'));
+    tab.classList.add('active');
+    applyFilters();
+  };
+});
+
+function applyFilters(){
+  const q=searchInput.value.toLowerCase();
+  const filter=document.querySelector('#global-tabs .tab.active').dataset.filter;
+  const container=document.getElementById('preg-tools').style.display==='block'
+    ? document.getElementById('preg-tools')
+    : document.getElementById('general-tools');
+
+  container.querySelectorAll('.tool').forEach(tool=>{
+    const okText=tool.innerText.toLowerCase().includes(q);
+    const okFilter=filter==='all'||tool.dataset.system===filter;
+    tool.style.display=okText&&okFilter?'block':'none';
+  });
+}
+
+/* COMMON */
+function select(btn){
+  btn.parentElement.querySelectorAll('button').forEach(b=>b.classList.remove('selected'));
+  btn.classList.add('selected');
+}
+function show(id){document.getElementById(id).classList.remove('hidden')}
+
+/* GENERAL HBV LOGIC (CORRECTED) */
+function hbvDNA(level){
+  if(level==='low'){monitor();return;}
+  show('g3');
+}
+function monitor(){
+  const r=document.getElementById('result');
+  const m=document.getElementById('monitor');
+  r.className='result warn';
+  r.textContent='No treatment now';
+  r.classList.remove('hidden');
+  m.textContent='Monitor ALT 3–6 monthly · HBV DNA 6–12 monthly';
+  m.classList.remove('hidden');
+}
+function treat(){
+  const r=document.getElementById('result');
+  const m=document.getElementById('monitor');
+  m.classList.add('hidden');
+  r.className='result success';
+  r.innerHTML=`
+    <strong>START ANTIVIRAL TREATMENT</strong><br><br>
+    <b>Recommended drugs:</b>
+    <ul>
+      <li>Tenofovir disoproxil fumarate (TDF)</li>
+      <li>Entecavir</li>
+    </ul>
+    <small>Avoid Lamivudine monotherapy due to resistance.</small>
+  `;
+  r.classList.remove('hidden');
+}
+
+/* PREGNANCY */
+function pregHBV(high){
+  const r=document.getElementById('preg-result');
+  r.className='result '+(high?'success':'info');
+  r.innerHTML=high
+    ? 'START Tenofovir at 28–32 weeks → Stop 4 weeks postpartum.<br>Infant: HBIG + Vaccine'
+    : 'No maternal antiviral.<br>Infant: HBIG + Vaccine';
+  r.classList.remove('hidden');
+}
+
+/* ================= A–Z SORT (GLOBAL) ================= */
+
+document.addEventListener('DOMContentLoaded', sortToolsAlphabetically);
+
+function sortToolsAlphabetically(){
+  ['general-tools', 'preg-tools'].forEach(id => {
+    const container = document.getElementById(id);
+    if (!container) return;
+
+    const tools = Array.from(container.querySelectorAll('.tool'));
+
+    tools.sort((a, b) => {
+      const aName = a.querySelector('.tool-title')?.textContent.trim().toLowerCase() || '';
+      const bName = b.querySelector('.tool-title')?.textContent.trim().toLowerCase() || '';
+      return aName.localeCompare(bName);
+    });
+
+    tools.forEach(tool => container.appendChild(tool));
+  });
+}
+</script>
+
+<footer style="
+  margin-top:40px;
+  padding:18px 12px;
+  text-align:center;
+  font-size:0.85rem;
+  color:var(--muted);
+  border-top:1px solid var(--border);
+">
+
+  <div style="margin-bottom:8px;">
+    Compiled by <b style="color:var(--text)">drmjp93</b> with ❤️
+  </div>
+
+  <div style="max-width:820px;margin:0 auto;line-height:1.5;">
+    <b>Disclaimer:</b> These clinical tools are intended for
+    <b>academic and educational purposes only</b>.
+    They are designed to support clinical reasoning but
+    <b>do not replace professional medical judgment</b>,
+    patient examination, or individualized decision-making.
+    Always correlate with clinical context and current guidelines.
+  </div>
+
+</footer>
+
+</body>
+</html>
