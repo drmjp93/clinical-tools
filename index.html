@@ -123,6 +123,23 @@ h1{font-size:1.6rem;margin-bottom:4px}
 }
 
 .hidden{display:none}
+
+/* ===== Mobile overflow fix for result boxes ===== */
+
+.tool-body,
+.step,
+.result,
+.monitor {
+  max-width: 100%;
+  overflow-wrap: break-word;
+  word-break: break-word;
+}
+
+.result {
+  box-sizing: border-box;
+  width: 100%;
+}
+
 </style>
 </head>
 
