@@ -139,7 +139,15 @@ h1{font-size:1.6rem;margin-bottom:4px}
   box-sizing: border-box;
   width: 100%;
 }
+/* === iOS GRID FIX === */
+input, button {
+  max-width: 100%;
+  min-width: 0;
+}
 
+.tool-body * {
+  box-sizing: border-box;
+}
 </style>
 </head>
 
@@ -237,7 +245,11 @@ h1{font-size:1.6rem;margin-bottom:4px}
 <div class="step">
   <div class="step-title">Patient details</div>
 
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+<div style="
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:12px
+">
     <input id="egfr-age" type="number" placeholder="Age (years)"
       style="padding:12px;border-radius:10px;border:1px solid var(--border);
              background:#0b0d0f;color:var(--text)">
@@ -324,7 +336,11 @@ function calcEGFR(sex){
 <div class="step">
   <div class="step-title">Enter details</div>
 
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+<div style="
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:12px
+">
     <input id="bmi-weight" type="number" step="0.1" placeholder="Weight (kg)"
       style="padding:12px;border-radius:10px;border:1px solid var(--border);
              background:#0b0d0f;color:var(--text)">
@@ -406,7 +422,11 @@ function calcBMI(){
 <div class="step">
   <div class="step-title">Current prescription</div>
 
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+<div style="
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:12px
+">
     <input id="thyroxine-strength" type="number" step="12.5"
       placeholder="Tablet strength (mcg)"
       style="padding:12px;border-radius:10px;border:1px solid var(--border);
