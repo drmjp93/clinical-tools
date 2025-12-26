@@ -804,6 +804,116 @@ function calculateGCS(){
   </div>
 </details>
 
+<!-- ================= OXYGEN CYLINDER DURATION ================= -->
+<details class="tool" data-system="resp">
+  <summary>
+    <div>
+      <div class="tool-title">Oxygen Cylinder Duration</div>
+      <div class="tool-sub">Estimate remaining time at given flow rate</div>
+    </div>
+    <div>▾</div>
+  </summary>
+
+  <div class="tool-body">
+
+    <!-- INPUTS -->
+    <div class="step">
+      <div class="step-title">Cylinder details</div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <select id="o2-cylinder"
+          style="padding:12px;border-radius:10px;border:1px solid var(--border);
+                 background:#0b0d10;color:var(--text)">
+          <option value="">Select cylinder type</option>
+          <option value="40">B cylinder</option>
+          <option value="85">C cylinder</option>
+          <option value="350">D cylinder</option>
+          <option value="680">E cylinder</option>
+          <option value="7000">Jumbo / Manifold</option>
+        </select>
+
+        <input id="o2-pressure" type="number"
+          placeholder="Current pressure (bar)"
+          style="padding:12px;border-radius:10px;border:1px solid var(--border);
+                 background:#0b0d10;color:var(--text)">
+      </div>
+
+      <input id="o2-flow" type="number" step="0.1"
+        placeholder="Oxygen flow (L/min)"
+        style="margin-top:12px;width:100%;padding:12px;
+               border-radius:10px;border:1px solid var(--border);
+               background:#0b0d10;color:var(--text)">
+
+      <button onclick="calcO2Time()" style="
+        margin-top:14px;
+        width:100%;
+        padding:12px;
+        border-radius:10px;
+        border:none;
+        background:var(--accent);
+        color:#fff;
+        font-weight:700;
+        cursor:pointer">
+        Calculate Duration
+      </button>
+    </div>
+
+    <!-- RESULT -->
+    <div id="o2-result" class="result hidden"></div>
+
+    <!-- INFO CARD -->
+    <div class="monitor">
+      <b>How to identify cylinder type:</b><br>
+      • Printed / engraved on cylinder body or neck<br>
+      • Color code sticker (varies by supplier)<br>
+      • Size reference:
+      <ul style="margin:6px 0 6px 18px">
+        <li><b>B/C</b> → small portable cylinders</li>
+        <li><b>D/E</b> → ward / bedside cylinders</li>
+        <li><b>Jumbo</b> → manifold / central supply</li>
+      </ul>
+
+      <b>Important clinical notes:</b><br>
+      • Calculation is <b>approximate</b><br>
+      • Humidifier, leaks, and high FiO₂ devices reduce duration<br>
+      • Plan cylinder change at <b>20–30 bar</b><br>
+      • Do not run cylinder to zero
+    </div>
+
+  </div>
+</details>
+
+<script>
+function calcO2Time(){
+  const factor = Number(document.getElementById('o2-cylinder').value);
+  const pressure = Number(document.getElementById('o2-pressure').value);
+  const flow = Number(document.getElementById('o2-flow').value);
+  const res = document.getElementById('o2-result');
+
+  if(!factor || !pressure || !flow || flow <= 0){
+    res.className = 'result warn';
+    res.textContent = 'Please select cylinder type and enter valid pressure and flow.';
+    res.classList.remove('hidden');
+    return;
+  }
+
+  const minutes = (pressure * factor) / flow / 60;
+  const hrs = Math.floor(minutes / 60);
+  const mins = Math.round(minutes % 60);
+
+  let cls = 'success';
+  if(pressure <= 30) cls = 'warn';
+
+  res.className = 'result ' + cls;
+  res.innerHTML = `
+    Remaining oxygen time ≈ <b>${hrs} hr ${mins} min</b><br>
+    <span style="font-size:0.85rem">
+      (at ${flow} L/min, ${pressure} bar)
+    </span>
+  `;
+  res.classList.remove('hidden');
+}
+</script>
 
 
 <!-- ================= tools block above this ================= -->
