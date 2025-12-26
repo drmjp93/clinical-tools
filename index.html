@@ -809,7 +809,7 @@ function calculateGCS(){
   <summary>
     <div>
       <div class="tool-title">Oxygen Cylinder Duration</div>
-      <div class="tool-sub">Estimate remaining time at given flow rate</div>
+      <div class="tool-sub">Estimate remaining oxygen time at given flow rate</div>
     </div>
     <div>▾</div>
   </summary>
@@ -826,14 +826,14 @@ function calculateGCS(){
                  background:#0b0d10;color:var(--text)">
           <option value="">Select cylinder type</option>
           <option value="40">B cylinder</option>
-          <option value="85">C cylinder</option>
+          <option value="80">C cylinder</option>
           <option value="350">D cylinder</option>
           <option value="680">E cylinder</option>
-          <option value="7000">Jumbo / Manifold</option>
+          <option value="6800">Jumbo / Manifold</option>
         </select>
 
         <input id="o2-pressure" type="number"
-          placeholder="Current pressure (bar)"
+          placeholder="Current pressure (bar or kg/cm²)"
           style="padding:12px;border-radius:10px;border:1px solid var(--border);
                  background:#0b0d10;color:var(--text)">
       </div>
@@ -863,21 +863,26 @@ function calculateGCS(){
 
     <!-- INFO CARD -->
     <div class="monitor">
+      <b>⚠️ Pressure unit instructions:</b><br>
+      • <b>DO NOT enter PSI values</b><br>
+      • Enter pressure in <b>bar or kg/cm² only</b><br>
+      • <b>1 bar ≈ 1 kg/cm²</b> (≈ 2% difference, clinically acceptable)<br><br>
+
       <b>How to identify cylinder type:</b><br>
       • Printed / engraved on cylinder body or neck<br>
-      • Color code sticker (varies by supplier)<br>
+      • Supplier label or color code (varies by manufacturer)<br>
       • Size reference:
       <ul style="margin:6px 0 6px 18px">
-        <li><b>B/C</b> → small portable cylinders</li>
-        <li><b>D/E</b> → ward / bedside cylinders</li>
+        <li><b>B / C</b> → small portable cylinders</li>
+        <li><b>D / E</b> → bedside / ward cylinders</li>
         <li><b>Jumbo</b> → manifold / central supply</li>
       </ul>
 
-      <b>Important clinical notes:</b><br>
+      <b>Clinical notes:</b><br>
       • Calculation is <b>approximate</b><br>
-      • Humidifier, leaks, and high FiO₂ devices reduce duration<br>
-      • Plan cylinder change at <b>20–30 bar</b><br>
-      • Do not run cylinder to zero
+      • Humidifier, leaks, NRBM/HFNC reduce duration<br>
+      • <b>20 bar is reserved</b> for safety<br>
+      • Plan cylinder change early — <b>do not run to zero</b>
     </div>
 
   </div>
@@ -897,9 +902,15 @@ function calcO2Time(){
     return;
   }
 
-  const minutes = (pressure * factor) / flow / 60;
-  const hrs = Math.floor(minutes / 60);
-  const mins = Math.round(minutes % 60);
+  // Reserve 20 bar for safety
+  const usablePressure = Math.max(pressure - 20, 0);
+
+  // CORRECT MEDICAL FORMULA
+  // Duration (minutes) = Cylinder factor × Pressure ÷ Flow
+  const totalMinutes = (usablePressure * factor) / flow;
+
+  const hrs = Math.floor(totalMinutes / 60);
+  const mins = Math.round(totalMinutes % 60);
 
   let cls = 'success';
   if(pressure <= 30) cls = 'warn';
@@ -908,7 +919,7 @@ function calcO2Time(){
   res.innerHTML = `
     Remaining oxygen time ≈ <b>${hrs} hr ${mins} min</b><br>
     <span style="font-size:0.85rem">
-      (at ${flow} L/min, ${pressure} bar)
+      (Usable pressure: ${usablePressure} bar · Flow: ${flow} L/min)
     </span>
   `;
   res.classList.remove('hidden');
