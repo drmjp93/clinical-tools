@@ -95,11 +95,30 @@ h1{font-size:1.6rem;margin-bottom:4px}
 }
 .step-title{font-weight:600;margin-bottom:8px}
 
-.options{display.options button{
-  flex:1;padding:12px;border-radius:10px;
-  border:1px solid var(--border);
-  background:#111827;color:var(--text);
-  cursor:pointer;font-weight:600
+.options button{
+  padding:14px 10px;
+  border-radius:12px;
+  border:1px solid #374151;
+  background:#020617;          /* darker background */
+  color:#e5e7eb;
+  font-weight:600;
+  min-height:56px;
+  cursor:pointer;
+  transition:all 0.15s ease;
+}
+
+/* HOVER (desktop) */
+.options button:hover{
+  background:#020617;
+  border-color:#60a5fa;
+}
+
+/* SELECTED (critical for GCS clarity) */
+.options button.selected{
+  background:linear-gradient(135deg,#1d4ed8,#2563eb);
+  border-color:#93c5fd;
+  color:#ffffff;
+  box-shadow:0 0 0 2px rgba(59,130,246,0.35);
 }
 .options button.selected{
   background:var(--accent);
