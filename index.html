@@ -804,12 +804,14 @@ function calculateGCS(){
   </div>
 </details>
 
+
+
 <!-- ================= OXYGEN CYLINDER DURATION ================= -->
 <details class="tool" data-system="resp">
   <summary>
     <div>
       <div class="tool-title">Oxygen Cylinder Duration</div>
-      <div class="tool-sub">Estimate remaining time at given flow rate</div>
+      <div class="tool-sub">Estimate remaining oxygen time at given flow rate</div>
     </div>
     <div>▾</div>
   </summary>
@@ -825,15 +827,15 @@ function calculateGCS(){
           style="padding:12px;border-radius:10px;border:1px solid var(--border);
                  background:#0b0d10;color:var(--text)">
           <option value="">Select cylinder type</option>
-          <option value="40">B cylinder (≈40 L/bar)</option>
-          <option value="85">C cylinder (≈85 L/bar)</option>
-          <option value="350">D cylinder (≈350 L/bar)</option>
-          <option value="680">E cylinder (≈680 L/bar)</option>
-          <option value="7000">Jumbo / Manifold</option>
+          <option value="7">B cylinder (≈7 L)</option>
+          <option value="10">C cylinder (≈10 L)</option>
+          <option value="46.7">D cylinder (≈46.7 L)</option>
+          <option value="28">E cylinder (≈28 L)</option>
+          <option value="700">Jumbo / Manifold</option>
         </select>
 
         <input id="o2-pressure" type="number"
-          placeholder="Current pressure (bar or kg/cm²)"
+          placeholder="Current pressure (bar / kg/cm²)"
           style="padding:12px;border-radius:10px;border:1px solid var(--border);
                  background:#0b0d10;color:var(--text)">
       </div>
@@ -863,19 +865,20 @@ function calculateGCS(){
 
     <!-- INFO CARD -->
     <div class="monitor">
-      <b>⚠ Pressure unit instructions:</b><br>
+      <b>Pressure unit instructions:</b><br>
       • <b>DO NOT enter PSI</b><br>
       • Enter pressure in <b>bar or kg/cm² only</b><br>
-      • <b>1 bar ≈ 1 kg/cm²</b> (≈2% difference, clinically acceptable)<br><br>
+      • 1 bar ≈ 1 kg/cm² (≈2% difference, clinically acceptable)<br><br>
 
       <b>How to identify cylinder type:</b><br>
       • Printed / engraved on cylinder body or neck<br>
-      • Supplier label / size marking<br><br>
+      • Supplier label or color code (varies)<br><br>
 
       <b>Clinical notes:</b><br>
       • Calculation is <b>approximate</b><br>
-      • NRBM / HFNC / leaks reduce duration<br>
-      • <b>20 bar is reserved for safety</b>
+      • Humidifier, leaks, NRBM/HFNC reduce duration<br>
+      • <b>20 bar kept as safety reserve</b><br>
+      • Do not run cylinder to zero
     </div>
 
   </div>
@@ -883,30 +886,35 @@ function calculateGCS(){
 
 <script>
 function calcO2Time(){
-  const factor = Number(document.getElementById('o2-cylinder').value);
+  const waterCap = Number(document.getElementById('o2-cylinder').value);
   const pressure = Number(document.getElementById('o2-pressure').value);
   const flow = Number(document.getElementById('o2-flow').value);
   const res = document.getElementById('o2-result');
 
-  if(!factor || !pressure || !flow || flow <= 0){
+  if(!waterCap || !pressure || !flow || flow <= 0){
     res.className = 'result warn';
     res.textContent = 'Please select cylinder type and enter valid pressure and flow.';
     res.classList.remove('hidden');
     return;
   }
 
-  const reserve = 20; // safety reserve
-  const usablePressure = Math.max(pressure - reserve, 0);
+  const reserve = 20; // bar
+  const usablePressure = pressure - reserve;
 
-  const totalLiters = usablePressure * factor;   // L
-  const minutes = totalLiters / flow;            // minutes
+  if(usablePressure <= 0){
+    res.className = 'result warn';
+    res.textContent = 'Pressure too low after safety reserve.';
+    res.classList.remove('hidden');
+    return;
+  }
 
-  const hrs = Math.floor(minutes / 60);
-  const mins = Math.round(minutes % 60);
+  const totalLiters = waterCap * usablePressure;
+  const totalMinutes = totalLiters / flow;
 
-  let cls = pressure <= 30 ? 'warn' : 'success';
+  const hrs = Math.floor(totalMinutes / 60);
+  const mins = Math.round(totalMinutes % 60);
 
-  res.className = 'result ' + cls;
+  res.className = 'result success';
   res.innerHTML = `
     Remaining oxygen time ≈ <b>${hrs} hr ${mins} min</b><br>
     <span style="font-size:0.85rem">
@@ -916,8 +924,6 @@ function calcO2Time(){
   res.classList.remove('hidden');
 }
 </script>
-
-
 
 
 
