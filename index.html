@@ -956,6 +956,150 @@ function calcO2Time(){
 }
 </script>
 
+<!-- ================= ABG BASIC ================= -->
+<details class="tool" data-system="resp">
+  <summary>
+    <div>
+      <div class="tool-title">ABG Interpretation (Basic)</div>
+      <div class="tool-sub">Acid–base status & primary disorder</div>
+    </div>
+    <div>▾</div>
+  </summary>
+
+  <div class="tool-body">
+
+    <!-- INPUTS -->
+    <div class="step">
+      <div class="step-title">Enter ABG values</div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <input id="abg-ph" type="number" step="0.01" placeholder="pH"
+          style="padding:12px;border-radius:10px;border:1px solid var(--border);
+                 background:#0b0d10;color:var(--text)">
+
+        <input id="abg-paco2" type="number" step="0.1" placeholder="PaCO₂ (mmHg)"
+          style="padding:12px;border-radius:10px;border:1px solid var(--border);
+                 background:#0b0d10;color:var(--text)">
+
+        <input id="abg-hco3" type="number" step="0.1" placeholder="HCO₃⁻ (mEq/L)"
+          style="padding:12px;border-radius:10px;border:1px solid var(--border);
+                 background:#0b0d10;color:var(--text)">
+
+        <input id="abg-pao2" type="number" step="1" placeholder="PaO₂ (mmHg) – optional"
+          style="padding:12px;border-radius:10px;border:1px solid var(--border);
+                 background:#0b0d10;color:var(--text)">
+      </div>
+
+      <button onclick="interpretABG()" style="
+        margin-top:14px;
+        width:100%;
+        padding:12px;
+        border-radius:10px;
+        border:none;
+        background:var(--accent);
+        color:#fff;
+        font-weight:700;
+        cursor:pointer">
+        Interpret ABG
+      </button>
+    </div>
+
+    <!-- RESULT -->
+    <div id="abg-result" class="result hidden"></div>
+
+    <!-- INFO -->
+    <div class="monitor">
+      <b>Normal reference:</b><br>
+      • pH: 7.35 – 7.45<br>
+      • PaCO₂: 35 – 45 mmHg<br>
+      • HCO₃⁻: 22 – 26 mEq/L<br><br>
+
+      <b>Note:</b> This is a <b>basic interpretation</b> tool.<br>
+      It identifies the primary disorder and checks if compensation
+      is directionally appropriate.
+    </div>
+
+  </div>
+</details>
+
+<script>
+function interpretABG(){
+  const ph = Number(document.getElementById('abg-ph').value);
+  const pco2 = Number(document.getElementById('abg-paco2').value);
+  const hco3 = Number(document.getElementById('abg-hco3').value);
+  const pao2 = Number(document.getElementById('abg-pao2').value);
+
+  const res = document.getElementById('abg-result');
+
+  if(!ph || !pco2 || !hco3){
+    res.className = 'result warn';
+    res.textContent = 'Please enter valid pH, PaCO₂, and HCO₃⁻ values.';
+    res.classList.remove('hidden');
+    return;
+  }
+
+  let acidBase = '';
+  let primary = '';
+  let compensation = '';
+
+  /* STEP 1: ACID–BASE STATUS */
+  if(ph < 7.35) acidBase = 'Acidemia';
+  else if(ph > 7.45) acidBase = 'Alkalemia';
+  else acidBase = 'Normal pH';
+
+  /* STEP 2: PRIMARY DISORDER */
+  if(acidBase === 'Acidemia'){
+    if(pco2 > 45) primary = 'Primary Respiratory Acidosis';
+    else if(hco3 < 22) primary = 'Primary Metabolic Acidosis';
+    else primary = 'Mixed / Compensated Acidosis';
+  }
+
+  if(acidBase === 'Alkalemia'){
+    if(pco2 < 35) primary = 'Primary Respiratory Alkalosis';
+    else if(hco3 > 26) primary = 'Primary Metabolic Alkalosis';
+    else primary = 'Mixed / Compensated Alkalosis';
+  }
+
+  if(acidBase === 'Normal pH'){
+    primary = 'Possible mixed disorder or full compensation';
+  }
+
+  /* STEP 3: COMPENSATION (DIRECTIONAL CHECK ONLY) */
+  if(primary.includes('Metabolic')){
+    compensation =
+      (primary.includes('Acidosis') && pco2 < 45) ||
+      (primary.includes('Alkalosis') && pco2 > 35)
+        ? 'Respiratory compensation present'
+        : 'Inadequate respiratory compensation';
+  }
+
+  if(primary.includes('Respiratory')){
+    compensation =
+      (primary.includes('Acidosis') && hco3 > 26) ||
+      (primary.includes('Alkalosis') && hco3 < 22)
+        ? 'Metabolic compensation present'
+        : 'Inadequate metabolic compensation';
+  }
+
+  /* OXYGENATION (OPTIONAL) */
+  let oxygen = '';
+  if(pao2){
+    if(pao2 >= 80) oxygen = 'Normal oxygenation';
+    else if(pao2 >= 60) oxygen = 'Mild hypoxemia';
+    else if(pao2 >= 40) oxygen = 'Moderate hypoxemia';
+    else oxygen = 'Severe hypoxemia';
+  }
+
+  res.className = 'result info';
+  res.innerHTML = `
+    <b>${acidBase}</b><br>
+    ${primary}<br>
+    ${compensation || ''}<br>
+    ${oxygen ? '<br><b>Oxygenation:</b> ' + oxygen : ''}
+  `;
+  res.classList.remove('hidden');
+}
+</script>
 
 
 <!-- ================= tools block above this ================= -->
