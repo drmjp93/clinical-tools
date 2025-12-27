@@ -534,6 +534,156 @@ function calcThyroxine(){
 
 <!-- ================= tools block below  this ================= -->
 
+  <!-- ================= CHA2DS2-VASc SCORE ================= -->
+<details class="tool" data-system="cardio">
+  <summary>
+    <div>
+      <div class="tool-title">CHA₂DS₂-VASc Score</div>
+      <div class="tool-sub">Stroke risk & indication for anticoagulation in AF</div>
+    </div>
+    <div>▾</div>
+  </summary>
+
+  <div class="tool-body">
+
+    <div class="step">
+      <div class="step-title">Select risk factors</div>
+
+      <div class="options" style="flex-wrap:wrap">
+        <button onclick="toggleScore(this,1)">Heart failure</button>
+        <button onclick="toggleScore(this,1)">Hypertension</button>
+        <button onclick="toggleScore(this,2)">Age ≥ 75 years</button>
+        <button onclick="toggleScore(this,1)">Diabetes</button>
+        <button onclick="toggleScore(this,2)">Stroke / TIA</button>
+        <button onclick="toggleScore(this,1)">Vascular disease</button>
+        <button onclick="toggleScore(this,1)">Age 65–74 years</button>
+        <button onclick="toggleScore(this,1)">Female sex</button>
+      </div>
+
+      <button onclick="calcCHA2DS2()" style="
+        margin-top:14px;width:100%;
+        padding:12px;border-radius:10px;
+        background:var(--accent);color:#fff;
+        border:none;font-weight:700">
+        Calculate CHA₂DS₂-VASc
+      </button>
+    </div>
+
+    <div id="cha2ds2-result" class="result hidden"></div>
+
+    <div class="monitor">
+      <b>Interpretation:</b><br>
+      • Score ≥2 (men) or ≥3 (women) → <b>Start anticoagulation</b><br>
+      • Score 1 (men) → Consider anticoagulation<br>
+      • Score 0 (men) → No anticoagulation
+    </div>
+
+  </div>
+</details>
+
+<script>
+let chaScore = 0;
+
+function toggleScore(btn, val){
+  if(btn.classList.contains('selected')){
+    btn.classList.remove('selected');
+    chaScore -= val;
+  } else {
+    btn.classList.add('selected');
+    chaScore += val;
+  }
+}
+
+function calcCHA2DS2(){
+  const r = document.getElementById('cha2ds2-result');
+  let advice = '';
+
+  if(chaScore === 0){
+    advice = 'No anticoagulation required.';
+  } else if(chaScore === 1){
+    advice = 'Consider anticoagulation based on clinical context.';
+  } else {
+    advice = 'Strong indication to START anticoagulation.';
+  }
+
+  r.className = 'result success';
+  r.innerHTML = `<b>CHA₂DS₂-VASc Score = ${chaScore}</b><br>${advice}`;
+  r.classList.remove('hidden');
+}
+</script>
+
+<!-- ================= HAS-BLED SCORE ================= -->
+<details class="tool" data-system="cardio">
+  <summary>
+    <div>
+      <div class="tool-title">HAS-BLED Score</div>
+      <div class="tool-sub">Bleeding risk assessment in AF</div>
+    </div>
+    <div>▾</div>
+  </summary>
+
+  <div class="tool-body">
+
+    <div class="step">
+      <div class="step-title">Select bleeding risk factors</div>
+
+      <div class="options" style="flex-wrap:wrap">
+        <button onclick="toggleHAS(this)">Hypertension</button>
+        <button onclick="toggleHAS(this)">Abnormal renal function</button>
+        <button onclick="toggleHAS(this)">Abnormal liver function</button>
+        <button onclick="toggleHAS(this)">Stroke history</button>
+        <button onclick="toggleHAS(this)">Bleeding history</button>
+        <button onclick="toggleHAS(this)">Labile INR</button>
+        <button onclick="toggleHAS(this)">Elderly (>65 years)</button>
+        <button onclick="toggleHAS(this)">Drugs / Alcohol</button>
+      </div>
+
+      <button onclick="calcHASBLED()" style="
+        margin-top:14px;width:100%;
+        padding:12px;border-radius:10px;
+        background:var(--accent);color:#fff;
+        border:none;font-weight:700">
+        Calculate HAS-BLED
+      </button>
+    </div>
+
+    <div id="hasbled-result" class="result hidden"></div>
+
+    <div class="monitor">
+      <b>Important:</b><br>
+      • Score ≥3 = High bleeding risk<br>
+      • <b>NOT a reason to stop anticoagulation</b><br>
+      • Correct reversible risk factors and monitor closely
+    </div>
+
+  </div>
+</details>
+
+<script>
+let hasScore = 0;
+
+function toggleHAS(btn){
+  if(btn.classList.contains('selected')){
+    btn.classList.remove('selected');
+    hasScore -= 1;
+  } else {
+    btn.classList.add('selected');
+    hasScore += 1;
+  }
+}
+
+function calcHASBLED(){
+  const r = document.getElementById('hasbled-result');
+  const msg = hasScore >= 3
+    ? 'High bleeding risk — correct risk factors & close follow-up.'
+    : 'Acceptable bleeding risk.';
+
+  r.className = hasScore >= 3 ? 'result warn' : 'result success';
+  r.innerHTML = `<b>HAS-BLED Score = ${hasScore}</b><br>${msg}`;
+  r.classList.remove('hidden');
+}
+</script>
+
 <details class="tool" data-system="cardio">
   <summary>
     <div>
