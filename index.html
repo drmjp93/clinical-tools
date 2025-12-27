@@ -34,14 +34,20 @@ body{
   color:var(--text);
   font-family:system-ui,-apple-system,Segoe UI,Roboto;
 
-  background:
-    linear-gradient(
-      rgba(0,0,0,0.82),
-      rgba(0,0,0,0.82)
-    ),
-    url("./bg.jpg") auto / cover no-repeat;
+  /* base dark color ALWAYS present */
+  background-color: var(--bg);
 
-  background-attachment: scroll;
+  /* image + overlay */
+  background-image:
+    linear-gradient(
+      rgba(0,0,0,0.88),
+      rgba(0,0,0,0.88)
+    ),
+    url("./bg.jpg");
+
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: auto;   /* no stretching */
 }
 main{
   max-width:1000px;
