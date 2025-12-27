@@ -28,11 +28,20 @@
 }
 
 *{box-sizing:border-box}
+  
 body{
   margin:0;
-  background:var(--bg);
   color:var(--text);
   font-family:system-ui,-apple-system,Segoe UI,Roboto;
+
+  background:
+    linear-gradient(
+      rgba(0,0,0,0.92),
+      rgba(0,0,0,0.92)
+    ),
+    url("./bg.jpg") center / cover no-repeat;
+
+  background-attachment: scroll;
 }
 main{
   max-width:1000px;
