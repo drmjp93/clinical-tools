@@ -973,118 +973,139 @@ function calcO2Time(){
       <div class="step-title">Enter ABG values</div>
 
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
-        <input id="abg-ph" type="number" step="0.01" placeholder="pH"
-          style="padding:12px;border-radius:10px;border:1px solid var(--border);background:#0b0d10;color:#fff">
-        <input id="abg-pco2" type="number" placeholder="PaCO₂ (mmHg)"
-          style="padding:12px;border-radius:10px;border:1px solid var(--border);background:#0b0d10;color:#fff">
-        <input id="abg-hco3" type="number" placeholder="HCO₃⁻ (mEq/L)"
-          style="padding:12px;border-radius:10px;border:1px solid var(--border);background:#0b0d10;color:#fff">
-        <input id="abg-po2" type="number" placeholder="PaO₂ (mmHg)"
-          style="padding:12px;border-radius:10px;border:1px solid var(--border);background:#0b0d10;color:#fff">
+        <input id="abg_ph" type="number" step="0.01" placeholder="pH"
+          style="padding:12px;border-radius:10px;border:1px solid var(--border);
+          background:#0b0d10;color:var(--text)">
+
+        <input id="abg_paco2" type="number" step="1" placeholder="PaCO₂ (mmHg)"
+          style="padding:12px;border-radius:10px;border:1px solid var(--border);
+          background:#0b0d10;color:var(--text)">
+
+        <input id="abg_hco3" type="number" step="1" placeholder="HCO₃⁻ (mEq/L)"
+          style="padding:12px;border-radius:10px;border:1px solid var(--border);
+          background:#0b0d10;color:var(--text)">
+
+        <input id="abg_pao2" type="number" step="1" placeholder="PaO₂ (mmHg)"
+          style="padding:12px;border-radius:10px;border:1px solid var(--border);
+          background:#0b0d10;color:var(--text)">
       </div>
 
-      <button onclick="interpretABG()" style="
-        margin-top:14px;width:100%;padding:12px;
-        border-radius:10px;border:none;
-        background:var(--accent);color:#fff;
-        font-weight:700;cursor:pointer">
+      <button onclick="interpretABGAdvanced()" style="
+        margin-top:14px;
+        width:100%;
+        padding:12px;
+        border-radius:10px;
+        border:none;
+        background:var(--accent);
+        color:#fff;
+        font-weight:700;
+        cursor:pointer">
         Interpret ABG
       </button>
     </div>
 
     <!-- RESULT -->
-    <div id="abg-result" class="result hidden"></div>
+    <div id="abg_result" class="result hidden"></div>
 
     <!-- INFO -->
     <div class="monitor">
-      <b>Reference:</b><br>
-      pH 7.35–7.45 · PaCO₂ 35–45 · HCO₃⁻ 22–26<br><br>
-      <b>Note:</b> This tool checks expected compensation to detect mixed disorders.
+      <b>Normal reference:</b><br>
+      • pH: 7.35 – 7.45<br>
+      • PaCO₂: 35 – 45 mmHg<br>
+      • HCO₃⁻: 22 – 26 mEq/L<br><br>
+
+      <b>Note:</b> This advanced tool checks expected compensation to
+      detect mixed acid–base disorders.
     </div>
 
   </div>
 </details>
 
 <script>
-function interpretABG(){
-  const pH = Number(document.getElementById('abg-ph').value);
-  const pCO2 = Number(document.getElementById('abg-pco2').value);
-  const HCO3 = Number(document.getElementById('abg-hco3').value);
-  const pO2 = Number(document.getElementById('abg-po2').value);
-  const res = document.getElementById('abg-result');
+function interpretABGAdvanced() {
 
-  if(!pH || !pCO2 || !HCO3){
+  const ph = parseFloat(document.getElementById('abg_ph').value);
+  const co2 = parseFloat(document.getElementById('abg_paco2').value);
+  const hco3 = parseFloat(document.getElementById('abg_hco3').value);
+  const o2 = parseFloat(document.getElementById('abg_pao2').value);
+  const res = document.getElementById('abg_result');
+
+  if (isNaN(ph) || isNaN(co2) || isNaN(hco3)) {
     res.className = 'result warn';
-    res.textContent = 'Please enter valid pH, PaCO₂ and HCO₃⁻ values.';
+    res.innerHTML = 'Please enter valid pH, PaCO₂ and HCO₃⁻ values.';
     res.classList.remove('hidden');
     return;
   }
 
+  let acidBase = '';
   let primary = '';
   let compensation = '';
-  let comment = '';
+  let mixed = false;
 
-  // STEP 1: PRIMARY
-  if(pH < 7.35){
-    if(pCO2 > 45) primary = 'Primary respiratory acidosis';
-    else primary = 'Primary metabolic acidosis';
-  } else if(pH > 7.45){
-    if(pCO2 < 35) primary = 'Primary respiratory alkalosis';
-    else primary = 'Primary metabolic alkalosis';
-  } else {
-    primary = 'Normal pH (suggests full compensation or mixed disorder)';
+  /* STEP 1: ACIDEMIA / ALKALEMIA */
+  if (ph < 7.35) acidBase = 'Acidemia';
+  else if (ph > 7.45) acidBase = 'Alkalemia';
+  else acidBase = 'Normal pH (suggests full compensation or mixed disorder)';
+
+  /* STEP 2: PRIMARY DISORDER */
+  if (ph < 7.35) {
+    if (co2 > 45) primary = 'Primary Respiratory Acidosis';
+    else if (hco3 < 22) primary = 'Primary Metabolic Acidosis';
   }
 
-  // STEP 2: COMPENSATION CHECK
-  if(primary.includes('respiratory acidosis')){
-    const deltaCO2 = pCO2 - 40;
-    const expectedAcute = 24 + (deltaCO2/10)*1;
-    const expectedChronic = 24 + (deltaCO2/10)*3.5;
-
-    if(Math.abs(HCO3 - expectedChronic) <= 2){
-      compensation = 'Chronic respiratory acidosis with appropriate metabolic compensation';
-    } else if(Math.abs(HCO3 - expectedAcute) <= 2){
-      compensation = 'Acute respiratory acidosis with minimal compensation';
-    } else {
-      compensation = 'Respiratory acidosis with additional metabolic disorder';
-    }
+  if (ph > 7.45) {
+    if (co2 < 35) primary = 'Primary Respiratory Alkalosis';
+    else if (hco3 > 26) primary = 'Primary Metabolic Alkalosis';
   }
 
-  else if(primary.includes('respiratory alkalosis')){
-    const deltaCO2 = 40 - pCO2;
-    const expectedAcute = 24 - (deltaCO2/10)*2;
-    const expectedChronic = 24 - (deltaCO2/10)*4;
-
-    if(Math.abs(HCO3 - expectedChronic) <= 2){
-      compensation = 'Chronic respiratory alkalosis with appropriate metabolic compensation';
-    } else if(Math.abs(HCO3 - expectedAcute) <= 2){
-      compensation = 'Acute respiratory alkalosis';
-    } else {
-      compensation = 'Respiratory alkalosis with mixed metabolic disorder';
-    }
+  if (acidBase.startsWith('Normal')) {
+    if (co2 > 45 && hco3 > 26)
+      primary = 'Respiratory Acidosis with Metabolic Compensation';
+    else if (co2 < 35 && hco3 < 22)
+      primary = 'Respiratory Alkalosis with Metabolic Compensation';
+    else
+      primary = 'Mixed Acid–Base Disorder';
   }
 
-  else if(primary.includes('metabolic acidosis')){
-    if(pCO2 < 35) compensation = 'Appropriate respiratory compensation';
-    else compensation = 'Inadequate compensation → mixed disorder';
+  /* STEP 3: EXPECTED COMPENSATION */
+  if (primary.includes('Metabolic Acidosis')) {
+    const expectedCO2 = (1.5 * hco3) + 8;
+    if (co2 < expectedCO2 - 2 || co2 > expectedCO2 + 2) mixed = true;
+    compensation = `Expected PaCO₂ ≈ ${expectedCO2.toFixed(1)} mmHg (Winter’s formula)`;
   }
 
-  else if(primary.includes('metabolic alkalosis')){
-    if(pCO2 > 45) compensation = 'Appropriate respiratory compensation';
-    else compensation = 'Inadequate compensation → mixed disorder';
+  if (primary.includes('Metabolic Alkalosis')) {
+    const expectedCO2 = 0.7 * hco3 + 20;
+    if (co2 < expectedCO2 - 5 || co2 > expectedCO2 + 5) mixed = true;
+    compensation = `Expected PaCO₂ ≈ ${expectedCO2.toFixed(1)} mmHg`;
   }
 
-  // STEP 3: OXYGENATION
-  let oxygen = '';
-  if(pO2){
-    oxygen = pO2 < 60 ? 'Hypoxemia present' : 'Oxygenation acceptable';
+  if (primary.includes('Respiratory Acidosis')) {
+    const expectedHCO3 = hco3 > 26 ? 'Chronic pattern likely' : 'Acute pattern likely';
+    compensation = expectedHCO3;
   }
 
-  res.className = 'result info';
+  if (primary.includes('Respiratory Alkalosis')) {
+    const expectedHCO3 = hco3 < 22 ? 'Chronic pattern likely' : 'Acute pattern likely';
+    compensation = expectedHCO3;
+  }
+
+  /* STEP 4: OXYGENATION */
+  let oxygenation = '';
+  if (!isNaN(o2)) {
+    if (o2 >= 80) oxygenation = 'Normal oxygenation';
+    else if (o2 >= 60) oxygenation = 'Mild hypoxemia';
+    else oxygenation = 'Severe hypoxemia';
+  }
+
+  /* OUTPUT */
+  res.className = 'result success';
   res.innerHTML = `
-    <b>Primary interpretation:</b> ${primary}<br><br>
-    <b>Compensation:</b> ${compensation}<br><br>
-    ${oxygen ? '<b>Oxygenation:</b> ' + oxygen : ''}
+    <b>Acid–base status:</b> ${acidBase}<br><br>
+    <b>Primary disorder:</b> ${primary}<br><br>
+    <b>Compensation:</b> ${compensation}<br>
+    ${mixed ? '<br><b>⚠ Mixed acid–base disorder suspected</b>' : ''}<br>
+    ${oxygenation ? `<br><b>Oxygenation:</b> ${oxygenation}` : ''}
   `;
   res.classList.remove('hidden');
 }
