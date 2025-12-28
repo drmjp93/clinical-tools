@@ -359,6 +359,24 @@ input, button {
 .tool-body * {
   box-sizing: border-box;
 }
+
+  /* ===== Mobile fix for Infusion Calculator ===== */
+@media (max-width: 520px) {
+
+  .form-row,
+  .form-row-2 {
+    grid-template-columns: 1fr !important;
+  }
+
+  .form-card {
+    padding: 14px;
+  }
+
+  .form-input,
+  .form-select {
+    width: 100%;
+  }
+}
 </style>
 </head>
 
