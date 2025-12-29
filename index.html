@@ -4,6 +4,7 @@
   
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">  
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon.png"> 
+
 <meta property="og:image" content="https://tools.drmjp93.in/icon-512.png">
 <meta property="og:title" content="Clinical Tools | Dr. Mit Panchani">
 <meta property="og:description" content="Practical bedside clinical calculators & tools">
@@ -402,6 +403,19 @@ input, button {
   box-sizing: border-box;
 }
 
+.sep{
+  margin: 0 6px;
+  opacity: 0.6;
+}
+
+.visitor-count{
+  font-weight: 400;
+}
+
+.visitor-count b{
+  font-weight: 700;
+}
+
   /* ===== Mobile fix for Infusion Calculator ===== */
 @media (max-width: 520px) {
 
@@ -437,7 +451,13 @@ input, button {
 <main>
 
 <h1>Clinical Tools</h1>
-<div class="sub">Quick OPD decision support</div>
+<div class="sub">
+  Quick OPD decision support
+  <span class="sep">·</span>
+  <span class="visitor-count">
+    Used: <b><span id="visitCount">—</span></b> times
+  </span>
+</div>
 
 <!-- MODE -->
 <div class="mode-toggle">
@@ -2029,6 +2049,32 @@ setTimeout(() => {
 }, 1200); // 1.2 seconds
 </script>
 
+<script>
+(async function () {
+  const el = document.getElementById("visitCount");
+  if (!el) return;
+
+  try {
+    const resp = await fetch(
+      "https://api.counterapi.dev/v1/drmjp93in/clinical-tools-visits/up"
+    );
+    const j = await resp.json();
+
+    if (j && j.count !== undefined) {
+      let count = j.count;
+
+      // Optional rounding (recommended)
+      if (count >= 1000) {
+        count = Math.floor(count / 100) * 100 + "+";
+      }
+
+      el.textContent = count;
+    }
+  } catch (e) {
+    el.textContent = "—";
+  }
+})();
+</script>
 
 <footer style="
   margin-top:40px;
