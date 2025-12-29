@@ -1,6 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
+  
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">  
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon.png"> 
 <meta property="og:image" content="https://tools.drmjp93.in/icon-512.png">
@@ -8,6 +9,7 @@
 <meta property="og:description" content="Practical bedside clinical calculators & tools">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
+
 <title>Clinical Tools | Dr. Mit Panchani</title>
 
 <link rel="manifest" href="/manifest.json">
@@ -77,6 +79,46 @@ h1{font-size:1.6rem;margin-bottom:4px}
   font-weight:600;cursor:pointer
 }
 .mode-btn.active{background:#fff;color:#000}
+
+
+/* ===== SPLASH SCREEN ===== */
+.splash{
+  position: fixed;
+  inset: 0;
+  background: #0f1113;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+.splash-card{
+  text-align: center;
+  animation: splashFade 0.5s ease;
+}
+
+.splash-title{
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+
+.splash-name{
+  font-size: 1rem;
+  color: #e5e7eb;
+}
+
+.splash-degree{
+  font-size: 0.85rem;
+  color: #9ca3af;
+  margin-top: 2px;
+}
+
+@keyframes splashFade{
+  from{opacity:0; transform:translateY(8px)}
+  to{opacity:1; transform:none}
+}
+
 
 /* ===== Floating ICU Dose Modal ===== */
 
@@ -381,6 +423,17 @@ input, button {
 </head>
 
 <body>
+  
+  <!-- SPLASH SCREEN -->
+<div id="splash" class="splash">
+  <div class="splash-card">
+    <div class="splash-title">Clinical Tools</div>
+    <div class="splash-name">Dr. Mit Panchani</div>
+    <div class="splash-degree">MD (General Medicine)</div>
+  </div>
+</div>
+  
+  
 <main>
 
 <h1>Clinical Tools</h1>
@@ -1968,6 +2021,14 @@ function closeDoseModal(){
   document.getElementById('doseModal').classList.add('hidden');
 }
 </script>
+
+<script>
+setTimeout(() => {
+  const splash = document.getElementById('splash');
+  if (splash) splash.style.display = 'none';
+}, 1200); // 1.2 seconds
+</script>
+
 
 <footer style="
   margin-top:40px;
