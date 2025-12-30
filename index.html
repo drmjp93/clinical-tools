@@ -2087,27 +2087,39 @@ setTimeout(() => {
   }
 })();
 </script>
-
 <footer style="
   margin-top:40px;
-  padding:18px 12px;
   text-align:center;
   font-size:0.85rem;
   color:var(--muted);
-  border-top:1px solid var(--border);
 ">
 
-  <div style="margin-bottom:8px;">
-    Compiled by <b style="color:var(--text)">drmjp93</b> with 🩵
-  </div>
+  <!-- OVERLAY WRAPPER -->
+  <div style="
+    background: rgba(0,0,0,0.6);      /* 60% black */
+    padding:18px 12px;
+    border-radius:16px;
+    max-width:900px;
+    margin:0 auto;
 
-  <div style="max-width:820px;margin:0 auto;line-height:1.5;">
-    <b>Disclaimer:</b> These clinical tools are intended for
-    <b>academic and educational purposes only</b>.
-    They are designed to support clinical reasoning but
-    <b>do not replace professional medical judgment</b>,
-    patient examination, or individualized decision-making.
-    Always correlate with clinical context and current guidelines.
+    /* OPTIONAL PREMIUM LOOK */
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+  ">
+
+    <div style="margin-bottom:8px;">
+      Compiled by <b style="color:var(--text)">drmjp93</b> with 🩵
+    </div>
+
+    <div style="max-width:820px;margin:0 auto;line-height:1.5;">
+      <b>Disclaimer:</b> These clinical tools are intended for
+      <b>academic and educational purposes only</b>.
+      They are designed to support clinical reasoning but
+      <b>do not replace professional medical judgment</b>,
+      patient examination, or individualized decision-making.
+      Always correlate with clinical context and current guidelines.
+    </div>
+
   </div>
 
 </footer>
