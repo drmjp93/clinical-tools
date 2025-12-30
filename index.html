@@ -1,4 +1,5 @@
 <!doctype html>
+
 <html lang="en">
 <head>
   
@@ -20,7 +21,6 @@
 <link rel="apple-touch-icon" href="/icon-192.png">
 
 <style>
-
 
 :root{
   --bg:#0f1113;
@@ -442,7 +442,7 @@ input, button {
 <div id="splash" class="splash">
   <div class="splash-card">
     <div class="splash-title">Clinical Tools</div>
-    <div class="splash-name">Dr. Mit Panchani</div>
+    <div class="splash-name">By Dr. Mit Panchani</div>
     <div class="splash-degree">MD (General Medicine)</div>
   </div>
 </div>
@@ -453,7 +453,7 @@ input, button {
 <h1>Clinical Tools</h1>
 <div class="sub">
   Quick OPD decision support
-  <span class="sep">·</span>
+  <span class="sep"> | </span>
   <span class="visitor-count">
     Used: <b><span id="visitCount">—</span></b> times
   </span>
@@ -461,7 +461,7 @@ input, button {
 
 <!-- MODE -->
 <div class="mode-toggle">
-  <button class="mode-btn active" onclick="switchMode('general',this)">General / Adult</button>
+  <button class="mode-btn active" onclick="switchMode('general',this)">Adult</button>
   <button class="mode-btn" onclick="switchMode('preg',this)">Pregnancy</button>
 </div>
 
@@ -480,11 +480,16 @@ input, button {
   <div class="tab" data-filter="nephro">Nephrology</div>
   <div class="tab" data-filter="endocrine">Endocrine</div>
   <div class="tab" data-filter="obstetric">Obstetric</div>
+  <div class="tab" data-filter="icu">ICU</div>
+  <div class="tab" data-filter="neuro">Neurology</div>
 </div>
 
 <!-- ================= GENERAL ================= -->
+  
 <div id="general-tools">
 
+  
+<!-- ================= HEP B ADULT TOOL ================= -->
 <details class="tool" data-system="hepato">
 <summary>
   <div>
@@ -533,6 +538,8 @@ input, button {
 
 </div>
 </details>
+
+<!-- ================= egfr tool================= -->
 <details class="tool" data-system="nephro">
 <summary>
   <div>
@@ -624,6 +631,9 @@ function calcEGFR(sex){
   resultBox.classList.remove('hidden');
 }
 </script>
+
+<!-- ================= BMI TOOL ================= -->
+  
 <details class="tool" data-system="endocrine">
 <summary>
   <div>
@@ -682,6 +692,7 @@ function calcBMI(){
   let cls = 'info';
 
   // Indian/WHO cutoffs
+  
   if(bmi < 18.5){
     category = 'Underweight';
     cls = 'warn';
@@ -710,6 +721,10 @@ function calcBMI(){
   res.classList.remove('hidden');
 }
 </script>
+
+  <!-- ================= THYROXINE DOSE CALCULATOR ================= -->
+
+  
 <details class="tool" data-system="endocrine">
 <summary>
   <div>
@@ -784,7 +799,7 @@ function calcThyroxine(){
 }
 </script>
 
-<!-- ================= tools block below  this ================= -->
+<!-- ================= MAP TOOL ================= -->
 
 <details class="tool" data-system="cardio">
   <summary>
@@ -866,6 +881,7 @@ function calcMAP(){
 </script>
 
 <!-- ================= LDL CALCULATOR ================= -->
+  
 <details class="tool" data-system="cardio">
   <summary>
     <div>
@@ -897,6 +913,7 @@ function calcMAP(){
 </details>
 
 <!-- ================= GCS CALCULATOR ================= -->
+  
 <details class="tool" data-system="neuro">
   <summary>
     <div>
@@ -909,6 +926,7 @@ function calcMAP(){
   <div class="tool-body">
 
     <!-- EYE -->
+    
     <div class="step">
       <div class="step-title">Eye Opening (E)</div>
       <div class="options">
@@ -920,6 +938,7 @@ function calcMAP(){
     </div>
 
     <!-- VERBAL -->
+    
     <div class="step">
       <div class="step-title">Verbal Response (V)</div>
       <div class="options">
@@ -932,6 +951,7 @@ function calcMAP(){
     </div>
 
     <!-- MOTOR -->
+    
     <div class="step">
       <div class="step-title">Motor Response (M)</div>
       <div class="options">
@@ -991,6 +1011,7 @@ function calculateGCS(){
 </script>
 
 <!-- ================= MENTZER INDEX ================= -->
+  
 <details class="tool" data-system="Hematology">
   <summary>
     <div>
@@ -1090,7 +1111,8 @@ function calculateGCS(){
 
 
 <!-- ================= OXYGEN CYLINDER DURATION ================= -->
-<details class="tool" data-system="resp">
+  
+<details class="tool" data-system="icu">
   <summary>
     <div>
       <div class="tool-title">Oxygen Cylinder Duration</div>
@@ -1208,8 +1230,11 @@ function calcO2Time(){
 }
 </script>
 
+  
 <!-- ================= ABG INTERPRETATION (ADVANCED) ================= -->
-<details class="tool" data-system="resp">
+
+  
+<details class="tool" data-system="icu">
   <summary>
     <div>
       <div class="tool-title">ABG Interpretation (Advanced)</div>
@@ -1364,6 +1389,7 @@ function interpretABGAdvanced() {
 </script>
 
 <!-- ================= CHA2DS2-VASc SCORE ================= -->
+  
 <details class="tool" data-system="cardio">
   <summary>
     <div>
@@ -1442,6 +1468,7 @@ function calcCHA2DS2(){
 </script>
 
 <!-- ================= HAS-BLED SCORE ================= -->
+  
 <details class="tool" data-system="cardio">
   <summary>
     <div>
@@ -1515,8 +1542,11 @@ function calcHASBLED(){
 
 
 <!-- ================= EMERGENCY DRUGS (ALL-IN-ONE) ================= -->
+  
 <style>
+  
 /* ===== Emergency Drugs ===== */
+  
 .em-card{
   background:var(--card);
   border:1px solid var(--border);
@@ -1589,7 +1619,7 @@ details[open] .em-arrow{
 }
 </style>
 
-<details class="tool pinned" data-system="cardio">
+<details class="tool pinned" data-system="icu">
   <summary>
     <div>
       <div class="tool-title">Emergency Drugs (MICU / ICCU)</div>
@@ -1681,7 +1711,7 @@ details[open] .em-arrow{
 
 <!-- ================= INFUSION RATE CALCULATOR ================= -->
 
-<details class="tool pinned" data-system="cardio">
+<details class="tool pinned" data-system="icu">
   <summary>
     <div>
       <div class="tool-title">Infusion Rate Calculator</div>
@@ -1830,21 +1860,7 @@ function calcInfusion(){
 </script>
 
 <!-- ================= tools block above this ================= -->
- <!-- ================= tools block above this ================= -->
-  <!-- ================= tools block above this ================= -->
-   <!-- ================= tools block above this ================= -->
-    <!-- ================= tools block above this ================= -->
-     <!-- ================= tools block above this ================= -->
-      <!-- ================= tools block above this ================= -->
 
-      <!-- ================= tools block above this ================= -->
-       <!-- ================= tools block above this ================= -->
-        <!-- ================= tools block above this ================= -->
-
-        <!-- ================= tools block above this ================= -->
-         <!-- ================= tools block above this ================= -->
-
-<!-- ================= tools block above this ================= -->
 </div>
 
 <!-- ================= PREGNANCY ================= -->
@@ -1963,9 +1979,6 @@ function pregHBV(high){
 
 /* ================= A–Z SORT (GLOBAL) ================= */
 
-
-
-
 function sortToolsAlphabetically(){
   const container = document.getElementById('general-tools');
   if(!container) return;
@@ -1986,11 +1999,10 @@ function sortToolsAlphabetically(){
 
 document.addEventListener('DOMContentLoaded', sortToolsAlphabetically);
 
-
-
 </script>
 
 <!-- ================= ICU INFUSION DOSE MODAL ================= -->
+  
 <div id="doseModal" class="dose-modal hidden">
 
   <div class="dose-card">
