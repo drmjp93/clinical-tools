@@ -1023,7 +1023,7 @@ function calcMAP(){
 }
 </script>
 
-<!-- ================= LDL CALCULATOR ================= -->
+<!-- ================= LDL CALCULATOR HTML ================= -->
   
 <div id="ldl-placeholder">
   <button onclick="loadLDL()" class="primary-btn">
@@ -1031,6 +1031,8 @@ function calcMAP(){
   </button>
 </div>
 
+  <!-- ================= LDL CALCULATOR JS ================= -->
+<script>
 function loadLDL(){
   document.getElementById('ldl-placeholder').innerHTML = `
     <iframe
@@ -1041,7 +1043,7 @@ function loadLDL(){
     </iframe>
   `;
 }
-
+</script>
 
 <!-- ================= GCS CALCULATOR ================= -->
   
