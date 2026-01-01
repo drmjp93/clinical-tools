@@ -1023,27 +1023,51 @@ function calcMAP(){
 }
 </script>
 
-<!-- ================= LDL CALCULATOR HTML ================= -->
-  
-<div id="ldl-placeholder">
-  <button onclick="loadLDL()" class="primary-btn">
-    Load LDL Calculator
-  </button>
-</div>
+<!-- ================= LDL CALCULATOR ================= -->
+<details class="tool" data-system="cardio">
+  <summary>
+    <div>
+      <div class="tool-title">LDL Cholesterol Calculator</div>
+      <div class="tool-sub">Loads on demand (external)</div>
+    </div>
+    <div>▾</div>
+  </summary>
 
-  <!-- ================= LDL CALCULATOR JS ================= -->
+  <div class="tool-body">
+
+    <div id="ldl-placeholder">
+      <button onclick="loadLDL(this)" class="primary-btn">
+        Load LDL Calculator
+      </button>
+    </div>
+
+  </div>
+</details>
+
 <script>
-function loadLDL(){
-  document.getElementById('ldl-placeholder').innerHTML = `
-    <iframe
-      src="https://drmjp93-ldlcal.netlify.app"
-      style="width:100%;height:520px;border:0;"
-      loading="lazy"
-      referrerpolicy="no-referrer">
-    </iframe>
+function loadLDL(btn){
+  const container = btn.parentElement;
+
+  container.innerHTML = `
+    <div style="
+      width:100%;
+      height:520px;
+      border:1px solid #262a30;
+      border-radius:12px;
+      overflow:hidden;
+      background:#0f1113;
+    ">
+      <iframe
+        src="https://drmjp93-ldlcal.netlify.app"
+        style="width:100%;height:100%;border:0;"
+        loading="lazy"
+        referrerpolicy="no-referrer">
+      </iframe>
+    </div>
   `;
 }
 </script>
+
 
 <!-- ================= GCS CALCULATOR ================= -->
   
