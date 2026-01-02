@@ -462,6 +462,47 @@ input, button {
 }
 </style>
 
+  <style>
+  
+/* ===== CHA2DS2-VASc BUTTON STYLES ===== */
+
+.cha-options{
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+}
+
+.cha-btn{
+  padding:10px 16px;
+  border-radius:999px;
+  border:1px solid #374151;
+  background:#020617;
+  color:#e5e7eb;
+  font-weight:600;
+  cursor:pointer;
+  transition:all .15s ease;
+}
+
+/* THIS is the highlight */
+    
+.cha-btn.selected{
+  background:#2563eb;
+  border-color:#93c5fd;
+  color:#ffffff;
+  box-shadow:0 0 0 2px rgba(59,130,246,.35);
+}
+
+.cha-result{
+  margin-top:14px;
+  padding:14px;
+  border-radius:12px;
+  font-weight:700;
+}
+
+.cha-success{background:#064e3b;color:#d1fae5}
+.cha-warn{background:#78350f;color:#fde68a}
+</style>
+  
 </head>
 
 <body>
@@ -1545,84 +1586,151 @@ function interpretABGAdvanced() {
 }
 </script>
 
-<!-- ================= CHA2DS2-VASc SCORE ================= -->
-  
-<details class="tool" data-system="cardio">
+<!-- ================= CHA₂DS₂-VASc SCORE ================= -->
+
+<details class="tool" data-system="cardio" open>
   <summary>
     <div>
       <div class="tool-title">CHA₂DS₂-VASc Score</div>
-      <div class="tool-sub">Stroke risk & indication for anticoagulation in AF</div>
+      <div class="tool-sub">Stroke risk & anticoagulation in Atrial Fibrillation</div>
     </div>
     <div>▾</div>
   </summary>
 
   <div class="tool-body">
 
+    <!-- SEX -->
     <div class="step">
-      <div class="step-title">Select risk factors</div>
-
-      <div class="options" style="flex-wrap:wrap">
-        <button onclick="toggleScore(this,1)">Heart failure</button>
-        <button onclick="toggleScore(this,1)">Hypertension</button>
-        <button onclick="toggleScore(this,2)">Age ≥ 75 years</button>
-        <button onclick="toggleScore(this,1)">Diabetes</button>
-        <button onclick="toggleScore(this,2)">Stroke / TIA</button>
-        <button onclick="toggleScore(this,1)">Vascular disease</button>
-        <button onclick="toggleScore(this,1)">Age 65–74 years</button>
-        <button onclick="toggleScore(this,1)">Female sex</button>
+      <div class="step-title">Sex</div>
+      <div class="cha-options" data-group="sex">
+        <button class="cha-btn" data-value="0">Male</button>
+        <button class="cha-btn" data-value="1">Female</button>
       </div>
-
-      <button onclick="calcCHA2DS2()" style="
-        margin-top:14px;width:100%;
-        padding:12px;border-radius:10px;
-        background:var(--accent);color:#fff;
-        border:none;font-weight:700">
-        Calculate CHA₂DS₂-VASc
-      </button>
     </div>
 
-    <div id="cha2ds2-result" class="result hidden"></div>
+    <!-- RISK FACTORS -->
+    <div class="step">
+      <div class="step-title">Risk factors</div>
+      <div class="cha-options">
+        <button class="cha-btn" data-value="1">Heart failure</button>
+        <button class="cha-btn" data-value="1">Hypertension</button>
+        <button class="cha-btn" data-value="1">Diabetes</button>
+        <button class="cha-btn" data-value="1">Vascular disease</button>
+      </div>
+    </div>
 
-    <div class="monitor">
-      <b>Interpretation:</b><br>
-      • Score ≥2 (men) or ≥3 (women) → <b>Start anticoagulation</b><br>
-      • Score 1 (men) → Consider anticoagulation<br>
-      • Score 0 (men) → No anticoagulation
+    <!-- AGE -->
+    <div class="step">
+      <div class="step-title">Age</div>
+      <div class="cha-options" data-group="age">
+        <button class="cha-btn" data-value="0">&lt; 65 years</button>
+        <button class="cha-btn" data-value="1">65–74 years</button>
+        <button class="cha-btn" data-value="2">≥ 75 years</button>
+      </div>
+    </div>
+
+    <!-- STROKE -->
+    <div class="step">
+      <div class="step-title">Stroke / TIA / Thromboembolism</div>
+      <div class="cha-options" data-group="stroke">
+        <button class="cha-btn" data-value="2">Present</button>
+        <button class="cha-btn selected" data-value="0">Absent</button>
+      </div>
+    </div>
+
+    <!-- RESULT -->
+    <div id="chaResult" class="result success">
+      CHA₂DS₂-VASc Score = 0<br>
+      Low risk. No anticoagulation required.
     </div>
 
   </div>
 </details>
 
 <script>
-let chaScore = 0;
+  
+/* ================= CHA₂DS₂-VASc LOGIC ================= */
 
-function toggleScore(btn, val){
-  if(btn.classList.contains('selected')){
-    btn.classList.remove('selected');
-    chaScore -= val;
+const chaButtons = document.querySelectorAll('.cha-btn');
+
+chaButtons.forEach(btn => {
+  btn.addEventListener('click', () => {
+
+    const group = btn.parentElement.dataset.group;
+
+    // SINGLE-SELECT GROUPS (Sex, Age, Stroke)
+    if (group) {
+      btn.parentElement.querySelectorAll('.cha-btn')
+        .forEach(b => b.classList.remove('selected'));
+      btn.classList.add('selected');
+    }
+    // MULTI-SELECT GROUP (Risk factors)
+    else {
+      btn.classList.toggle('selected');
+    }
+
+    calculateCHA();
+  });
+});
+
+function calculateCHA(){
+  let score = 0;
+  let isFemale = false;
+
+  document.querySelectorAll('.cha-btn.selected').forEach(b => {
+    const val = Number(b.dataset.value);
+    score += val;
+
+    if (
+      b.parentElement.dataset.group === 'sex' &&
+      val === 1
+    ) {
+      isFemale = true;
+    }
+  });
+
+  const r = document.getElementById('chaResult');
+  let msg = '';
+  let cls = 'success';
+
+  /*
+    GUIDELINE-CORRECT INTERPRETATION
+
+    Male:
+      0 → No Rx
+      1 → Consider
+      ≥2 → Start
+
+    Female:
+      1 → No Rx (sex only)
+      2 → Consider
+      ≥3 → Start
+  */
+
+  if (
+    (!isFemale && score === 0) ||
+    (isFemale && score === 1)
+  ) {
+    msg = 'Low risk. No anticoagulation required.';
+    cls = 'success';
+
+  } else if (
+    (!isFemale && score === 1) ||
+    (isFemale && score === 2)
+  ) {
+    msg = 'Moderate risk. Consider anticoagulation.';
+    cls = 'warn';
+
   } else {
-    btn.classList.add('selected');
-    chaScore += val;
-  }
-}
-
-function calcCHA2DS2(){
-  const r = document.getElementById('cha2ds2-result');
-  let advice = '';
-
-  if(chaScore === 0){
-    advice = 'No anticoagulation required.';
-  } else if(chaScore === 1){
-    advice = 'Consider anticoagulation based on clinical context.';
-  } else {
-    advice = 'Strong indication to START anticoagulation.';
+    msg = 'High risk. Strong indication to START anticoagulation.';
+    cls = 'warn';
   }
 
-  r.className = 'result success';
-  r.innerHTML = `<b>CHA₂DS₂-VASc Score = ${chaScore}</b><br>${advice}`;
-  r.classList.remove('hidden');
+  r.className = 'result ' + cls;
+  r.innerHTML = `CHA₂DS₂-VASc Score = <b>${score}</b><br>${msg}`;
 }
 </script>
+
 
 <!-- ================= HAS-BLED SCORE ================= -->
   
