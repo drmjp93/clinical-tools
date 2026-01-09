@@ -2431,6 +2431,140 @@ function calculateIronRequirement(){
 </script>
 
 
+<details class="tool" data-system="endocrine">
+  <summary>
+    <div>
+      <div class="tool-title">RBS Sliding Scale Insulin (IPD)</div>
+      <div class="tool-sub">
+        6-hourly · Regular Insulin · Adult (0–4–6–8–12–16–20 scale)
+      </div>
+    </div>
+    <div>▾</div>
+  </summary>
+
+  <div class="tool-body">
+
+    <div class="monitor" style="margin-bottom:15px; font-size:0.9em; line-height:1.6em;">
+      <b style="color:var(--accent);">Protocol (Adult IPD · India):</b><br>
+      <div style="display:grid; grid-template-columns: 1fr 1fr; gap:4px; margin-top:4px;">
+        <span>≤ 150</span> <span style="opacity:0.7">0 units</span>
+        <span>151 – 200</span> <b>4 units</b>
+        <span>201 – 250</span> <b>6 units</b>
+        <span>251 – 300</span> <b>8 units</b>
+        <span>301 – 350</span> <b>12 units</b>
+        <span>351 – 400</span> <b>16 units</b>
+        <span>&gt; 400</span> <b>20 units + Call</b>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-title">Enter Random Blood Sugar (mg/dL)</div>
+      <input
+        id="rbsValue"
+        type="number"
+        placeholder="e.g. 268"
+        style="
+          padding:12px;
+          border-radius:10px;
+          border:1px solid var(--border);
+          background:#0b0d10;
+          color:var(--text);
+          width:100%;
+          font-size: 1.1em;
+        "
+        oninput="calculateRBS()"
+      >
+    </div>
+
+    <div id="rbsResult" class="result hidden"></div>
+
+    <div class="monitor">
+      <b>Assumptions:</b><br>
+      • Patient is <b>off OHA</b>, no basal insulin.<br>
+      • <b>CKD excluded</b> (requires dose reduction).<br>
+      • Use <b>Regular insulin (SC)</b>.<br><br>
+
+      <b>Safety:</b><br>
+      • RBS &lt; 70: Stop insulin, treat hypoglycemia.<br>
+      • RBS &gt; 400: Check ketones, evaluate for sepsis/steroid effect.
+    </div>
+
+  </div>
+</details>
+
+<script>
+function calculateRBS(){
+  const rbs = Number(document.getElementById('rbsValue').value);
+  const res = document.getElementById('rbsResult');
+  const inputVal = document.getElementById('rbsValue').value;
+
+  // Clear if empty
+  if(inputVal === ''){
+    res.classList.add('hidden');
+    return;
+  }
+
+  let insulin = 0;
+  let msg = '';
+  let cls = 'success'; 
+
+  // --- LOGIC ---
+
+  // 1. HYPOGLYCEMIA (< 70)
+  if(rbs < 70){
+    cls = 'warn'; 
+    msg = '⚠️ <b>HYPOGLYCEMIA!</b><br>• Do NOT give insulin.<br>• Give 25% Dextrose / Oral carbs immediately.<br>• Recheck RBS in 15 mins.';
+    insulin = 0;
+  }
+  // 2. NORMAL / TARGET (70 - 150)
+  else if(rbs <= 150){
+    cls = 'success';
+    msg = 'Target range. No correction needed.';
+    insulin = 0;
+  }
+  // 3. SLIDING SCALE
+  else if(rbs <= 200){
+    insulin = 4;
+  }
+  else if(rbs <= 250){
+    insulin = 6;
+  }
+  else if(rbs <= 300){
+    insulin = 8;
+  }
+  else if(rbs <= 350){
+    insulin = 12;
+    cls = 'warn'; // Alert color for higher doses
+  }
+  else if(rbs <= 400){
+    insulin = 16;
+    cls = 'warn';
+  }
+  // 4. SEVERE HYPERGLYCEMIA (> 400)
+  else{
+    insulin = 20;
+    cls = 'warn';
+    msg = '⚠️ <b>High Risk</b><br>• Check Urine Ketones.<br>• Inform treating physician.';
+  }
+
+  // RENDER
+  res.className = 'result ' + cls;
+  
+  let outputHtml = `<b>RBS: ${rbs} mg/dL</b><br><br>`;
+  
+  if(insulin > 0){
+    outputHtml += `<strong>Give Regular Insulin: ${insulin} units SC</strong>`;
+  } else if (rbs >= 70) {
+    outputHtml += `<strong>Give Regular Insulin: 0 units</strong>`;
+  }
+
+  if(msg) outputHtml += `<br><br>${msg}`;
+
+  res.innerHTML = outputHtml;
+  res.classList.remove('hidden');
+}
+</script>
+
 
 
 
