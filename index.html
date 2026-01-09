@@ -2269,6 +2269,163 @@ function calcInfusion(){
 
 })();
 </script>
+
+<!-- ================= IRON REQUIREMENT CALCULATOR ================= -->
+
+<details class="tool" data-system="hematology">
+  <summary>
+    <div>
+      <div class="tool-title">Iron Requirement in Iron Deficiency Anemia</div>
+      <div class="tool-sub">Ganzoni formula (Harrison-based)</div>
+    </div>
+    <div>▾</div>
+  </summary>
+
+  <div class="tool-body">
+
+    <!-- BASIC DETAILS -->
+    <div class="step">
+      <div class="step-title">Patient category</div>
+      <div class="options">
+        <button onclick="setAgeGroup('adult',this)" class="selected">Adult</button>
+        <button onclick="setAgeGroup('pediatric',this)">Pediatric</button>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-title">Sex</div>
+      <div class="options">
+        <button onclick="setSex('male',this)" class="selected">Male</button>
+        <button onclick="setSex('female',this)">Female</button>
+      </div>
+    </div>
+
+    <!-- INPUTS -->
+    <div class="step">
+      <div class="step-title">Clinical values</div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <input id="iron-weight" type="number" placeholder="Weight (kg)">
+        <input id="iron-hb" type="number" step="0.1" placeholder="Current Hb (g/dL)">
+      </div>
+    </div>
+
+    <button onclick="calculateIron()" class="primary-btn">
+      Calculate Iron Requirement
+    </button>
+
+    <!-- RESULT -->
+    <div id="iron-result" class="result hidden"></div>
+
+    <!-- NOTES -->
+    <div class="monitor">
+      <b>Formula (Ganzoni):</b><br>
+      Iron deficit (mg) = Weight × (Target Hb − Actual Hb) × 2.4 + Stores<br><br>
+
+      <b>Assumptions:</b><br>
+      • Adult target Hb: Male 15 g/dL · Female 14 g/dL<br>
+      • Pediatric target Hb: 13 g/dL<br>
+      • Iron stores: Adult 500 mg · Pediatric 15 mg/kg<br><br>
+
+      <b>Clinical note:</b><br>
+      Calculated deficit may exceed what is practically given in one course.
+    </div>
+
+  </div>
+</details>
+
+<script>
+let ageGroup = 'adult';
+let sex = 'male';
+
+function select(btn){
+  btn.parentElement.querySelectorAll('button')
+    .forEach(b=>b.classList.remove('selected'));
+  btn.classList.add('selected');
+}
+
+function setAgeGroup(val,btn){
+  ageGroup = val;
+  select(btn);
+}
+
+function setSex(val,btn){
+  sex = val;
+  select(btn);
+}
+
+function calculateIron(){
+
+  const wt = Number(document.getElementById('iron-weight').value);
+  const hb = Number(document.getElementById('iron-hb').value);
+  const res = document.getElementById('iron-result');
+
+  if(!wt || !hb){
+    res.className = 'result warn';
+    res.textContent = 'Please enter valid weight and hemoglobin.';
+    res.classList.remove('hidden');
+    return;
+  }
+
+  // TARGET Hb
+  let targetHb;
+  if(ageGroup === 'adult'){
+    targetHb = sex === 'male' ? 15 : 14;
+  } else {
+    targetHb = 13;
+  }
+
+  // STORES
+  let stores;
+  if(ageGroup === 'adult'){
+    stores = 500;
+  } else {
+    stores = 15 * wt; // pediatric
+  }
+
+  // GANZONI
+  const deficit = wt * (targetHb - hb) * 2.4 + stores;
+  const roundedDeficit = Math.round(deficit);
+
+  // PRACTICAL IV IRON CAP
+  let recommended;
+  if(ageGroup === 'adult'){
+    recommended = Math.min(roundedDeficit, 1500);
+  } else {
+    recommended = Math.min(roundedDeficit, 20 * wt);
+  }
+
+  res.className = 'result success';
+  res.innerHTML = `
+    <b>Calculated iron deficit:</b> ${roundedDeficit} mg<br><br>
+
+    <b>Recommended IV iron (this course):</b>
+    ${recommended} mg<br><br>
+
+    <span style="font-size:0.85rem;color:#9ca3af">
+      Remaining deficit (if any) to be corrected after reassessment.
+    </span>
+  `;
+  res.classList.remove('hidden');
+}
+</script>
+
+
+
+
+
+
+
+  
+<!-- ================= tools block above this ================= -->
+<!-- ================= tools block above this ================= -->
+<!-- ================= tools block above this ================= -->
+<!-- ================= tools block above this ================= -->
+<!-- ================= tools block above this ================= -->
+<!-- ================= tools block above this ================= -->
+<!-- ================= tools block above this ================= -->
+<!-- ================= tools block above this ================= -->
+<!-- ================= tools block above this ================= -->
 <!-- ================= tools block above this ================= -->
 
 </div>
