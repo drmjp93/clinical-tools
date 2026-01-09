@@ -2275,6 +2275,163 @@ function calcInfusion(){
 <details class="tool" data-system="hematology">
   <summary>
     <div>
+      <div class="tool-title">Iron Requirement Calculator (IDA)</div>
+      <div class="tool-sub">Adult & Pediatric · IV Iron (India practice)</div>
+    </div>
+    <div>▾</div>
+  </summary>
+
+  <div class="tool-body">
+
+    <!-- TYPE -->
+    <div class="step">
+      <div class="step-title">Patient category</div>
+      <div class="options">
+        <button onclick="setCategory('adult',this)">Adult</button>
+        <button onclick="setCategory('pediatric',this)">Pediatric</button>
+      </div>
+    </div>
+
+    <!-- SEX (Adults only) -->
+    <div class="step hidden" id="sex-step">
+      <div class="step-title">Sex</div>
+      <div class="options">
+        <button onclick="setSex('male',this)">Male</button>
+        <button onclick="setSex('female',this)">Female</button>
+      </div>
+    </div>
+
+    <!-- INPUTS -->
+    <div class="step">
+      <div class="step-title">Clinical details</div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <input id="iron-weight" type="number" placeholder="Weight (kg)">
+        <input id="iron-hb" type="number" step="0.1" placeholder="Current Hb (g/dL)">
+      </div>
+    </div>
+
+    <!-- ACTION -->
+    <button class="primary-btn" onclick="calculateIron()">Calculate Iron Requirement</button>
+
+    <!-- RESULT -->
+    <div id="iron-result" class="result hidden"></div>
+
+    <!-- NOTES -->
+    <div class="monitor">
+      <b>Assumptions:</b><br>
+      • Adult stores = <b>500 mg</b><br>
+      • Pediatric stores = <b>15 mg/kg (max 500 mg)</b><br>
+      • Formula based on <b>Harrison / Ganzoni (modified)</b><br><br>
+
+      <b>Indian IV practice:</b><br>
+      • Iron sucrose: max 200 mg/sitting<br>
+      • Ferric carboxymaltose: max 1000 mg/sitting<br>
+      • Ferric derisomaltose: full dose single sitting
+    </div>
+
+  </div>
+</details>
+
+<script>
+let category = null;
+let sex = null;
+
+function setCategory(val, btn){
+  category = val;
+  highlight(btn);
+
+  document.getElementById('sex-step').classList.toggle(
+    'hidden', val !== 'adult'
+  );
+}
+
+function setSex(val, btn){
+  sex = val;
+  highlight(btn);
+}
+
+function highlight(btn){
+  btn.parentElement.querySelectorAll('button')
+    .forEach(b=>b.classList.remove('selected'));
+  btn.classList.add('selected');
+}
+
+function calculateIron(){
+  const wt = Number(document.getElementById('iron-weight').value);
+  const hb = Number(document.getElementById('iron-hb').value);
+  const r = document.getElementById('iron-result');
+
+  if(!category || !wt || !hb || (category==='adult' && !sex)){
+    r.className = 'result warn';
+    r.textContent = 'Please complete all required inputs.';
+    r.classList.remove('hidden');
+    return;
+  }
+
+  /* SAFETY CHECKS */
+  if(hb >= 13){
+    r.className = 'result info';
+    r.textContent = 'Hb ≥ 13 g/dL — iron deficiency unlikely. Recheck indication.';
+    r.classList.remove('hidden');
+    return;
+  }
+
+  if(category === 'pediatric' && wt < 5){
+    r.className = 'result warn';
+    r.textContent = 'Weight < 5 kg — specialist assessment required.';
+    r.classList.remove('hidden');
+    return;
+  }
+
+  /* TARGET Hb */
+  let targetHb = 12;
+  if(category === 'adult'){
+    targetHb = sex === 'male' ? 15 : 14;
+  }
+
+  /* IRON DEFICIT */
+  const hbDeficit = Math.max(0, targetHb - hb);
+  const deficitIron = wt * hbDeficit * 2.4;
+
+  /* STORES */
+  let stores = 500;
+  if(category === 'pediatric'){
+    stores = Math.min(15 * wt, 500);
+  }
+
+  let totalIron = deficitIron + stores;
+
+  /* SAFETY CAPS */
+  if(category === 'adult'){
+    totalIron = Math.min(totalIron, 1500);
+  } else {
+    totalIron = Math.min(totalIron, 20 * wt);
+  }
+
+  totalIron = Math.round(totalIron);
+
+  r.className = 'result success';
+  r.innerHTML = `
+    <b>Total iron required ≈ ${totalIron} mg</b><br><br>
+
+    Weight: ${wt} kg<br>
+    Current Hb: ${hb} g/dL<br>
+    Target Hb: ${targetHb} g/dL<br>
+    Hb deficit: ${hbDeficit.toFixed(1)} g/dL<br>
+    Iron deficit: ${Math.round(deficitIron)} mg<br>
+    Iron stores: ${Math.round(stores)} mg
+  `;
+  r.classList.remove('hidden');
+}
+</script>
+
+
+<!-- ================= IRON REQUIREMENT CALCULATOR ================= -->
+
+<details class="tool" data-system="hematology">
+  <summary>
+    <div>
       <div class="tool-title">Iron Requirement in Iron Deficiency Anemia</div>
       <div class="tool-sub">Ganzoni formula (Harrison-based)</div>
     </div>
