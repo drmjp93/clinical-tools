@@ -2348,68 +2348,89 @@ function selectBtn(btn){
 function setAgeGroup(val, btn){
   ironAgeGroup = val;
   selectBtn(btn);
-
   document.getElementById('iron-sex-step')
     .classList.toggle('hidden', val === 'pediatric');
+  
+  // Clear result to prevent confusion when switching
+  document.getElementById('iron-output').classList.add('hidden');
 }
 
 function setIronSex(val, btn){
   ironSex = val;
   selectBtn(btn);
+  document.getElementById('iron-output').classList.add('hidden');
 }
 
 function calculateIronRequirement(){
 
-  const wt = Number(document.getElementById('iron-wt').value);
-  const hb = Number(document.getElementById('iron-hb').value);
+  const wt = parseFloat(document.getElementById('iron-wt').value);
+  const hb = parseFloat(document.getElementById('iron-hb').value);
   const r = document.getElementById('iron-output');
 
-  if(!wt || !hb){
+  // Basic Validation
+  if(!wt || !hb || wt <= 0 || hb <= 0){
     r.className = 'result warn';
     r.textContent = 'Please enter valid weight and hemoglobin.';
     r.classList.remove('hidden');
     return;
   }
 
-  if(hb >= 13){
-    r.className = 'result info';
-    r.textContent = 'Hb ≥ 13 g/dL — iron deficiency unlikely. Recheck indication.';
-    r.classList.remove('hidden');
-    return;
-  }
-
+  // 1. Set Targets & Stores
   let targetHb, stores;
 
   if(ironAgeGroup === 'adult'){
     targetHb = ironSex === 'male' ? 15 : 14;
     stores = 500;
   } else {
-    targetHb = 13;
-    stores = Math.min(15 * wt, 500);
+    // Pediatric: Target Hb 13 as requested
+    targetHb = 13; 
+    // Pediatric stores: 15mg/kg up to max 500mg
+    stores = Math.min(15 * wt, 500); 
   }
 
-  const deficitIron = wt * Math.max(0, targetHb - hb) * 2.4;
+  // 2. Dynamic Check: Is patient actually anemic relative to THEIR target?
+  if(hb >= targetHb){
+    r.className = 'result info';
+    r.innerHTML = `Current Hb (${hb}) is ≥ Target (${targetHb}).<br>Iron replacement likely not indicated.`;
+    r.classList.remove('hidden');
+    return;
+  }
+
+  // 3. Ganzoni Formula
+  // Deficit = Weight x (Target - Actual) x 2.4
+  const deficitIron = wt * (targetHb - hb) * 2.4;
   let totalIron = deficitIron + stores;
-
-  // Practical caps
-  if(ironAgeGroup === 'adult'){
-    totalIron = Math.min(totalIron, 1500);
-  } else {
-    totalIron = Math.min(totalIron, 20 * wt);
-  }
 
   totalIron = Math.round(totalIron);
 
+  // 4. Safety Warnings (No hard cap on the calculation result)
+  let note = '';
+  
+  if(ironAgeGroup === 'adult'){
+      if(totalIron > 1000) {
+          note = '<br><small>⚠️ Total deficit > 1000 mg. Administer in divided doses (e.g., max 1000mg per sitting).</small>';
+      }
+  } else {
+      // Pediatric safety check
+      const maxSingleDose = Math.round(20 * wt); 
+      if(totalIron > maxSingleDose){
+          note = `<br><small>⚠️ Total requirement exceeds single dose limit.<br>Max single dose for child: approx ${maxSingleDose} mg (20mg/kg).</small>`;
+      }
+  }
+
   r.className = 'result success';
   r.innerHTML = `
-    <b>Total IV iron required ≈ ${totalIron} mg</b><br><br>
-    Weight: ${wt} kg<br>
-    Current Hb: ${hb} g/dL<br>
-    Target Hb: ${targetHb} g/dL
+    <b>Total Iron Deficit: ${totalIron} mg</b><br>
+    <div style="font-size:0.85rem; margin-top:5px; opacity:0.8">
+      Target Hb: ${targetHb} g/dL • Stores: ${Math.round(stores)} mg
+    </div>
+    ${note}
   `;
   r.classList.remove('hidden');
 }
 </script>
+
+
 
 
 
