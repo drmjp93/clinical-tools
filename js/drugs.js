@@ -32,9 +32,10 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!q) return;
 
     const matched = drugs.filter(d =>
-      d.generic.toLowerCase().includes(q) ||
-      d.class.toLowerCase().includes(q) ||
-      d.brands.some(b => b.name.toLowerCase().includes(q))
+      (d.Active_Content || '').toLowerCase().includes(q) ||
+      (d.Category || '').toLowerCase().includes(q) ||
+      (d.Ethical_Brand || '').toLowerCase().includes(q) ||
+      (d.Generic_Brand || '').toLowerCase().includes(q)
     );
 
     if (matched.length === 0) {
@@ -45,20 +46,29 @@ document.addEventListener('DOMContentLoaded', () => {
 
     matched.forEach(d => {
       const card = document.createElement('div');
+      card.className = 'tool';
+      card.style.padding = '14px';
       card.style.marginBottom = '12px';
-      card.style.padding = '12px';
-      card.style.border = '1px solid var(--border)';
-      card.style.borderRadius = '12px';
-      card.style.background = 'var(--card)';
-
-      let brandList = d.brands
-        .map(b => `${b.name} – ₹${b.price}`)
-        .join('<br>');
 
       card.innerHTML = `
-        <b>${d.generic}</b><br>
-        <small>${d.class}</small><br><br>
-        <div style="font-size:0.85rem">${brandList}</div>
+        <div style="font-weight:700">${d.Active_Content}</div>
+        <div style="font-size:0.85rem;color:var(--muted)">
+          ${d.Category}
+        </div>
+
+        <div style="margin-top:8px;font-size:0.9rem">
+          <b>Ethical:</b> ${d.Ethical_Brand}<br>
+          <span style="color:var(--muted)">
+            ${d.Ethical_Mfg} · ₹${d.Ethical_Price}
+          </span>
+        </div>
+
+        <div style="margin-top:6px;font-size:0.9rem">
+          <b>Generic:</b> ${d.Generic_Brand}<br>
+          <span style="color:var(--muted)">
+            ${d.Generic_Mfg} · ₹${d.Generic_Price}
+          </span>
+        </div>
       `;
 
       results.appendChild(card);
