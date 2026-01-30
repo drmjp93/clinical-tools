@@ -1,0 +1,2847 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+  
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">  
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon.png"> 
+
+<meta property="og:image" content="https://tools.drmjp93.in/icon-512.png">
+<meta property="og:title" content="Clinical Tools | Dr. Mit Panchani">
+<meta property="og:description" content="Practical bedside clinical calculators & tools">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+
+<title>Clinical Tools | Dr. Mit Panchani</title>
+
+<link rel="manifest" href="/manifest.json">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Clinical Tools">
+<link rel="apple-touch-icon" href="/icon-192.png">
+
+
+
+<style> 
+
+/* ================= VARIABLES STYLE - CSS ================= */
+
+:root{
+  --bg:#0f1113;
+  --card:#16191d;
+  --inner:#0b0d10;
+  --border:#262a30;
+  --text:#e5e7eb;
+  --muted:#9ca3af;
+  --accent:#3b82f6;
+  --success:#064e3b;
+  --warn:#78350f;
+  --info:#1e3a8a;
+  --text-dim:#b3b7c0;
+}
+
+/* ================= BASE (entire app skeleton) STYLE - CSS ================= */
+
+*{box-sizing:border-box}
+  
+body{
+  margin:0;
+  color:var(--text);
+  font-family:system-ui,-apple-system,Segoe UI,Roboto;
+  background-color: var(--bg);
+}
+
+main{
+  max-width:1000px;
+  margin:24px auto;
+  padding:16px;
+}
+
+/* ================= BACKGROUND IMAGE STYLE - CSS ================= */
+
+body::before{
+  content:"";
+  position:fixed;
+  inset:0;
+  z-index:-1;
+
+  background-image:
+    linear-gradient(
+      rgba(0,0,0,0.88),  /*  OPACITY  */
+      rgba(0,0,0,0.88)
+    ),
+    url("./bg.jpg");
+
+  background-repeat: repeat;
+  background-size: 600px;
+  background-position: top left;
+}
+
+/* ================= TYPOGRAPHY STYLE - CSS =============== */
+
+h1{font-size:1.6rem;margin-bottom:4px}
+.sub{color:var(--muted);font-size:.9rem;margin-bottom:16px}
+
+/* ================= NAV / CONTROLS STYLE - CSS ================= */
+
+/* MODE */
+.mode-toggle{display:flex;gap:12px;margin-bottom:18px}
+
+.mode-btn{
+  flex:1;padding:14px;border-radius:14px;
+  border:1px solid var(--border);
+  background:var(--card);color:var(--muted);
+  font-weight:600;cursor:pointer
+}
+
+.mode-btn.active{background:#fff;color:#000}
+
+/* SEARCH */
+.search input{
+  width:100%;padding:14px;border-radius:12px;
+  border:1px solid var(--border);
+  background:#0b0d0f;color:var(--text);
+  margin-bottom:14px
+}
+
+/* GLOBAL SORT BAR */
+.tabs{
+  display:flex;gap:10px;margin:0 0 18px;overflow-x:auto
+}
+.tabs::-webkit-scrollbar{display:none}
+.tab{
+  padding:8px 14px;border-radius:999px;
+  border:1px solid var(--border);
+  background:var(--card);
+  color:var(--muted);
+  cursor:pointer;font-size:.85rem;
+  white-space:nowrap
+}
+.tab.active{background:#fff;color:#000;font-weight:600}
+
+/* ===== SPLASH SCREEN STYLE - CSS ===== */
+.splash{
+  position:fixed;
+  inset:0;
+  background:#0f1113;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  z-index:9999;
+}
+
+.splash-card{
+  text-align:center;
+  animation:splashFade .6s ease;
+}
+
+.splash-title{
+  font-size:1.5rem;
+  font-weight:700;
+  margin-bottom:6px;
+}
+
+.splash-divider{
+  width:160px;
+  height:1px;
+  margin:12px auto 8px;
+  background:rgba(255,255,255,0.25);
+}
+
+.splash-name{
+  font-size:1rem;
+  color:#e5e7eb;
+}
+
+.splash-degree{
+  font-size:.70rem;
+  color:#9ca3af;
+  margin-top:5px;
+}
+
+@keyframes splashFade{
+  from{opacity:0;transform:translateY(8px)}
+  to{opacity:1;transform:none}
+}
+/* ================= TOOL SHELL CSS STYLE ================= */
+
+/* TOOL */
+.tool{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:14px;
+  margin-bottom:14px;
+  overflow:hidden
+}
+.tool summary{
+  list-style:none;padding:16px;
+  cursor:pointer;display:flex;
+  justify-content:space-between
+}
+.tool summary::-webkit-details-marker{display:none}
+.tool-title{font-weight:600}
+.tool-sub{font-size:.8rem;color:var(--muted)}
+.tool-body{padding:16px;border-top:1px solid var(--border)}
+
+/* ================= TOOL STEPS CSS STYLE================= */
+
+/* STEPS */
+.step{
+  background:var(--inner);
+  border:1px solid var(--border);
+  border-radius:12px;
+  padding:14px;margin-bottom:14px
+}
+.step-title{font-weight:600;margin-bottom:8px}
+
+.options button{
+  padding:14px 10px;
+  border-radius:12px;
+  border:1px solid #374151;
+  background:#020617;          /* darker background */
+  color:#e5e7eb;
+  font-weight:600;
+  min-height:56px;
+  cursor:pointer;
+  transition:all 0.15s ease;
+}
+
+/* HOVER (desktop) */
+.options button:hover{
+  background:#020617;
+  border-color:#60a5fa;
+}
+
+/* SELECTED (critical for GCS clarity) */
+.options button.selected{
+  background:linear-gradient(135deg,#1d4ed8,#2563eb);
+  border-color:#93c5fd;
+  color:#ffffff;
+  box-shadow:0 0 0 2px rgba(59,130,246,0.35);
+}
+
+/* ================= RESULTS - STYLE CSS ================= */
+
+/* RESULT */
+.result{
+  padding:14px;border-radius:12px;
+  font-weight:700;margin-top:12px
+}
+.success{background:var(--success);color:#d1fae5}
+.warn{background:var(--warn);color:#fde68a}
+.info{background:var(--info);color:#dbeafe}
+
+.monitor{
+  margin-top:12px;padding:12px;
+  border-radius:12px;
+  border:1px dashed var(--border);
+  font-size:.9rem;color:var(--muted)
+}
+
+
+/* ================= FORMS CSS - STYLE ================= */
+
+/* ===== ICU FORM UI (GLOBAL) ===== */
+
+.form-card {
+  background: #0b0f14;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 16px;
+  margin-bottom: 16px;
+}
+
+.form-section-title {
+  font-weight: 700;
+  margin-bottom: 12px;
+  color: var(--text);
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.form-label {
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+.form-input,
+.form-select {
+  padding: 12px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: #0f141a;
+  color: var(--text);
+  font-size: 0.95rem;
+}
+
+.form-input:focus,
+.form-select:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 12px;
+}
+
+.form-row-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.primary-btn {
+  width: 100%;
+  padding: 14px;
+  margin-top: 8px;
+  border-radius: 14px;
+  border: none;
+  background: var(--accent);
+  color: #fff;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.primary-btn:hover {
+  opacity: 0.9;
+}
+
+
+/* ===== Floating ICU Dose Modal - CSS STYLE  ===== */
+
+.ghost-btn{
+  margin:10px 0;
+  background:rgba(59,130,246,0.08);
+  border:1px dashed var(--border);
+  color:var(--text-dim);
+  padding:10px;
+  border-radius:10px;
+  cursor:pointer;
+  font-weight:600;
+}
+.ghost-btn:hover{
+  color:#fff;
+  border-color:var(--accent);
+}
+
+
+.dose-modal{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.6);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  z-index:9999;
+}
+
+.dose-card{
+  width:min(520px,92%);
+  background:#0b0f16;
+  border-radius:16px;
+  box-shadow:0 20px 60px rgba(0,0,0,.6);
+  overflow:hidden;
+}
+
+.dose-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:14px 16px;
+  background:#121826;
+  font-weight:700;
+}
+
+.dose-header button{
+  background:none;
+  border:none;
+  color:#aaa;
+  font-size:18px;
+  cursor:pointer;
+}
+
+.dose-body{
+  padding:16px;
+  max-height:70vh;
+  overflow:auto;
+}
+
+.dose-section{margin-bottom:16px}
+.dose-section h4{
+  margin:0 0 8px;
+  color:#7aa2ff;
+  font-size:.9rem;
+  text-transform:uppercase;
+}
+
+.dose-row{
+  display:flex;
+  justify-content:space-between;
+  padding:8px 10px;
+  border-radius:8px;
+  background:#0f1420;
+  margin-bottom:6px;
+  font-size:.9rem;
+}
+
+.dose-row span{color:#a5c8ff}
+
+.dose-note{
+  margin-top:12px;
+  font-size:.75rem;
+  color:#888;
+}
+
+.hidden{display:none}
+
+/* ================= UTILITIES - CSS - STYLE =============== */
+
+/* ===== Mobile overflow fix for result boxes ===== */
+
+.tool-body,
+.step,
+.result,
+.monitor {
+  max-width: 100%;
+  overflow-wrap: break-word;
+  word-break: break-word;
+}
+
+.result {
+  box-sizing: border-box;
+  width: 100%;
+}
+/* === iOS GRID FIX === */
+input, button {
+  max-width: 100%;
+  min-width: 0;
+}
+
+.tool-body * {
+  box-sizing: border-box;
+}
+
+.sep{
+  margin: 0 6px;
+  opacity: 0.6;
+}
+
+.visitor-count{
+  font-weight: 400;
+}
+
+.visitor-count b{
+  font-weight: 700;
+}
+
+/* ================= RESPONSIVE ============== */
+
+  /* ===== Mobile fix for Infusion Calculator ===== */
+
+@media (max-width: 520px) {
+
+  .form-row,
+  .form-row-2 {
+    grid-template-columns: 1fr !important;
+  }
+
+  .form-card {
+    padding: 14px;
+  }
+
+  .form-input,
+  .form-select {
+    width: 100%;
+  }
+}
+</style>
+
+  <style>
+  
+/* ===== CHA2DS2-VASc BUTTON STYLES ===== */
+
+.cha-options{
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+}
+
+.cha-btn{
+  padding:10px 16px;
+  border-radius:999px;
+  border:1px solid #374151;
+  background:#020617;
+  color:#e5e7eb;
+  font-weight:600;
+  cursor:pointer;
+  transition:all .15s ease;
+}
+
+/* THIS is the highlight */
+    
+.cha-btn.selected{
+  background:#2563eb;
+  border-color:#93c5fd;
+  color:#ffffff;
+  box-shadow:0 0 0 2px rgba(59,130,246,.35);
+}
+
+.cha-result{
+  margin-top:14px;
+  padding:14px;
+  border-radius:12px;
+  font-weight:700;
+}
+
+.cha-success{background:#064e3b;color:#d1fae5}
+.cha-warn{background:#78350f;color:#fde68a}
+</style>
+
+<style>
+  /* ===== INSTALL AS APP CARD ===== */
+
+.install-tool{
+  border:1px dashed var(--accent);
+}
+
+.install-steps{
+  margin:0 0 12px 18px;
+  font-size:0.9rem;
+  color:var(--muted);
+}
+
+.install-images{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(140px,1fr));
+  gap:10px;
+}
+
+.install-images img{
+  width:100%;
+  border-radius:10px;
+  border:1px solid var(--border);
+}
+
+.install-section.hidden{
+  display:none;
+}
+
+</style>
+</head>
+
+<body>
+  
+  <!-- ================= SPLASH SCREEN ================= -->
+
+<div id="splash" class="splash">
+  <div class="splash-card">
+    <div class="splash-title">Clinical Tools</div>
+    <div class="splash-divider"></div>
+    <div class="splash-name">By Dr. Mit Panchani</div>
+    <div class="splash-degree">MD (General Medicine)</div>
+  </div>
+</div>
+  
+  
+<main>
+
+<h1>Clinical Tools</h1>
+<div class="sub">
+  Quick OPD decision support
+  <span class="sep"> | </span>
+  <span class="visitor-count">
+    Used: <b><span id="visitCount">—</span></b> times
+  </span>
+</div>
+
+<!-- MODE -->
+<div class="mode-toggle">
+  <button class="mode-btn active" onclick="switchMode('general',this)">Adult</button>
+  <button class="mode-btn" onclick="switchMode('preg',this)">Pregnancy</button>
+</div>
+
+<!-- SEARCH -->
+<div class="search">
+  <input id="searchInput" placeholder="Search tools…">
+</div>
+
+<!-- GLOBAL SORT BAR -->
+ 
+<div class="tabs" id="global-tabs">
+  <div class="tab active" data-filter="all">All</div>
+  <div class="tab" data-filter="hepato">Hepatology</div>
+  <div class="tab" data-filter="cardio">Cardiology</div>
+  <div class="tab" data-filter="resp">Respiratory</div>
+  <div class="tab" data-filter="Hematology">Hematology</div>
+  <div class="tab" data-filter="nephro">Nephrology</div>
+  <div class="tab" data-filter="endocrine">Endocrine</div>
+  <div class="tab" data-filter="obstetric">Obstetric</div>
+  <div class="tab" data-filter="icu">ICU</div>
+  <div class="tab" data-filter="neuro">Neurology</div>
+</div>
+
+<!-- ================= GENERAL ================= -->
+  
+<div id="general-tools">
+
+  
+<!-- ================= HEP B ADULT TOOL ================= -->
+
+<details class="tool" data-system="hepato">
+  <summary>
+    <div>
+      <div class="tool-title">Hepatitis B – Chronic Infection</div>
+      <div class="tool-sub">Adult (Non-pregnant)</div>
+    </div>
+    <div>▾</div>
+  </summary>
+
+  <div class="tool-body" id="hbv-adult">
+
+    <!-- STEP 1 -->
+    <div class="step">
+      <div class="step-title">Step 1 – HBeAg status</div>
+      <div class="options">
+        <button onclick="hbv.setHBeAg(true,this)">HBeAg Positive</button>
+        <button onclick="hbv.setHBeAg(false,this)">HBeAg Negative</button>
+      </div>
+    </div>
+
+    <!-- STEP 2 -->
+    <div class="step hidden" id="hbv-step-dna">
+      <div class="step-title" id="hbv-dna-title">Step 2 – HBV DNA</div>
+      <div class="options" id="hbv-dna-options"></div>
+    </div>
+
+    <!-- STEP 3 -->
+    <div class="step hidden" id="hbv-step-cirrhosis">
+      <div class="step-title">Step 3 – Cirrhosis</div>
+      <div class="options">
+        <button onclick="hbv.cirrhosis(true,this)">Yes</button>
+        <button onclick="hbv.cirrhosis(false,this)">No</button>
+      </div>
+    </div>
+
+    <!-- STEP 4 -->
+    <div class="step hidden" id="hbv-step-alt">
+      <div class="step-title">Step 4 – ALT</div>
+      <div class="options">
+        <button onclick="hbv.alt(true,this)">ALT &gt; 2× ULN</button>
+        <button onclick="hbv.alt(false,this)">ALT ≤ 2× ULN</button>
+      </div>
+    </div>
+
+    <!-- RESULT -->
+    <div id="hbv-result" class="result hidden"></div>
+    <div id="hbv-monitor" class="monitor hidden"></div>
+
+  </div>
+</details>
+
+<script>
+function select(btn){
+  btn.parentElement
+     .querySelectorAll('button')
+     .forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+}
+</script>
+
+<script>
+const hbv = {
+  hbeag: null,
+  highDNA: null,
+  cirr: null,
+
+  reset(){
+    document.querySelectorAll('#hbv-adult .selected')
+      .forEach(b=>b.classList.remove('selected'));
+
+    ['hbv-step-dna','hbv-step-cirrhosis','hbv-step-alt']
+      .forEach(id=>document.getElementById(id).classList.add('hidden'));
+
+    document.getElementById('hbv-result').classList.add('hidden');
+    document.getElementById('hbv-monitor').classList.add('hidden');
+  },
+
+  setHBeAg(val,btn){
+    this.reset();
+    this.hbeag = val;
+    select(btn);
+
+    const dnaBox = document.getElementById('hbv-dna-options');
+    const title = document.getElementById('hbv-dna-title');
+
+    if(val){
+      title.innerHTML = 'Step 2 – HBV DNA (Cutoff: 20,000 IU/mL)';
+      dnaBox.innerHTML = `
+        <button onclick="hbv.dna(true,this)">&gt; 20,000 IU/mL</button>
+        <button onclick="hbv.dna(false,this)">≤ 20,000 IU/mL</button>
+      `;
+    }else{
+      title.innerHTML = 'Step 2 – HBV DNA (Cutoff: 2,000 IU/mL)';
+      dnaBox.innerHTML = `
+        <button onclick="hbv.dna(true,this)">&gt; 2,000 IU/mL</button>
+        <button onclick="hbv.dna(false,this)">≤ 2,000 IU/mL</button>
+      `;
+    }
+
+    document.getElementById('hbv-step-dna').classList.remove('hidden');
+  },
+
+  dna(high,btn){
+    select(btn);
+    this.highDNA = high;
+
+    if(!high){
+      this.showMonitor();
+      return;
+    }
+    document.getElementById('hbv-step-cirrhosis').classList.remove('hidden');
+  },
+
+  cirrhosis(val,btn){
+    select(btn);
+    this.cirr = val;
+
+    if(val){
+      this.showTreat();
+    }else{
+      document.getElementById('hbv-step-alt').classList.remove('hidden');
+    }
+  },
+
+  alt(high,btn){
+    select(btn);
+    if(high) this.showTreat();
+    else this.showMonitor();
+  },
+
+  showTreat(){
+    const r = document.getElementById('hbv-result');
+    r.className = 'result success';
+    r.innerHTML = `
+      <strong>START ANTIVIRAL THERAPY</strong><br><br>
+      <b>First-line:</b>
+      <ul>
+        <li>Tenofovir (TDF / TAF)</li>
+        <li>Entecavir</li>
+      </ul>
+      <small>Avoid lamivudine monotherapy.</small>
+    `;
+    r.classList.remove('hidden');
+  },
+
+  showMonitor(){
+    const r = document.getElementById('hbv-result');
+    const m = document.getElementById('hbv-monitor');
+
+    r.className = 'result warn';
+    r.textContent = 'No treatment indicated currently';
+    r.classList.remove('hidden');
+
+    m.textContent =
+      'Monitor ALT every 3–6 months · HBV DNA every 6–12 months';
+    m.classList.remove('hidden');
+  }
+};
+</script>
+
+<!-- ================= egfr tool================= -->
+<details class="tool" data-system="nephro">
+<summary>
+  <div>
+    <div class="tool-title">eGFR Calculator (CKD-EPI 2021)</div>
+    <div class="tool-sub">Creatinine-based, race-free</div>
+  </div>
+  <div>▾</div>
+</summary>
+
+<div class="tool-body">
+
+<div class="step">
+  <div class="step-title">Patient details</div>
+
+<div style="
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:12px
+">
+    <input id="egfr-age" type="number" placeholder="Age (years)"
+      style="padding:12px;border-radius:10px;border:1px solid var(--border);
+             background:#0b0d0f;color:var(--text)">
+    <input id="egfr-creat" type="number" step="0.01" placeholder="Serum Creatinine (mg/dL)"
+      style="padding:12px;border-radius:10px;border:1px solid var(--border);
+             background:#0b0d0f;color:var(--text)">
+  </div>
+
+  <div class="options" style="margin-top:12px">
+    <button onclick="calcEGFR('male')">Male</button>
+    <button onclick="calcEGFR('female')">Female</button>
+  </div>
+</div>
+
+<div id="egfr-result" class="hidden"></div>
+
+</div>
+</details>
+
+<script>
+function calcEGFR(sex){
+  const age = parseFloat(document.getElementById('egfr-age').value);
+  const scr = parseFloat(document.getElementById('egfr-creat').value);
+  const resultBox = document.getElementById('egfr-result');
+
+  if(!age || !scr){
+    resultBox.className = 'result warn';
+    resultBox.textContent = 'Please enter valid age and creatinine values.';
+    resultBox.classList.remove('hidden');
+    return;
+  }
+
+  // CKD-EPI 2021 (race-free)
+  let k, alpha;
+  if(sex === 'female'){
+    k = 0.7;
+    alpha = -0.241;
+  } else {
+    k = 0.9;
+    alpha = -0.302;
+  }
+
+  const minScr = Math.min(scr / k, 1);
+  const maxScr = Math.max(scr / k, 1);
+
+  const egfr =
+    142 *
+    Math.pow(minScr, alpha) *
+    Math.pow(maxScr, -1.200) *
+    Math.pow(0.9938, age) *
+    (sex === 'female' ? 1.012 : 1);
+
+  const egfrVal = Math.round(egfr);
+
+  let stage = '';
+  let cls = 'info';
+
+  if(egfrVal >= 90){ stage = 'G1 (Normal or high)'; cls='success'; }
+  else if(egfrVal >= 60){ stage = 'G2 (Mildly decreased)'; cls='info'; }
+  else if(egfrVal >= 45){ stage = 'G3a (Mild–Moderate)'; cls='warn'; }
+  else if(egfrVal >= 30){ stage = 'G3b (Moderate–Severe)'; cls='warn'; }
+  else if(egfrVal >= 15){ stage = 'G4 (Severely decreased)'; cls='warn'; }
+  else { stage = 'G5 (Kidney failure)'; cls='warn'; }
+
+  resultBox.className = 'result ' + cls;
+  resultBox.innerHTML = `
+    eGFR ≈ <strong>${egfrVal} mL/min/1.73 m²</strong><br>
+    CKD Stage: <b>${stage}</b>
+  `;
+  resultBox.classList.remove('hidden');
+}
+</script>
+
+<!-- ================= BMI TOOL ================= -->
+  
+<details class="tool" data-system="endocrine">
+<summary>
+  <div>
+    <div class="tool-title">BMI Calculator</div>
+    <div class="tool-sub">Weight & Height (Indian units)</div>
+  </div>
+  <div>▾</div>
+</summary>
+
+<div class="tool-body">
+
+<div class="step">
+  <div class="step-title">Enter details</div>
+
+<div style="
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:12px
+">
+    <input id="bmi-weight" type="number" step="0.1" placeholder="Weight (kg)"
+      style="padding:12px;border-radius:10px;border:1px solid var(--border);
+             background:#0b0d0f;color:var(--text)">
+    <input id="bmi-height" type="number" step="0.1" placeholder="Height (cm)"
+      style="padding:12px;border-radius:10px;border:1px solid var(--border);
+             background:#0b0d0f;color:var(--text)">
+  </div>
+
+  <div class="options" style="margin-top:12px">
+    <button onclick="calcBMI()">Calculate BMI</button>
+  </div>
+</div>
+
+<div id="bmi-result" class="hidden"></div>
+
+</div>
+</details>
+
+<script>
+function calcBMI(){
+  const wt = parseFloat(document.getElementById('bmi-weight').value);
+  const htCm = parseFloat(document.getElementById('bmi-height').value);
+  const res = document.getElementById('bmi-result');
+
+  if(!wt || !htCm){
+    res.className = 'result warn';
+    res.textContent = 'Please enter valid weight and height.';
+    res.classList.remove('hidden');
+    return;
+  }
+
+  const htM = htCm / 100;
+  const bmi = wt / (htM * htM);
+  const bmiVal = bmi.toFixed(1);
+
+  let category = '';
+  let cls = 'info';
+
+  // Indian/WHO cutoffs
+  
+  if(bmi < 18.5){
+    category = 'Underweight';
+    cls = 'warn';
+  } else if(bmi < 23){
+    category = 'Normal';
+    cls = 'success';
+  } else if(bmi < 25){
+    category = 'Overweight (At risk – Indian cutoff)';
+    cls = 'warn';
+  } else if(bmi < 30){
+    category = 'Obese (Class I)';
+    cls = 'warn';
+  } else {
+    category = 'Obese (Class II / III)';
+    cls = 'warn';
+  }
+
+  res.className = 'result ' + cls;
+  res.innerHTML = `
+    BMI = <strong>${bmiVal} kg/m²</strong><br>
+    Category: <b>${category}</b>
+    <div style="margin-top:8px;font-size:0.8rem;color:#9ca3af">
+      Indian risk threshold: BMI ≥ 23 kg/m²
+    </div>
+  `;
+  res.classList.remove('hidden');
+}
+</script>
+
+  <!-- ================= THYROXINE DOSE CALCULATOR ================= -->
+
+  
+<details class="tool" data-system="endocrine">
+<summary>
+  <div>
+    <div class="tool-title">Thyroxine Dose Calculator</div>
+    <div class="tool-sub">Convert weekly variable dosing → daily dose</div>
+  </div>
+  <div>▾</div>
+</summary>
+
+<div class="tool-body">
+
+<div class="step">
+  <div class="step-title">Current prescription</div>
+
+<div style="
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:12px
+">
+    <input id="thyroxine-strength" type="number" step="12.5"
+      placeholder="Tablet strength (mcg)"
+      style="padding:12px;border-radius:10px;border:1px solid var(--border);
+             background:#0b0d0f;color:var(--text)">
+
+    <input id="thyroxine-weekly" type="number" step="1"
+      placeholder="Total tablets per week"
+      style="padding:12px;border-radius:10px;border:1px solid var(--border);
+             background:#0b0d0f;color:var(--text)">
+  </div>
+
+  <div class="options" style="margin-top:12px">
+    <button onclick="calcThyroxine()">Calculate daily dose</button>
+  </div>
+</div>
+
+<div id="thyroxine-result" class="hidden"></div>
+
+</div>
+</details>
+
+<script>
+function calcThyroxine(){
+  const strength = parseFloat(document.getElementById('thyroxine-strength').value);
+  const weeklyTabs = parseFloat(document.getElementById('thyroxine-weekly').value);
+  const res = document.getElementById('thyroxine-result');
+
+  if(!strength || !weeklyTabs){
+    res.className = 'result warn';
+    res.textContent = 'Please enter valid tablet strength and weekly tablet count.';
+    res.classList.remove('hidden');
+    return;
+  }
+
+  const weeklyDose = strength * weeklyTabs; // mcg/week
+  const dailyExact = weeklyDose / 7;
+
+  // Round to nearest 12.5 mcg (practical tablet division)
+  const dailyRounded = Math.round(dailyExact / 12.5) * 12.5;
+
+  res.className = 'result success';
+  res.innerHTML = `
+    Weekly dose = <b>${weeklyDose.toFixed(1)} mcg</b><br>
+    Exact daily equivalent = ${dailyExact.toFixed(1)} mcg/day<br><br>
+    <strong>Suggested daily dose ≈ ${dailyRounded} mcg</strong>
+
+    <div style="margin-top:8px;font-size:0.8rem;color:#9ca3af">
+      Rounded to nearest 12.5 mcg for practical dosing.<br>
+      Adjust further based on TSH (6–8 weeks).
+    </div>
+  `;
+  res.classList.remove('hidden');
+}
+</script>
+
+<!-- ================= MAP TOOL ================= -->
+
+<details class="tool" data-system="cardio">
+  <summary>
+    <div>
+      <div class="tool-title">Mean Arterial Pressure (MAP)</div>
+      <div class="tool-sub">Hemodynamic assessment & BP emergencies</div>
+    </div>
+    <div>▾</div>
+  </summary>
+
+  <div class="tool-body">
+
+    <!-- INPUTS -->
+    <div class="step">
+      <div class="step-title">Enter Blood Pressure</div>
+
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <input id="sbp" type="number" placeholder="SBP (mmHg)"
+          style="flex:1;padding:12px;border-radius:10px;border:1px solid var(--border);background:#0b0d10;color:#fff">
+        <input id="dbp" type="number" placeholder="DBP (mmHg)"
+          style="flex:1;padding:12px;border-radius:10px;border:1px solid var(--border);background:#0b0d10;color:#fff">
+      </div>
+
+      <button onclick="calcMAP()" style="
+        margin-top:12px;
+        width:100%;
+        padding:12px;
+        border-radius:10px;
+        border:none;
+        background:var(--accent);
+        color:#fff;
+        font-weight:600;
+        cursor:pointer">
+        Calculate MAP
+      </button>
+    </div>
+
+    <!-- RESULT -->
+    <div id="map-result" class="result info hidden"></div>
+
+    <!-- INFORMATION -->
+    <div class="monitor">
+      <b>Normal MAP:</b><br>
+      • 70–100 mmHg (adequate organ perfusion)<br><br>
+
+      <b>Hypertensive Urgency:</b><br>
+      • Reduce BP gradually over 24–48 hours<br>
+      • No immediate MAP target<br>
+      • Avoid rapid reduction<br><br>
+
+      <b>Hypertensive Emergency:</b><br>
+      • Reduce MAP by <b>≤25%</b> in first 1 hour<br>
+      • Then target BP ≈ 160/100 mmHg over next 2–6 hours<br>
+      • Further gradual reduction over 24–48 hours
+    </div>
+
+  </div>
+</details>
+
+<script>
+function calcMAP(){
+  const sbp = parseFloat(document.getElementById('sbp').value);
+  const dbp = parseFloat(document.getElementById('dbp').value);
+  const r = document.getElementById('map-result');
+
+  if(isNaN(sbp) || isNaN(dbp) || sbp <= dbp){
+    r.className = 'result warn';
+    r.textContent = 'Please enter valid SBP and DBP values.';
+    r.classList.remove('hidden');
+    return;
+  }
+
+  const map = Math.round((dbp + (sbp - dbp)/3)*10)/10;
+
+  r.className = 'result success';
+  r.innerHTML = `Calculated MAP: <b>${map} mmHg</b>`;
+  r.classList.remove('hidden');
+}
+</script>
+
+<!-- ================= LDL CALCULATOR ================= -->
+<details class="tool" data-system="cardio">
+  <summary>
+    <div>
+      <div class="tool-title">LDL Cholesterol Calculator</div>
+      <div class="tool-sub">When to start Statins? Lipid Management tool</div>
+    </div>
+    <div>▾</div>
+  </summary>
+
+  <div class="tool-body">
+
+    <div id="ldl-placeholder">
+      <button onclick="loadLDL(this)" class="primary-btn">
+        Load LDL Calculator
+      </button>
+    </div>
+
+  </div>
+</details>
+
+<script>
+function loadLDL(btn){
+  const container = btn.parentElement;
+
+  container.innerHTML = `
+    <div style="
+      width:100%;
+      height:520px;
+      border:1px solid #262a30;
+      border-radius:12px;
+      overflow:hidden;
+      background:#0f1113;
+    ">
+      <iframe
+        src="https://drmjp93-ldlcal.netlify.app"
+        style="width:100%;height:100%;border:0;"
+        loading="lazy"
+        referrerpolicy="no-referrer">
+      </iframe>
+    </div>
+  `;
+}
+</script>
+
+
+<!-- ================= GCS CALCULATOR ================= -->
+  
+<details class="tool" data-system="neuro">
+  <summary>
+    <div>
+      <div class="tool-title">Glasgow Coma Scale (GCS)</div>
+      <div class="tool-sub">Level of consciousness assessment</div>
+    </div>
+    <div>▾</div>
+  </summary>
+
+  <div class="tool-body">
+
+    <!-- EYE -->
+    
+    <div class="step">
+      <div class="step-title">Eye Opening (E)</div>
+      <div class="options">
+        <button onclick="setGCS('eye',4,this)">Spontaneous (4)</button>
+        <button onclick="setGCS('eye',3,this)">To speech (3)</button>
+        <button onclick="setGCS('eye',2,this)">To pain (2)</button>
+        <button onclick="setGCS('eye',1,this)">None (1)</button>
+      </div>
+    </div>
+
+    <!-- VERBAL -->
+    
+    <div class="step">
+      <div class="step-title">Verbal Response (V)</div>
+      <div class="options">
+        <button onclick="setGCS('verbal',5,this)">Oriented (5)</button>
+        <button onclick="setGCS('verbal',4,this)">Confused (4)</button>
+        <button onclick="setGCS('verbal',3,this)">Inappropriate (3)</button>
+        <button onclick="setGCS('verbal',2,this)">Incomprehensible (2)</button>
+        <button onclick="setGCS('verbal',1,this)">None (1)</button>
+      </div>
+    </div>
+
+    <!-- MOTOR -->
+    
+    <div class="step">
+      <div class="step-title">Motor Response (M)</div>
+      <div class="options">
+        <button onclick="setGCS('motor',6,this)">Obeys commands (6)</button>
+        <button onclick="setGCS('motor',5,this)">Localizes pain (5)</button>
+        <button onclick="setGCS('motor',4,this)">Withdraws (4)</button>
+        <button onclick="setGCS('motor',3,this)">Flexion (3)</button>
+        <button onclick="setGCS('motor',2,this)">Extension (2)</button>
+        <button onclick="setGCS('motor',1,this)">None (1)</button>
+      </div>
+    </div>
+
+    <!-- RESULT -->
+    <div id="gcs-result" class="result hidden"></div>
+
+    <!-- INTERPRETATION -->
+    <div id="gcs-info" class="monitor hidden"></div>
+
+  </div>
+</details>
+
+<script>
+const gcsScore = { eye: 0, verbal: 0, motor: 0 };
+
+function setGCS(type, value, btn){
+  btn.parentElement.querySelectorAll('button')
+    .forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+
+  gcsScore[type] = value;
+  calculateGCS();
+}
+
+function calculateGCS(){
+  const total = gcsScore.eye + gcsScore.verbal + gcsScore.motor;
+  if(total === 0) return;
+
+  const result = document.getElementById('gcs-result');
+  const info = document.getElementById('gcs-info');
+
+  result.className = 'result ' + (total <= 8 ? 'warn' : total <= 12 ? 'info' : 'success');
+  result.innerHTML = `<strong>GCS = ${total}</strong>`;
+  result.classList.remove('hidden');
+
+  let interpretation = '';
+  if(total <= 8){
+    interpretation = 'Severe head injury → Consider airway protection & ICU care.';
+  } else if(total <= 12){
+    interpretation = 'Moderate head injury → Close monitoring required.';
+  } else {
+    interpretation = 'Mild head injury → Continue observation.';
+  }
+
+  info.textContent = interpretation;
+  info.classList.remove('hidden');
+}
+</script>
+
+<!-- ================= MENTZER INDEX ================= -->
+  
+<details class="tool" data-system="Hematology">
+  <summary>
+    <div>
+      <div class="tool-title">Mentzer Index</div>
+      <div class="tool-sub">Thalassemia trait vs Iron Deficiency Anemia</div>
+    </div>
+    <div>▾</div>
+  </summary>
+
+  <div class="tool-body">
+
+    <!-- INPUT -->
+    <div class="step">
+      <div class="step-title">Enter CBC Values</div>
+
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <input
+          id="mentzer-mcv"
+          type="number"
+          placeholder="MCV (fL)"
+          style="flex:1;padding:12px;border-radius:10px;
+          border:1px solid var(--border);background:#0b0d10;color:var(--text)"
+        >
+
+        <input
+          id="mentzer-rbc"
+          type="number"
+          step="0.1"
+          placeholder="RBC (million/µL)"
+          style="flex:1;padding:12px;border-radius:10px;
+          border:1px solid var(--border);background:#0b0d10;color:var(--text)"
+        >
+      </div>
+
+      <button
+        onclick="(function(){
+          const mcv = Number(document.getElementById('mentzer-mcv').value);
+          const rbc = Number(document.getElementById('mentzer-rbc').value);
+          const result = document.getElementById('mentzer-result');
+
+          if(!mcv || !rbc || rbc <= 0){
+            result.className = 'result warn';
+            result.textContent = 'Please enter valid MCV and RBC values.';
+            result.classList.remove('hidden');
+            return;
+          }
+
+          const index = (mcv / rbc).toFixed(1);
+
+          if(index < 13){
+            result.className = 'result success';
+            result.innerHTML =
+              '<strong>Mentzer Index = ' + index +
+              '</strong><br>Suggestive of <b>Thalassemia trait</b>';
+          } else {
+            result.className = 'result warn';
+            result.innerHTML =
+              '<strong>Mentzer Index = ' + index +
+              '</strong><br>Suggestive of <b>Iron Deficiency Anemia</b>';
+          }
+
+          result.classList.remove('hidden');
+        })()"
+        style="
+          margin-top:14px;
+          width:100%;
+          padding:12px;
+          border-radius:10px;
+          border:none;
+          background:var(--accent);
+          color:#fff;
+          font-weight:700;
+          cursor:pointer
+        ">
+        Calculate Mentzer Index
+      </button>
+    </div>
+
+    <!-- RESULT -->
+    <div id="mentzer-result" class="result hidden"></div>
+
+    <!-- INTERPRETATION -->
+    <div class="monitor">
+      <b>Formula:</b> MCV ÷ RBC count<br><br>
+
+      <b>&lt; 13</b> → Thalassemia trait likely<br>
+      <b>&gt; 13</b> → Iron Deficiency Anemia likely<br><br>
+
+      <span style="color:var(--muted);font-size:0.85rem">
+        Screening tool only — confirm with iron studies / Hb electrophoresis
+      </span>
+    </div>
+
+  </div>
+</details>
+
+
+
+<!-- ================= OXYGEN CYLINDER DURATION ================= -->
+  
+<details class="tool" data-system="icu">
+  <summary>
+    <div>
+      <div class="tool-title">Oxygen Cylinder Duration</div>
+      <div class="tool-sub">Estimate remaining oxygen time at given flow rate</div>
+    </div>
+    <div>▾</div>
+  </summary>
+
+  <div class="tool-body">
+
+    <!-- INPUTS -->
+    <div class="step">
+      <div class="step-title">Cylinder details</div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <select id="o2-cylinder"
+          style="padding:12px;border-radius:10px;border:1px solid var(--border);
+                 background:#0b0d10;color:var(--text)">
+          <option value="">Select cylinder type</option>
+          <option value="7">B cylinder (≈7 L)</option>
+          <option value="10">C cylinder (≈10 L)</option>
+          <option value="46.7">D cylinder (≈46.7 L)</option>
+          <option value="28">E cylinder (≈28 L)</option>
+          <option value="700">Jumbo / Manifold</option>
+        </select>
+
+        <input id="o2-pressure" type="number"
+          placeholder="Current pressure (bar / kg/cm²)"
+          style="padding:12px;border-radius:10px;border:1px solid var(--border);
+                 background:#0b0d10;color:var(--text)">
+      </div>
+
+      <input id="o2-flow" type="number" step="0.1"
+        placeholder="Oxygen flow (L/min)"
+        style="margin-top:12px;width:100%;padding:12px;
+               border-radius:10px;border:1px solid var(--border);
+               background:#0b0d10;color:var(--text)">
+
+      <button onclick="calcO2Time()" style="
+        margin-top:14px;
+        width:100%;
+        padding:12px;
+        border-radius:10px;
+        border:none;
+        background:var(--accent);
+        color:#fff;
+        font-weight:700;
+        cursor:pointer">
+        Calculate Duration
+      </button>
+    </div>
+
+    <!-- RESULT -->
+    <div id="o2-result" class="result hidden"></div>
+
+    <!-- INFO CARD -->
+    <div class="monitor">
+      <b>Pressure unit instructions:</b><br>
+      • <b>DO NOT enter PSI</b><br>
+      • Enter pressure in <b>bar or kg/cm² only</b><br>
+      • 1 bar ≈ 1 kg/cm² (≈2% difference, clinically acceptable)<br><br>
+
+      <b>How to identify cylinder type:</b><br>
+      • Printed / engraved on cylinder body or neck<br>
+      • Supplier label or color code (varies)<br><br>
+
+      <b>Clinical notes:</b><br>
+      • Calculation is <b>approximate</b><br>
+      • Humidifier, leaks, NRBM/HFNC reduce duration<br>
+      • <b>20 bar kept as safety reserve</b><br>
+      • Do not run cylinder to zero
+    </div>
+
+  </div>
+</details>
+
+<script>
+function calcO2Time(){
+  const waterCap = Number(document.getElementById('o2-cylinder').value);
+  const pressure = Number(document.getElementById('o2-pressure').value);
+  const flow = Number(document.getElementById('o2-flow').value);
+  const res = document.getElementById('o2-result');
+
+  if(!waterCap || !pressure || !flow || flow <= 0){
+    res.className = 'result warn';
+    res.textContent = 'Please select cylinder type and enter valid pressure and flow.';
+    res.classList.remove('hidden');
+    return;
+  }
+
+  const reserve = 20; // bar
+  const usablePressure = pressure - reserve;
+
+  if(usablePressure <= 0){
+    res.className = 'result warn';
+    res.textContent = 'Pressure too low after safety reserve.';
+    res.classList.remove('hidden');
+    return;
+  }
+
+  const totalLiters = waterCap * usablePressure;
+  const totalMinutes = totalLiters / flow;
+
+  const hrs = Math.floor(totalMinutes / 60);
+  const mins = Math.round(totalMinutes % 60);
+
+  res.className = 'result success';
+  res.innerHTML = `
+    Remaining oxygen time ≈ <b>${hrs} hr ${mins} min</b><br>
+    <span style="font-size:0.85rem">
+      (Usable pressure: ${usablePressure} bar · Flow: ${flow} L/min)
+    </span>
+  `;
+  res.classList.remove('hidden');
+}
+</script>
+
+  
+<!-- ================= ABG INTERPRETATION (ADVANCED) ================= -->
+
+  
+<details class="tool" data-system="icu">
+  <summary>
+    <div>
+      <div class="tool-title">ABG Interpretation (Advanced)</div>
+      <div class="tool-sub">Primary disorder, compensation & mixed states</div>
+    </div>
+    <div>▾</div>
+  </summary>
+
+  <div class="tool-body">
+
+    <!-- INPUT -->
+    <div class="step">
+      <div class="step-title">Enter ABG values</div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <input id="abg_ph" type="number" step="0.01" placeholder="pH"
+          style="padding:12px;border-radius:10px;border:1px solid var(--border);
+          background:#0b0d10;color:var(--text)">
+
+        <input id="abg_paco2" type="number" step="1" placeholder="PaCO₂ (mmHg)"
+          style="padding:12px;border-radius:10px;border:1px solid var(--border);
+          background:#0b0d10;color:var(--text)">
+
+        <input id="abg_hco3" type="number" step="1" placeholder="HCO₃⁻ (mEq/L)"
+          style="padding:12px;border-radius:10px;border:1px solid var(--border);
+          background:#0b0d10;color:var(--text)">
+
+        <input id="abg_pao2" type="number" step="1" placeholder="PaO₂ (mmHg)"
+          style="padding:12px;border-radius:10px;border:1px solid var(--border);
+          background:#0b0d10;color:var(--text)">
+      </div>
+
+      <button onclick="interpretABGAdvanced()" style="
+        margin-top:14px;
+        width:100%;
+        padding:12px;
+        border-radius:10px;
+        border:none;
+        background:var(--accent);
+        color:#fff;
+        font-weight:700;
+        cursor:pointer">
+        Interpret ABG
+      </button>
+    </div>
+
+    <!-- RESULT -->
+    <div id="abg_result" class="result hidden"></div>
+
+    <!-- INFO -->
+    <div class="monitor">
+      <b>Normal reference:</b><br>
+      • pH: 7.35 – 7.45<br>
+      • PaCO₂: 35 – 45 mmHg<br>
+      • HCO₃⁻: 22 – 26 mEq/L<br><br>
+
+      <b>Note:</b> This advanced tool checks expected compensation to
+      detect mixed acid–base disorders.
+    </div>
+
+  </div>
+</details>
+
+<script>
+function interpretABGAdvanced() {
+
+  const ph = parseFloat(document.getElementById('abg_ph').value);
+  const co2 = parseFloat(document.getElementById('abg_paco2').value);
+  const hco3 = parseFloat(document.getElementById('abg_hco3').value);
+  const o2 = parseFloat(document.getElementById('abg_pao2').value);
+  const res = document.getElementById('abg_result');
+
+  if (isNaN(ph) || isNaN(co2) || isNaN(hco3)) {
+    res.className = 'result warn';
+    res.innerHTML = 'Please enter valid pH, PaCO₂ and HCO₃⁻ values.';
+    res.classList.remove('hidden');
+    return;
+  }
+
+  let acidBase = '';
+  let primary = '';
+  let compensation = '';
+  let mixed = false;
+
+  /* STEP 1: ACIDEMIA / ALKALEMIA */
+  if (ph < 7.35) acidBase = 'Acidemia';
+  else if (ph > 7.45) acidBase = 'Alkalemia';
+  else acidBase = 'Normal pH (suggests full compensation or mixed disorder)';
+
+  /* STEP 2: PRIMARY DISORDER */
+  if (ph < 7.35) {
+    if (co2 > 45) primary = 'Primary Respiratory Acidosis';
+    else if (hco3 < 22) primary = 'Primary Metabolic Acidosis';
+  }
+
+  if (ph > 7.45) {
+    if (co2 < 35) primary = 'Primary Respiratory Alkalosis';
+    else if (hco3 > 26) primary = 'Primary Metabolic Alkalosis';
+  }
+
+  if (acidBase.startsWith('Normal')) {
+    if (co2 > 45 && hco3 > 26)
+      primary = 'Respiratory Acidosis with Metabolic Compensation';
+    else if (co2 < 35 && hco3 < 22)
+      primary = 'Respiratory Alkalosis with Metabolic Compensation';
+    else
+      primary = 'Mixed Acid–Base Disorder';
+  }
+
+  /* STEP 3: EXPECTED COMPENSATION */
+  if (primary.includes('Metabolic Acidosis')) {
+    const expectedCO2 = (1.5 * hco3) + 8;
+    if (co2 < expectedCO2 - 2 || co2 > expectedCO2 + 2) mixed = true;
+    compensation = `Expected PaCO₂ ≈ ${expectedCO2.toFixed(1)} mmHg (Winter’s formula)`;
+  }
+
+  if (primary.includes('Metabolic Alkalosis')) {
+    const expectedCO2 = 0.7 * hco3 + 20;
+    if (co2 < expectedCO2 - 5 || co2 > expectedCO2 + 5) mixed = true;
+    compensation = `Expected PaCO₂ ≈ ${expectedCO2.toFixed(1)} mmHg`;
+  }
+
+  if (primary.includes('Respiratory Acidosis')) {
+    const expectedHCO3 = hco3 > 26 ? 'Chronic pattern likely' : 'Acute pattern likely';
+    compensation = expectedHCO3;
+  }
+
+  if (primary.includes('Respiratory Alkalosis')) {
+    const expectedHCO3 = hco3 < 22 ? 'Chronic pattern likely' : 'Acute pattern likely';
+    compensation = expectedHCO3;
+  }
+
+  /* STEP 4: OXYGENATION */
+  let oxygenation = '';
+  if (!isNaN(o2)) {
+    if (o2 >= 80) oxygenation = 'Normal oxygenation';
+    else if (o2 >= 60) oxygenation = 'Mild hypoxemia';
+    else oxygenation = 'Severe hypoxemia';
+  }
+
+  /* OUTPUT */
+  res.className = 'result success';
+  res.innerHTML = `
+    <b>Acid–base status:</b> ${acidBase}<br><br>
+    <b>Primary disorder:</b> ${primary}<br><br>
+    <b>Compensation:</b> ${compensation}<br>
+    ${mixed ? '<br><b>⚠ Mixed acid–base disorder suspected</b>' : ''}<br>
+    ${oxygenation ? `<br><b>Oxygenation:</b> ${oxygenation}` : ''}
+  `;
+  res.classList.remove('hidden');
+}
+</script>
+
+<!-- ================= CHA₂DS₂-VASc SCORE ================= -->
+
+<details class="tool" data-system="cardio">
+  <summary>
+    <div>
+      <div class="tool-title">CHA₂DS₂-VASc Score</div>
+      <div class="tool-sub">Stroke risk & anticoagulation in Atrial Fibrillation</div>
+    </div>
+    <div>▾</div>
+  </summary>
+
+  <div class="tool-body">
+
+    <!-- SEX -->
+    <div class="step">
+      <div class="step-title">Sex</div>
+      <div class="cha-options" data-group="sex">
+        <button class="cha-btn" data-value="0">Male</button>
+        <button class="cha-btn" data-value="1">Female</button>
+      </div>
+    </div>
+
+    <!-- RISK FACTORS -->
+    <div class="step">
+      <div class="step-title">Risk factors</div>
+      <div class="cha-options">
+        <button class="cha-btn" data-value="1">Heart failure</button>
+        <button class="cha-btn" data-value="1">Hypertension</button>
+        <button class="cha-btn" data-value="1">Diabetes</button>
+        <button class="cha-btn" data-value="1">Vascular disease</button>
+      </div>
+    </div>
+
+    <!-- AGE -->
+    <div class="step">
+      <div class="step-title">Age</div>
+      <div class="cha-options" data-group="age">
+        <button class="cha-btn" data-value="0">&lt; 65 years</button>
+        <button class="cha-btn" data-value="1">65–74 years</button>
+        <button class="cha-btn" data-value="2">≥ 75 years</button>
+      </div>
+    </div>
+
+    <!-- STROKE -->
+    <div class="step">
+      <div class="step-title">Stroke / TIA / Thromboembolism</div>
+      <div class="cha-options" data-group="stroke">
+        <button class="cha-btn" data-value="2">Present</button>
+        <button class="cha-btn selected" data-value="0">Absent</button>
+      </div>
+    </div>
+
+    <!-- RESULT -->
+    <div id="chaResult" class="result success">
+      CHA₂DS₂-VASc Score = 0<br>
+      Low risk. No anticoagulation required.
+    </div>
+
+  </div>
+</details>
+
+<script>
+  
+/* ================= CHA₂DS₂-VASc LOGIC ================= */
+
+const chaButtons = document.querySelectorAll('.cha-btn');
+
+chaButtons.forEach(btn => {
+  btn.addEventListener('click', () => {
+
+    const group = btn.parentElement.dataset.group;
+
+    // SINGLE-SELECT GROUPS (Sex, Age, Stroke)
+    if (group) {
+      btn.parentElement.querySelectorAll('.cha-btn')
+        .forEach(b => b.classList.remove('selected'));
+      btn.classList.add('selected');
+    }
+    // MULTI-SELECT GROUP (Risk factors)
+    else {
+      btn.classList.toggle('selected');
+    }
+
+    calculateCHA();
+  });
+});
+
+function calculateCHA(){
+  let score = 0;
+  let isFemale = false;
+
+  document.querySelectorAll('.cha-btn.selected').forEach(b => {
+    const val = Number(b.dataset.value);
+    score += val;
+
+    if (
+      b.parentElement.dataset.group === 'sex' &&
+      val === 1
+    ) {
+      isFemale = true;
+    }
+  });
+
+  const r = document.getElementById('chaResult');
+  let msg = '';
+  let cls = 'success';
+
+  /*
+    GUIDELINE-CORRECT INTERPRETATION
+
+    Male:
+      0 → No Rx
+      1 → Consider
+      ≥2 → Start
+
+    Female:
+      1 → No Rx (sex only)
+      2 → Consider
+      ≥3 → Start
+  */
+
+  if (
+    (!isFemale && score === 0) ||
+    (isFemale && score === 1)
+  ) {
+    msg = 'Low risk. No anticoagulation required.';
+    cls = 'success';
+
+  } else if (
+    (!isFemale && score === 1) ||
+    (isFemale && score === 2)
+  ) {
+    msg = 'Moderate risk. Consider anticoagulation.';
+    cls = 'warn';
+
+  } else {
+    msg = 'High risk. Strong indication to START anticoagulation.';
+    cls = 'warn';
+  }
+
+  r.className = 'result ' + cls;
+  r.innerHTML = `CHA₂DS₂-VASc Score = <b>${score}</b><br>${msg}`;
+}
+</script>
+
+
+<!-- ================= HAS-BLED SCORE ================= -->
+  
+<details class="tool" data-system="cardio">
+  <summary>
+    <div>
+      <div class="tool-title">HAS-BLED Score</div>
+      <div class="tool-sub">Bleeding risk assessment in AF</div>
+    </div>
+    <div>▾</div>
+  </summary>
+
+  <div class="tool-body">
+
+    <div class="step">
+      <div class="step-title">Select bleeding risk factors</div>
+
+      <div class="options" style="flex-wrap:wrap">
+        <button onclick="toggleHAS(this)">Hypertension</button>
+        <button onclick="toggleHAS(this)">Abnormal renal function</button>
+        <button onclick="toggleHAS(this)">Abnormal liver function</button>
+        <button onclick="toggleHAS(this)">Stroke history</button>
+        <button onclick="toggleHAS(this)">Bleeding history</button>
+        <button onclick="toggleHAS(this)">Labile INR</button>
+        <button onclick="toggleHAS(this)">Elderly (>65 years)</button>
+        <button onclick="toggleHAS(this)">Drugs / Alcohol</button>
+      </div>
+
+      <button onclick="calcHASBLED()" style="
+        margin-top:14px;width:100%;
+        padding:12px;border-radius:10px;
+        background:var(--accent);color:#fff;
+        border:none;font-weight:700">
+        Calculate HAS-BLED
+      </button>
+    </div>
+
+    <div id="hasbled-result" class="result hidden"></div>
+
+    <div class="monitor">
+      <b>Important:</b><br>
+      • Score ≥3 = High bleeding risk<br>
+      • <b>NOT a reason to stop anticoagulation</b><br>
+      • Correct reversible risk factors and monitor closely
+    </div>
+
+  </div>
+</details>
+
+<script>
+let hasScore = 0;
+
+function toggleHAS(btn){
+  if(btn.classList.contains('selected')){
+    btn.classList.remove('selected');
+    hasScore -= 1;
+  } else {
+    btn.classList.add('selected');
+    hasScore += 1;
+  }
+}
+
+function calcHASBLED(){
+  const r = document.getElementById('hasbled-result');
+  const msg = hasScore >= 3
+    ? 'High bleeding risk — correct risk factors & close follow-up.'
+    : 'Acceptable bleeding risk.';
+
+  r.className = hasScore >= 3 ? 'result warn' : 'result success';
+  r.innerHTML = `<b>HAS-BLED Score = ${hasScore}</b><br>${msg}`;
+  r.classList.remove('hidden');
+}
+</script>
+
+
+<!-- ================= EMERGENCY DRUGS (ALL-IN-ONE) ================= -->
+  
+<style>
+  
+/* ===== Emergency Drugs ===== */
+  
+.em-card{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:16px;
+  padding:14px;
+  margin-top:12px;
+}
+
+/* Category card */
+.em-category{
+  background:#0b0d10;
+  border:1px solid var(--border);
+  border-radius:14px;
+  margin-bottom:12px;
+  overflow:hidden;
+}
+
+.em-category summary{
+  list-style:none;
+  cursor:pointer;
+  padding:14px 16px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
+.em-category summary::-webkit-details-marker{display:none}
+
+.em-cat-title{
+  font-weight:600;
+  font-size:0.95rem;
+}
+
+.em-arrow{
+  opacity:0.6;
+  transition:transform .25s ease;
+}
+
+details[open] .em-arrow{
+  transform:rotate(180deg);
+  opacity:1;
+}
+
+/* Drugs list */
+.em-body{
+  padding:8px 12px 12px;
+  border-top:1px solid var(--border);
+}
+
+.em-drug{
+  display:flex;
+  justify-content:space-between;
+  gap:12px;
+  padding:8px 4px;
+  font-size:0.9rem;
+  border-bottom:1px dashed var(--border);
+}
+
+.em-drug:last-child{border-bottom:none}
+
+.em-drug-name{
+  font-weight:600;
+  color:var(--text);
+}
+
+.em-drug-dose{
+  color:var(--muted);
+  white-space:nowrap;
+  text-align:right;
+}
+</style>
+
+<details class="tool pinned" data-system="icu">
+  <summary>
+    <div>
+      <div class="tool-title">Emergency Drugs (MICU / ICCU)</div>
+      <div class="tool-sub">Commonly used emergency medications with standard doses</div>
+    </div>
+    <div>▾</div>
+  </summary>
+
+  <div class="tool-body">
+    <div class="em-card">
+
+      <!-- Vasopressors -->
+      <details class="em-category">
+        <summary>
+          <span class="em-cat-title">Vasopressors</span>
+          <span class="em-arrow">▾</span>
+        </summary>
+        <div class="em-body">
+          <div class="em-drug"><span class="em-drug-name">Adrenaline</span><span class="em-drug-dose">0.05–0.5 µg/kg/min IV</span></div>
+          <div class="em-drug"><span class="em-drug-name">Dopamine</span><span class="em-drug-dose">5–20 µg/kg/min IV</span></div>
+          <div class="em-drug"><span class="em-drug-name">Noradrenaline</span><span class="em-drug-dose">0.05–0.5 µg/kg/min IV</span></div>
+          <div class="em-drug"><span class="em-drug-name">Phenylephrine</span><span class="em-drug-dose">0.5–5 µg/kg/min IV</span></div>
+          <div class="em-drug"><span class="em-drug-name">Vasopressin</span><span class="em-drug-dose">0.01–0.04 units/min IV</span></div>
+        </div>
+      </details>
+
+      <!-- Antiarrhythmics -->
+      <details class="em-category">
+        <summary>
+          <span class="em-cat-title">Antiarrhythmics</span>
+          <span class="em-arrow">▾</span>
+        </summary>
+        <div class="em-body">
+          <div class="em-drug"><span class="em-drug-name">Adenosine</span><span class="em-drug-dose">6 mg IV → 12 mg</span></div>
+          <div class="em-drug"><span class="em-drug-name">Amiodarone</span><span class="em-drug-dose">150 mg IV over 10 min</span></div>
+          <div class="em-drug"><span class="em-drug-name">Lidocaine</span><span class="em-drug-dose">1–1.5 mg/kg IV</span></div>
+          <div class="em-drug"><span class="em-drug-name">Magnesium sulfate</span><span class="em-drug-dose">2 g IV over 10–15 min</span></div>
+          <div class="em-drug"><span class="em-drug-name">Metoprolol</span><span class="em-drug-dose">5 mg IV slow (×3)</span></div>
+        </div>
+      </details>
+
+      <!-- Sedatives / Analgesics -->
+      <details class="em-category">
+        <summary>
+          <span class="em-cat-title">Sedatives / Analgesics</span>
+          <span class="em-arrow">▾</span>
+        </summary>
+        <div class="em-body">
+          <div class="em-drug"><span class="em-drug-name">Dexmedetomidine</span><span class="em-drug-dose">0.2–0.7 µg/kg/hr IV</span></div>
+          <div class="em-drug"><span class="em-drug-name">Fentanyl</span><span class="em-drug-dose">1–2 µg/kg IV</span></div>
+          <div class="em-drug"><span class="em-drug-name">Midazolam</span><span class="em-drug-dose">0.05–0.1 mg/kg IV</span></div>
+          <div class="em-drug"><span class="em-drug-name">Morphine</span><span class="em-drug-dose">2–4 mg IV slow</span></div>
+          <div class="em-drug"><span class="em-drug-name">Propofol</span><span class="em-drug-dose">5–50 µg/kg/min IV</span></div>
+        </div>
+      </details>
+
+      <!-- Electrolytes -->
+      <details class="em-category">
+        <summary>
+          <span class="em-cat-title">Electrolytes / Metabolic</span>
+          <span class="em-arrow">▾</span>
+        </summary>
+        <div class="em-body">
+          <div class="em-drug"><span class="em-drug-name">Calcium gluconate</span><span class="em-drug-dose">10 mL of 10% IV</span></div>
+          <div class="em-drug"><span class="em-drug-name">Dextrose 25%</span><span class="em-drug-dose">100–200 mL IV</span></div>
+          <div class="em-drug"><span class="em-drug-name">Potassium chloride</span><span class="em-drug-dose">10–20 mEq/hr IV</span></div>
+          <div class="em-drug"><span class="em-drug-name">Sodium bicarbonate</span><span class="em-drug-dose">50–100 mEq IV</span></div>
+        </div>
+      </details>
+
+      <!-- Anticoagulation -->
+      <details class="em-category">
+        <summary>
+          <span class="em-cat-title">Anticoagulation / Thrombolysis</span>
+          <span class="em-arrow">▾</span>
+        </summary>
+        <div class="em-body">
+          <div class="em-drug"><span class="em-drug-name">Enoxaparin</span><span class="em-drug-dose">1 mg/kg SC 12-hourly</span></div>
+          <div class="em-drug"><span class="em-drug-name">Heparin (UFH)</span><span class="em-drug-dose">80 U/kg bolus → 18 U/kg/hr</span></div>
+          <div class="em-drug"><span class="em-drug-name">Streptokinase</span><span class="em-drug-dose">1.5 MU IV<br> in 100ml NS<br> over 60 min</span></div>
+  <details class="em-category" style="margin-top:6px;">
+  <summary>
+    <span class="em-cat-title">Tenecteplase (TNK)</span>
+    <span class="em-arrow">▾</span>
+  </summary>
+
+  <div class="em-body" style="font-size:0.85rem; color:var(--muted)">
+
+    <div style="margin-bottom:10px;"> 
+      <br>Single IV bolus (no infusion)
+    </div>
+
+    <div><strong>ST-Elevation Myocardial Infarction (ESC 2023)</strong></div>
+    <div>• IV bolus over 5–10 sec</div>
+    <div>• &lt;60 kg → 30 mg (6000 U)</div>
+    <div>• 60–69 kg → 35 mg (7000 U)</div>
+    <div>• 70–79 kg → 40 mg (8000 U)</div>
+    <div>• 80–89 kg → 45 mg (9000 U)</div>
+    <div>• ≥90 kg → 50 mg (10,000 U)</div>
+    <div style="margin-top:4px;">⚠️ Age ≥75 years → <strong>Half dose</strong></div>
+
+    <div style="margin-top:10px;"><strong>Acute Ischemic Stroke (ESO 2023)</strong></div>
+    <div>• 0.25 mg/kg IV bolus</div>
+    <div>• Maximum dose: 25 mg</div>
+
+    <div style="margin-top:10px;"><strong>Pulmonary Thromboembolism</strong></div>
+    <div>• Weight-based dosing (same as STEMI)</div>
+    <div>• ⚠️ Guidelines still prefer <strong>Alteplase</strong></div>
+
+  </div>
+</details>        </div>
+      </details>
+
+    </div>
+  </div>
+</details>
+
+
+<!-- ================= INFUSION RATE CALCULATOR ================= -->
+
+<details class="tool pinned" data-system="icu">
+  <summary>
+    <div>
+      <div class="tool-title">Infusion Rate Calculator</div>
+      <div class="tool-sub">Calculate mL/hr for ICU infusions</div>
+    </div>
+    <div>▾</div>
+  </summary>
+
+  <div class="tool-body">
+
+<button onclick="openDoseModal()" class="ghost-btn">
+  📌 View common ICU infusion doses
+</button>
+
+    <!-- DRUG PREPARATION -->
+    <div class="form-card">
+      <div class="form-section-title">Drug preparation</div>
+
+      <div class="form-group">
+        <span class="form-label">Strength per mL</span>
+        <div class="form-row">
+          <input id="inf-strength" type="number" step="0.01" class="form-input">
+          <select id="inf-unit" class="form-select">
+            <option value="mg">mg/mL</option>
+            <option value="mcg">µg/mL</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-row-2" style="margin-top:12px">
+        <div class="form-group">
+          <span class="form-label">Ampoule volume (mL)</span>
+          <input id="inf-amp-vol" type="number" step="0.1" class="form-input">
+        </div>
+
+        <div class="form-group">
+          <span class="form-label">Total number of ampoules</span>
+          <input id="inf-amp-count" type="number" step="1" class="form-input">
+        </div>
+      </div>
+
+      <div class="form-group" style="margin-top:12px">
+        <span class="form-label">Final dilution volume (mL)</span>
+        <input id="inf-dilution" type="number" step="1" class="form-input">
+      </div>
+    </div>
+
+    <!-- DOSE -->
+    <div class="form-card">
+      <div class="form-section-title">Dose to be administered</div>
+
+      <div class="form-group">
+        <span class="form-label">Prescribed dose</span>
+        <div class="form-row">
+          <input id="inf-dose" type="number" step="0.01" class="form-input">
+          <select id="inf-dose-unit" class="form-select">
+            <option value="mg_hr">mg/hr</option>
+            <option value="mg_kg_hr">mg/kg/hr</option>
+            <option value="mcg_min">µg/min</option>
+            <option value="mcg_kg_min">µg/kg/min</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group" style="margin-top:12px">
+        <span class="form-label">Patient weight (kg)</span>
+        <input id="inf-weight" type="number" step="0.1" class="form-input">
+      </div>
+    </div>
+
+    <!-- ACTION -->
+   
+    <button onclick="calcInfusion()" class="primary-btn">
+      Calculate Infusion Rate
+    </button>
+
+    <!-- RESULT -->
+    <div id="inf-result" class="result hidden"></div>
+
+    <!-- NOTES -->
+    <div class="monitor">
+      <b>Clinical notes:</b><br>
+      • Uses actual ampoule volume × count<br>
+      • Supports mg & µg dosing<br>
+      • Weight mandatory for kg-based dosing<br>
+      • Always double-check vasopressors & insulin
+    </div>
+
+  </div>
+</details>
+
+<script>
+function calcInfusion(){
+  const strength = Number(document.getElementById('inf-strength').value);
+  const unit = document.getElementById('inf-unit').value;
+  const ampVol = Number(document.getElementById('inf-amp-vol').value);
+  const ampCount = Number(document.getElementById('inf-amp-count').value);
+  const dilution = Number(document.getElementById('inf-dilution').value);
+
+  const dose = Number(document.getElementById('inf-dose').value);
+  const doseUnit = document.getElementById('inf-dose-unit').value;
+  const weight = Number(document.getElementById('inf-weight').value);
+
+  const res = document.getElementById('inf-result');
+
+  if(!strength || !ampVol || !ampCount || !dilution || !dose){
+    showError("Please fill all required fields.");
+    return;
+  }
+
+  // Total drug loaded (mg)
+  let totalMg = strength * ampVol * ampCount;
+  if(unit === 'mcg') totalMg /= 1000;
+
+  const concentration = totalMg / dilution; // mg/mL
+  let requiredMgHr = 0;
+
+  if(doseUnit === 'mg_hr'){
+    requiredMgHr = dose;
+  } else if(doseUnit === 'mg_kg_hr'){
+    if(!weight) return showError("Weight required for kg-based dosing.");
+    requiredMgHr = dose * weight;
+  } else if(doseUnit === 'mcg_min'){
+    requiredMgHr = (dose * 60) / 1000;
+  } else if(doseUnit === 'mcg_kg_min'){
+    if(!weight) return showError("Weight required for kg-based dosing.");
+    requiredMgHr = (dose * weight * 60) / 1000;
+  }
+
+  const mlHr = requiredMgHr / concentration;
+
+  res.className = 'result success';
+  res.innerHTML = `
+    <strong>Infusion rate ≈ ${mlHr.toFixed(2)} mL/hr</strong><br><br>
+    Total drug loaded: <b>${totalMg.toFixed(2)} mg</b><br>
+    Final concentration: <b>${concentration.toFixed(4)} mg/mL</b>
+  `;
+  res.classList.remove('hidden');
+
+  function showError(msg){
+    res.className = 'result warn';
+    res.textContent = msg;
+    res.classList.remove('hidden');
+  }
+}
+</script>
+
+  <!-- ================= INSTALL AS APP ================= -->
+
+<details class="tool install-tool">
+  <summary>
+    <div>
+      <div class="tool-title">Install as App</div>
+      <div class="tool-sub">Add Clinical Tools to your home screen</div>
+    </div>
+    <div>▾</div>
+  </summary>
+
+  <div class="tool-body">
+
+    <!-- iOS -->
+    <div id="install-ios" class="install-section hidden">
+      <div class="step-title">iPhone / iPad (Safari)</div>
+      <ol class="install-steps">
+        <li>Tap the <b>Share</b> icon</li>
+        <li>Select <b>Add to Home Screen</b></li>
+        <li>Tap <b>Add</b></li>
+      </ol>
+
+      <div class="install-images">
+        <img src="/i1.jpeg">
+        <img src="/i2.jpeg">
+        <img src="/i3.jpeg">
+        <img src="/i4.jpeg">
+      </div>
+    </div>
+
+    <!-- ANDROID -->
+    <div id="install-android" class="install-section hidden">
+      <div class="step-title">Android (Chrome)</div>
+      <ol class="install-steps">
+        <li>Tap the <b>⋮ menu</b></li>
+        <li>Select <b>Add to Home screen</b></li>
+        <li>Confirm installation</li>
+      </ol>
+
+      <div class="install-images">
+        <img src="/a1.jpeg">
+        <img src="/a2.jpeg">
+        <img src="/a3.jpeg">
+        <img src="/a4.jpeg">
+      </div>
+    </div>
+
+    <!-- DESKTOP -->
+    <div id="install-desktop" class="install-section hidden">
+      <div class="monitor">
+        Open this page on your phone to install it as an app.
+      </div>
+    </div>
+
+  </div>
+</details>
+
+  <script>
+(function () {
+
+  /* ===== HIDE IN PWA ===== */
+  const isPWA =
+    window.matchMedia('(display-mode: standalone)').matches ||
+    window.navigator.standalone === true;
+
+  if (isPWA) {
+    const card = document.querySelector('.install-tool');
+    if (card) card.style.display = 'none';
+    return;
+  }
+
+  /* ===== DEVICE DETECTION ===== */
+  const ua = navigator.userAgent.toLowerCase();
+
+  if (/iphone|ipad|ipod/.test(ua)) {
+    document.getElementById('install-ios')?.classList.remove('hidden');
+  }
+  else if (/android/.test(ua)) {
+    document.getElementById('install-android')?.classList.remove('hidden');
+  }
+  else {
+    document.getElementById('install-desktop')?.classList.remove('hidden');
+  }
+
+})();
+</script>
+
+<!-- ================= IRON REQUIREMENT CALCULATOR ================= -->
+
+<details class="tool" data-system="hematology">
+  <summary>
+    <div>
+      <div class="tool-title">Iron Requirement Calculator (IDA)</div>
+      <div class="tool-sub">Ganzoni formula · Adult & Pediatric</div>
+    </div>
+    <div>▾</div>
+  </summary>
+
+  <div class="tool-body">
+
+    <!-- AGE GROUP -->
+    <div class="step">
+      <div class="step-title">Patient category</div>
+      <div class="options">
+        <button class="selected" onclick="setAgeGroup('adult',this)">Adult</button>
+        <button onclick="setAgeGroup('pediatric',this)">Pediatric</button>
+      </div>
+    </div>
+
+    <!-- SEX (Adults only) -->
+    <div class="step" id="iron-sex-step">
+      <div class="step-title">Sex</div>
+      <div class="options">
+        <button class="selected" onclick="setIronSex('male',this)">Male</button>
+        <button onclick="setIronSex('female',this)">Female</button>
+      </div>
+    </div>
+
+    <!-- INPUTS -->
+    <div class="step">
+      <div class="step-title">Clinical details</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <input id="iron-wt" type="number" placeholder="Weight (kg)">
+        <input id="iron-hb" type="number" step="0.1" placeholder="Current Hb (g/dL)">
+      </div>
+    </div>
+
+    <button class="primary-btn" onclick="calculateIronRequirement()">
+      Calculate Iron Requirement
+    </button>
+
+    <!-- RESULT -->
+    <div id="iron-output" class="result hidden"></div>
+
+    <!-- NOTES -->
+    <div class="monitor">
+      <b>Formula:</b><br>
+      Iron (mg) = Weight × (Target Hb − Actual Hb) × 2.4 + Stores<br><br>
+
+      <b>Assumptions:</b><br>
+      • Adult target Hb: Male 15 · Female 14<br>
+      • Pediatric target Hb: 13<br>
+      • Stores: Adult 500 mg · Pediatric 15 mg/kg (max 500)<br><br>
+
+      <b>Practical caps:</b><br>
+      • Adult: max 1500 mg per course<br>
+      • Pediatric: max 20 mg/kg
+    </div>
+
+  </div>
+</details>
+
+<script>
+let ironAgeGroup = 'adult';
+let ironSex = 'male';
+
+function selectBtn(btn){
+  btn.parentElement.querySelectorAll('button')
+    .forEach(b=>b.classList.remove('selected'));
+  btn.classList.add('selected');
+}
+
+function setAgeGroup(val, btn){
+  ironAgeGroup = val;
+  selectBtn(btn);
+  document.getElementById('iron-sex-step')
+    .classList.toggle('hidden', val === 'pediatric');
+  
+  // Clear result to prevent confusion when switching
+  document.getElementById('iron-output').classList.add('hidden');
+}
+
+function setIronSex(val, btn){
+  ironSex = val;
+  selectBtn(btn);
+  document.getElementById('iron-output').classList.add('hidden');
+}
+
+function calculateIronRequirement(){
+
+  const wt = parseFloat(document.getElementById('iron-wt').value);
+  const hb = parseFloat(document.getElementById('iron-hb').value);
+  const r = document.getElementById('iron-output');
+
+  // Basic Validation
+  if(!wt || !hb || wt <= 0 || hb <= 0){
+    r.className = 'result warn';
+    r.textContent = 'Please enter valid weight and hemoglobin.';
+    r.classList.remove('hidden');
+    return;
+  }
+
+  // 1. Set Targets & Stores
+  let targetHb, stores;
+
+  if(ironAgeGroup === 'adult'){
+    targetHb = ironSex === 'male' ? 15 : 14;
+    stores = 500;
+  } else {
+    // Pediatric: Target Hb 13 as requested
+    targetHb = 13; 
+    // Pediatric stores: 15mg/kg up to max 500mg
+    stores = Math.min(15 * wt, 500); 
+  }
+
+  // 2. Dynamic Check: Is patient actually anemic relative to THEIR target?
+  if(hb >= targetHb){
+    r.className = 'result info';
+    r.innerHTML = `Current Hb (${hb}) is ≥ Target (${targetHb}).<br>Iron replacement likely not indicated.`;
+    r.classList.remove('hidden');
+    return;
+  }
+
+  // 3. Ganzoni Formula
+  // Deficit = Weight x (Target - Actual) x 2.4
+  const deficitIron = wt * (targetHb - hb) * 2.4;
+  let totalIron = deficitIron + stores;
+
+  totalIron = Math.round(totalIron);
+
+  // 4. Safety Warnings (No hard cap on the calculation result)
+  let note = '';
+  
+  if(ironAgeGroup === 'adult'){
+      if(totalIron > 1000) {
+          note = '<br><small>⚠️ Total deficit > 1000 mg. Administer in divided doses (e.g., max 1000mg per sitting).</small>';
+      }
+  } else {
+      // Pediatric safety check
+      const maxSingleDose = Math.round(20 * wt); 
+      if(totalIron > maxSingleDose){
+          note = `<br><small>⚠️ Total requirement exceeds single dose limit.<br>Max single dose for child: approx ${maxSingleDose} mg (20mg/kg).</small>`;
+      }
+  }
+
+  r.className = 'result success';
+  r.innerHTML = `
+    <b>Total Iron Deficit: ${totalIron} mg</b><br>
+    <div style="font-size:0.85rem; margin-top:5px; opacity:0.8">
+      Target Hb: ${targetHb} g/dL • Stores: ${Math.round(stores)} mg
+    </div>
+    ${note}
+  `;
+  r.classList.remove('hidden');
+}
+</script>
+
+
+<details class="tool" data-system="endocrine">
+  <summary>
+    <div>
+      <div class="tool-title">RBS Sliding Scale Insulin (IPD)</div>
+      <div class="tool-sub">
+        6-hourly · Regular Insulin · Adult (0–4–6–8–12–16–20 scale)
+      </div>
+    </div>
+    <div>▾</div>
+  </summary>
+
+  <div class="tool-body">
+
+    <div class="monitor" style="margin-bottom:15px; font-size:0.9em; line-height:1.6em;">
+      <b style="color:var(--accent);">Protocol (Adult IPD · India):</b><br>
+      <div style="display:grid; grid-template-columns: 1fr 1fr; gap:4px; margin-top:4px;">
+        <span>≤ 150</span> <span style="opacity:0.7">0 units</span>
+        <span>151 – 200</span> <b>4 units</b>
+        <span>201 – 250</span> <b>6 units</b>
+        <span>251 – 300</span> <b>8 units</b>
+        <span>301 – 350</span> <b>12 units</b>
+        <span>351 – 400</span> <b>16 units</b>
+        <span>&gt; 400</span> <b>20 units + Call</b>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-title">Enter Random Blood Sugar (mg/dL)</div>
+      <input
+        id="rbsValue"
+        type="number"
+        placeholder="e.g. 268"
+        style="
+          padding:12px;
+          border-radius:10px;
+          border:1px solid var(--border);
+          background:#0b0d10;
+          color:var(--text);
+          width:100%;
+          font-size: 1.1em;
+        "
+        oninput="calculateRBS()"
+      >
+    </div>
+
+    <div id="rbsResult" class="result hidden"></div>
+
+    <div class="monitor">
+      <b>Assumptions:</b><br>
+      • Patient is <b>off OHA</b>, no basal insulin.<br>
+      • <b>CKD excluded</b> (requires dose reduction).<br>
+      • Use <b>Regular insulin (SC)</b>.<br><br>
+
+      <b>Safety:</b><br>
+      • RBS &lt; 70: Stop insulin, treat hypoglycemia.<br>
+      • RBS &gt; 400: Check ketones, evaluate for sepsis/steroid effect.
+    </div>
+
+  </div>
+</details>
+
+<script>
+function calculateRBS(){
+  const rbs = Number(document.getElementById('rbsValue').value);
+  const res = document.getElementById('rbsResult');
+  const inputVal = document.getElementById('rbsValue').value;
+
+  // Clear if empty
+  if(inputVal === ''){
+    res.classList.add('hidden');
+    return;
+  }
+
+  let insulin = 0;
+  let msg = '';
+  let cls = 'success'; 
+
+  // --- LOGIC ---
+
+  // 1. HYPOGLYCEMIA (< 70)
+  if(rbs < 70){
+    cls = 'warn'; 
+    msg = '⚠️ <b>HYPOGLYCEMIA!</b><br>• Do NOT give insulin.<br>• Give 25% Dextrose / Oral carbs immediately.<br>• Recheck RBS in 15 mins.';
+    insulin = 0;
+  }
+  // 2. NORMAL / TARGET (70 - 150)
+  else if(rbs <= 150){
+    cls = 'success';
+    msg = 'Target range. No correction needed.';
+    insulin = 0;
+  }
+  // 3. SLIDING SCALE
+  else if(rbs <= 200){
+    insulin = 4;
+  }
+  else if(rbs <= 250){
+    insulin = 6;
+  }
+  else if(rbs <= 300){
+    insulin = 8;
+  }
+  else if(rbs <= 350){
+    insulin = 12;
+    cls = 'warn'; // Alert color for higher doses
+  }
+  else if(rbs <= 400){
+    insulin = 16;
+    cls = 'warn';
+  }
+  // 4. SEVERE HYPERGLYCEMIA (> 400)
+  else{
+    insulin = 20;
+    cls = 'warn';
+    msg = '⚠️ <b>High Risk</b><br>• Check Urine Ketones.<br>• Inform treating physician.';
+  }
+
+  // RENDER
+  res.className = 'result ' + cls;
+  
+  let outputHtml = `<b>RBS: ${rbs} mg/dL</b><br><br>`;
+  
+  if(insulin > 0){
+    outputHtml += `<strong>Give Regular Insulin: ${insulin} units SC</strong>`;
+  } else if (rbs >= 70) {
+    outputHtml += `<strong>Give Regular Insulin: 0 units</strong>`;
+  }
+
+  if(msg) outputHtml += `<br><br>${msg}`;
+
+  res.innerHTML = outputHtml;
+  res.classList.remove('hidden');
+}
+</script>
+
+<!-- ================= DRUG DIRECTORY ================= -->
+
+<details class="tool" data-system="pharma">
+  <summary>
+    <div>
+      <div class="tool-title">Drug Directory</div>
+      <div class="tool-sub">Search generic / brand · Prices · Strengths</div>
+    </div>
+    <div>▾</div>
+  </summary>
+
+  <div class="tool-body">
+
+    <input
+      id="drugSearch"
+      type="text"
+      placeholder="Search drug name, brand, class…"
+      style="
+        width:100%;
+        padding:14px;
+        border-radius:12px;
+        border:1px solid var(--border);
+        background:#0b0d10;
+        color:var(--text);
+        margin-bottom:14px
+      "
+    >
+
+    <div id="drugResults"></div>
+
+  </div>
+</details>
+
+<script src="/js/drugs.js"></script>
+
+
+  
+<!-- ================= tools block above this ================= -->
+<!-- ================= tools block above this ================= -->
+<!-- ================= tools block above this ================= -->
+<!-- ================= tools block above this ================= -->
+<!-- ================= tools block above this ================= -->
+<!-- ================= tools block above this ================= -->
+<!-- ================= tools block above this ================= -->
+<!-- ================= tools block above this ================= -->
+<!-- ================= tools block above this ================= -->
+<!-- ================= tools block above this ================= -->
+
+</div>
+
+<!-- ================= PREGNANCY ================= -->
+<div id="preg-tools" class="hidden">
+
+<details class="tool" data-system="obstetric">
+<summary>
+  <div>
+    <div class="tool-title">Hepatitis B in Pregnancy</div>
+    <div class="tool-sub">Vertical transmission prevention</div>
+  </div>
+  <div>▾</div>
+</summary>
+
+<div class="tool-body">
+
+<div class="step">
+  <div class="step-title">HBV DNA</div>
+  <div class="options">
+    <button onclick="pregHBV(true)">≥ 200,000 IU/mL</button>
+    <button onclick="pregHBV(false)">&lt; 200,000 IU/mL</button>
+  </div>
+</div>
+
+<div id="preg-result" class="hidden"></div>
+
+</div>
+</details>
+</div>
+
+</main>
+
+<script>
+/* MODE */
+function switchMode(mode,btn){
+  document.querySelectorAll('.mode-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('general-tools').style.display = mode==='general'?'block':'none';
+  document.getElementById('preg-tools').style.display = mode==='preg'?'block':'none';
+  applyFilters();
+}
+
+/* SEARCH + SORT (UNIFIED) */
+const searchInput=document.getElementById('searchInput');
+searchInput.addEventListener('input',applyFilters);
+
+document.querySelectorAll('#global-tabs .tab').forEach(tab=>{
+  tab.onclick=()=>{
+    document.querySelectorAll('#global-tabs .tab').forEach(t=>t.classList.remove('active'));
+    tab.classList.add('active');
+    applyFilters();
+  };
+});
+
+function applyFilters(){
+  const q=searchInput.value.toLowerCase();
+  const filter=document.querySelector('#global-tabs .tab.active').dataset.filter;
+  const container=document.getElementById('preg-tools').style.display==='block'
+    ? document.getElementById('preg-tools')
+    : document.getElementById('general-tools');
+
+  container.querySelectorAll('.tool').forEach(tool=>{
+    const okText=tool.innerText.toLowerCase().includes(q);
+    const okFilter=filter==='all'||tool.dataset.system===filter;
+    tool.style.display=okText&&okFilter?'block':'none';
+  });
+}
+
+/* COMMON */
+function select(btn){
+  btn.parentElement.querySelectorAll('button').forEach(b=>b.classList.remove('selected'));
+  btn.classList.add('selected');
+}
+function show(id){document.getElementById(id).classList.remove('hidden')}
+
+
+
+/* PREGNANCY */
+function pregHBV(high){
+  const r=document.getElementById('preg-result');
+  r.className='result '+(high?'success':'info');
+  r.innerHTML=high
+    ? 'START Tenofovir at 28–32 weeks → Stop 4 weeks postpartum.<br>Infant: HBIG + Vaccine'
+    : 'No maternal antiviral.<br>Infant: HBIG + Vaccine';
+  r.classList.remove('hidden');
+}
+
+/* ================= A–Z SORT (GLOBAL) ================= */
+
+function sortToolsAlphabetically(){
+  const container = document.getElementById('general-tools');
+  if(!container) return;
+
+  const tools = Array.from(container.querySelectorAll('.tool'));
+
+  const pinned = tools.filter(t => t.classList.contains('pinned'));
+  const normal = tools.filter(t => !t.classList.contains('pinned'));
+
+  normal.sort((a,b)=>{
+    const A = a.querySelector('.tool-title')?.innerText.toLowerCase() || '';
+    const B = b.querySelector('.tool-title')?.innerText.toLowerCase() || '';
+    return A.localeCompare(B);
+  });
+
+  [...pinned, ...normal].forEach(t => container.appendChild(t));
+}
+
+document.addEventListener('DOMContentLoaded', sortToolsAlphabetically);
+
+</script>
+
+<!-- ================= ICU INFUSION DOSE MODAL ================= -->
+  
+<div id="doseModal" class="dose-modal hidden">
+
+  <div class="dose-card">
+    <div class="dose-header">
+      <span>Common ICU Infusion Doses</span>
+      <button onclick="closeDoseModal()">✕</button>
+    </div>
+
+    <div class="dose-body">
+
+      <div class="dose-section">
+        <h4>Vasopressors</h4>
+        <div class="dose-row">Noradrenaline <span>0.05–0.5 µg/kg/min</span></div>
+        <div class="dose-row">Adrenaline <span>0.05–0.5 µg/kg/min</span></div>
+        <div class="dose-row">Dopamine <span>5–20 µg/kg/min</span></div>
+        <div class="dose-row">Phenylephrine <span>0.5–5 µg/kg/min</span></div>
+        <div class="dose-row">Vasopressin <span>0.01–0.04 units/min</span></div>
+      </div>
+
+      <div class="dose-section">
+        <h4>Sedation / Analgesia</h4>
+        <div class="dose-row">Propofol <span>5–50 µg/kg/min</span></div>
+        <div class="dose-row">Dexmedetomidine <span>0.2–0.7 µg/kg/hr</span></div>
+        <div class="dose-row">Midazolam <span>0.02–0.1 mg/kg/hr</span></div>
+        <div class="dose-row">Fentanyl <span>1–2 µg/kg/hr</span></div>
+      </div>
+
+      <div class="dose-section">
+        <h4>Others</h4>
+        <div class="dose-row">Insulin infusion <span>0.05–0.1 units/kg/hr</span></div>
+        <div class="dose-row">Amiodarone <span>0.5–1 mg/min (post bolus)</span></div>
+        <div class="dose-row">Heparin infusion <span>12–18 units/kg/hr</span></div>
+      </div>
+
+      <div class="dose-note">
+        Reference ranges only. Always titrate to MAP, HR, lactate & protocol.
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+function openDoseModal(){
+  document.getElementById('doseModal').classList.remove('hidden');
+}
+function closeDoseModal(){
+  document.getElementById('doseModal').classList.add('hidden');
+}
+</script>
+
+<script>
+setTimeout(() => {
+  const splash = document.getElementById('splash');
+  if (splash) splash.style.display = 'none';
+}, 1200); // 1.2 seconds
+</script>
+
+<script>
+(async function () {
+  const el = document.getElementById("visitCount");
+  if (!el) return;
+
+  try {
+    const resp = await fetch(
+      "https://api.counterapi.dev/v1/drmjp93in/clinical-tools-visits/up"
+    );
+    const j = await resp.json();
+
+    if (j && j.count !== undefined) {
+      let count = j.count;
+
+      // Optional rounding (recommended)
+      if (count >= 1000) {
+        count = Math.floor(count / 100) * 100 + "+";
+      }
+
+      el.textContent = count;
+    }
+  } catch (e) {
+    el.textContent = "—";
+  }
+})();
+</script>
+<footer style="
+  margin-top:40px;
+  text-align:center;
+  font-size:0.85rem;
+  color:var(--muted);
+">
+
+  <!-- OVERLAY WRAPPER -->
+  <div style="
+    background: rgba(0,0,0,0.10);      
+    padding:18px 12px;
+    border-radius:16px;
+    max-width:900px;
+    margin:0 auto;
+
+    /* OPTIONAL PREMIUM LOOK */
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+  ">
+
+    <div style="margin-bottom:8px;">
+      Compiled by <b style="color:var(--text)">drmjp93</b> with 🩵
+    </div>
+
+    <div style="max-width:820px;margin:0 auto;line-height:1.5;">
+      <b>Disclaimer:</b> These clinical tools are intended for <b>academic and educational purposes only</b>. They are designed to support clinical reasoning but
+      <b>do not replace professional medical judgment</b>, patient examination, or individualized decision-making. Always correlate with clinical context and current guidelines.
+    </div>
+
+  </div>
+
+</footer>
+  
+</body>
+</html>
