@@ -1,0 +1,18 @@
+[
+  {
+    "generic": "Paracetamol",
+    "class": "Analgesic",
+    "brands": [
+      { "name": "Calpol 500", "price": 25 },
+      { "name": "Crocin 650", "price": 32 }
+    ]
+  },
+  {
+    "generic": "Metformin",
+    "class": "Antidiabetic",
+    "brands": [
+      { "name": "Glyciphage 500", "price": 42 },
+      { "name": "Metformin 500", "price": 12 }
+    ]
+  }
+]
