@@ -17,10 +17,9 @@ fetch('/data/drugs.json')
     console.error('Drug JSON error:', err);
   });
 
-/* ================= SEARCH ================= */
+/* ================= SEARCH LOGIC ================= */
 
 document.addEventListener('DOMContentLoaded', () => {
-
   const search = document.getElementById('drugSearch');
   const results = document.getElementById('drugResults');
 
@@ -33,24 +32,31 @@ document.addEventListener('DOMContentLoaded', () => {
     const q = search.value.toLowerCase().trim();
     results.innerHTML = '';
 
-    if (!q) return;
+    if (q.length < 2) return; // prevents junk results
 
-    /* ---------- RANKED SEARCH ---------- */
+    /* ===== SCORE + FILTER ===== */
     const matched = drugs
       .map(d => {
         let score = 0;
 
-        if ((d.Molecule || '').toLowerCase().startsWith(q)) score += 5;
-        if ((d.Molecule || '').toLowerCase().includes(q)) score += 3;
+        const molecule = (d.Active_Content || '').toLowerCase();
+        const category = (d.Category || '').toLowerCase();
+        const ethicalBrand = (d.Ethical_Brand || '').toLowerCase();
+        const genericBrand = (d.Generic_Brand || '').toLowerCase();
 
-        if ((d.Category || '').toLowerCase().includes(q)) score += 1;
+        /* 1️⃣ MOLECULE MATCH (HIGHEST PRIORITY) */
+        if (molecule.startsWith(q)) score += 12;
+        else if (molecule.includes(q)) score += 8;
 
-        if (Array.isArray(d.Brands)) {
-          d.Brands.forEach(b => {
-            if ((b.Name || '').toLowerCase().startsWith(q)) score += 6;
-            else if ((b.Name || '').toLowerCase().includes(q)) score += 4;
-          });
-        }
+        /* 2️⃣ BRAND MATCH */
+        if (ethicalBrand.startsWith(q)) score += 10;
+        else if (ethicalBrand.includes(q)) score += 6;
+
+        if (genericBrand.startsWith(q)) score += 9;
+        else if (genericBrand.includes(q)) score += 5;
+
+        /* 3️⃣ CATEGORY — WEAK, ONLY IF QUERY LONG */
+        if (q.length >= 4 && category.includes(q)) score += 1;
 
         return score > 0 ? { ...d, _score: score } : null;
       })
@@ -63,53 +69,43 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
-    /* ---------- RENDER ---------- */
-
+    /* ===== RENDER RESULTS ===== */
     matched.forEach(d => {
-
       const card = document.createElement('div');
       card.className = 'tool';
-      card.style.padding = '10px 12px';
+      card.style.padding = '12px';
       card.style.marginBottom = '10px';
-
-      /* ---- Brand list (compact) ---- */
-      let brandHtml = '';
-
-      if (Array.isArray(d.Brands)) {
-        brandHtml = d.Brands.map(b => `
-          <div style="
-            display:flex;
-            justify-content:space-between;
-            font-size:0.78rem;
-            line-height:1.25;
-            margin-top:2px
-          ">
-            <span><b>${b.Name || ''}</b></span>
-            <span style="color:var(--muted)">
-              ${b.Price ? '₹' + b.Price : ''}
-            </span>
-          </div>
-        `).join('');
-      }
 
       card.innerHTML = `
         <div style="font-weight:700;font-size:0.95rem">
-          ${d.Molecule || ''}
+          ${d.Active_Content}
         </div>
 
-        <div style="font-size:0.7rem;color:var(--muted)">
-          ${d.Category || ''}
+        <div style="font-size:0.75rem;color:var(--muted)">
+          ${d.Category}
         </div>
 
-        ${d.Max_Dose ? `
-          <div style="font-size:0.7rem;color:#93c5fd">
-            Max: ${d.Max_Dose}
-          </div>
-        ` : ''}
-
-        <div style="margin-top:6px">
-          ${brandHtml}
+        <div style="margin-top:6px;font-size:0.85rem">
+          <b>Ethical:</b> ${d.Ethical_Brand || '-'}
+          <span style="color:var(--muted)">
+            · ${d.Ethical_Mfg || '-'} · ₹${d.Ethical_Price || '-'}
+          </span>
         </div>
+
+        <div style="margin-top:4px;font-size:0.85rem">
+          <b>Generic:</b> ${d.Generic_Brand || '-'}
+          <span style="color:var(--muted)">
+            · ${d.Generic_Mfg || '-'} · ₹${d.Generic_Price || '-'}
+          </span>
+        </div>
+
+        ${
+          d.Max_Dose
+            ? `<div style="margin-top:4px;font-size:0.75rem;color:var(--muted)">
+                Max dose: ${d.Max_Dose}
+               </div>`
+            : ''
+        }
       `;
 
       results.appendChild(card);
