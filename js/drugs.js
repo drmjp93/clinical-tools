@@ -2,7 +2,7 @@ console.log('Drug directory JS loaded');
 
 let drugs = [];
 
-/* ================= LOAD DRUG DATA ================= */
+/* ================= LOAD JSON ================= */
 
 fetch('/data/drugs.json')
   .then(res => {
@@ -17,7 +17,7 @@ fetch('/data/drugs.json')
     console.error('Drug JSON error:', err);
   });
 
-/* ================= SEARCH LOGIC ================= */
+/* ================= SEARCH ================= */
 
 document.addEventListener('DOMContentLoaded', () => {
 
@@ -35,29 +35,22 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (!q) return;
 
-    /* ===== RANKED MATCHING ===== */
-
+    /* ---------- RANKED SEARCH ---------- */
     const matched = drugs
       .map(d => {
-
         let score = 0;
 
-        const active   = (d.Active_Content || '').toLowerCase();
-        const category = (d.Category || '').toLowerCase();
-        const ethical  = (d.Ethical_Brand || '').toLowerCase();
-        const generic  = (d.Generic_Brand || '').toLowerCase();
+        if ((d.Molecule || '').toLowerCase().startsWith(q)) score += 5;
+        if ((d.Molecule || '').toLowerCase().includes(q)) score += 3;
 
-        // 1️⃣ Brand name match (HIGHEST priority)
-        if (ethical.includes(q) || generic.includes(q)) score += 100;
+        if ((d.Category || '').toLowerCase().includes(q)) score += 1;
 
-        // 2️⃣ Exact active content match
-        if (active === q) score += 80;
-
-        // 3️⃣ Partial active content match
-        if (active.includes(q)) score += 50;
-
-        // 4️⃣ Category match
-        if (category.includes(q)) score += 10;
+        if (Array.isArray(d.Brands)) {
+          d.Brands.forEach(b => {
+            if ((b.Name || '').toLowerCase().startsWith(q)) score += 6;
+            else if ((b.Name || '').toLowerCase().includes(q)) score += 4;
+          });
+        }
 
         return score > 0 ? { ...d, _score: score } : null;
       })
@@ -70,36 +63,52 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
-    /* ===== RENDER RESULTS ===== */
+    /* ---------- RENDER ---------- */
 
     matched.forEach(d => {
 
       const card = document.createElement('div');
       card.className = 'tool';
-      card.style.padding = '14px';
-      card.style.marginBottom = '12px';
+      card.style.padding = '10px 12px';
+      card.style.marginBottom = '10px';
+
+      /* ---- Brand list (compact) ---- */
+      let brandHtml = '';
+
+      if (Array.isArray(d.Brands)) {
+        brandHtml = d.Brands.map(b => `
+          <div style="
+            display:flex;
+            justify-content:space-between;
+            font-size:0.78rem;
+            line-height:1.25;
+            margin-top:2px
+          ">
+            <span><b>${b.Name || ''}</b></span>
+            <span style="color:var(--muted)">
+              ${b.Price ? '₹' + b.Price : ''}
+            </span>
+          </div>
+        `).join('');
+      }
 
       card.innerHTML = `
-        <div style="font-weight:700">
-          ${d.Active_Content}
+        <div style="font-weight:700;font-size:0.95rem">
+          ${d.Molecule || ''}
         </div>
 
-        <div style="font-size:0.85rem;color:var(--muted)">
-          ${d.Category}
+        <div style="font-size:0.7rem;color:var(--muted)">
+          ${d.Category || ''}
         </div>
 
-        <div style="margin-top:8px;font-size:0.9rem">
-          <b>Ethical:</b> ${d.Ethical_Brand}<br>
-          <span style="color:var(--muted)">
-            ${d.Ethical_Mfg || ''} · ₹${d.Ethical_Price || '-'}
-          </span>
-        </div>
+        ${d.Max_Dose ? `
+          <div style="font-size:0.7rem;color:#93c5fd">
+            Max: ${d.Max_Dose}
+          </div>
+        ` : ''}
 
-        <div style="margin-top:6px;font-size:0.9rem">
-          <b>Generic:</b> ${d.Generic_Brand || '-'}<br>
-          <span style="color:var(--muted)">
-            ${d.Generic_Mfg || ''} · ₹${d.Generic_Price || '-'}
-          </span>
+        <div style="margin-top:6px">
+          ${brandHtml}
         </div>
       `;
 
