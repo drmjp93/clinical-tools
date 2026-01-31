@@ -4,12 +4,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const container = document.getElementById('drugResults');
     let allDrugs = [];
 
-    // 2. DYNAMIC CSS INJECTION (Refined for better spacing)
+    // 2. DYNAMIC CSS INJECTION
     const style = document.createElement('style');
     style.innerHTML = `
         :root {
-            --card-bg: #111316; /* Slightly darker for contrast */
-            --accent-color: #00e5ff; /* Sharp Cyan */
+            --card-bg: #111316;
+            --accent-color: #00e5ff; /* Cyan accent */
             --border-color: #333;
             --badge-bg: #2c3e50;
             --text-secondary: #9ca3af;
@@ -18,7 +18,7 @@ document.addEventListener('DOMContentLoaded', () => {
         /* Results Grid */
         #drugResults {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); /* Increased min-width slightly */
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
             gap: 16px;
             padding-bottom: 20px;
             margin-top: 10px;
@@ -118,7 +118,7 @@ document.addEventListener('DOMContentLoaded', () => {
             font-weight: 600;
             color: #fff;
             margin-bottom: 2px;
-            word-break: break-word; /* Allow brand names to wrap if super long */
+            word-break: break-word;
         }
 
         .brand-meta {
@@ -134,7 +134,7 @@ document.addEventListener('DOMContentLoaded', () => {
             font-weight: 600;
         }
 
-        /* Dosing Section - FIXED LAYOUT */
+        /* Dosing Section */
         .dosing-section {
             margin-top: auto;
             padding-top: 12px;
@@ -147,7 +147,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         .dose-row {
-            /* Using Grid here ensures the label ('Max Dose') always gets enough space */
             display: grid;
             grid-template-columns: 75px 1fr; 
             gap: 10px;
@@ -156,8 +155,8 @@ document.addEventListener('DOMContentLoaded', () => {
         
         .dose-label {
             font-weight: 700;
-            color: #6b7280; /* Muted gray for label */
-            white-space: nowrap; /* Prevents "Note" from splitting */
+            color: #6b7280;
+            white-space: nowrap;
         }
 
         .dose-value {
@@ -174,6 +173,7 @@ document.addEventListener('DOMContentLoaded', () => {
             return response.json();
         })
         .then(data => {
+            // Handle array directly or object wrapper { drugs: [...] }
             allDrugs = Array.isArray(data) ? data : (data.drugs || []);
         })
         .catch(err => {
@@ -236,6 +236,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const fragment = document.createDocumentFragment();
 
         drugs.forEach(drug => {
+            // Data Validation & Checks
             const hasBrand2 = drug["SECOND BRAND"] && drug["SECOND BRAND"] !== "-" && drug["SECOND BRAND"].trim() !== "";
             const hasDose = (drug.Max_Dose_Adult && drug.Max_Dose_Adult.trim() !== "") || 
                           (drug.Max_Dose_Notes && drug.Max_Dose_Notes.trim() !== "");
@@ -248,6 +249,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const price1 = formatPrice(drug["FIRST PRICE"]);
             const price2 = formatPrice(drug["SECOND PRICE"]);
 
+            // Build Card
             const card = document.createElement('div');
             card.className = 'drug-card';
 
@@ -272,7 +274,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         <span class="brand-label">Alternative</span>
                         <span class="brand-name">${drug["SECOND BRAND"]}</span>
                         <div class="brand-meta">
-                            <span>${drug["SECONF MFG"] || ''}</span>
+                            <span>${drug["SECOND MFG"] || ''}</span>
                             <span class="price-tag">${price2}</span>
                         </div>
                     </div>
