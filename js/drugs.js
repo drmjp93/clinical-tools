@@ -13,6 +13,8 @@ document.addEventListener('DOMContentLoaded', () => {
             --border-color: #333;
             --badge-bg: #2c3e50;
             --text-secondary: #9ca3af;
+            /* Fallback for var(--text) if not defined in your main css */
+            --text: #e0e0e0; 
         }
 
         /* Results Grid */
@@ -178,7 +180,7 @@ document.addEventListener('DOMContentLoaded', () => {
         })
         .catch(err => {
             console.error("Error loading drugs:", err);
-            container.innerHTML = `<div style="text-align:center; padding:20px; color:#ff6b6b;">Error loading drug database. Check console.</div>`;
+            container.innerHTML = `<div style="text-align:center; padding:20px; color:#ff6b6b;">Error loading drug database. See console for details.</div>`;
         });
 
 
@@ -204,6 +206,7 @@ document.addEventListener('DOMContentLoaded', () => {
             return terms.every(term => searchString.includes(term));
         });
 
+        // 5. SORTING ALGORITHM
         filtered.sort((a, b) => {
             const nameA = (a.Active_Content || '').toLowerCase();
             const nameB = (b.Active_Content || '').toLowerCase();
@@ -224,7 +227,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
 
-    // 5. RENDER CARDS
+    // 6. RENDER CARDS
     function renderDrugs(drugs) {
         container.innerHTML = '';
 
@@ -236,11 +239,12 @@ document.addEventListener('DOMContentLoaded', () => {
         const fragment = document.createDocumentFragment();
 
         drugs.forEach(drug => {
-            // Data Validation & Checks
+            // Data Validation
             const hasBrand2 = drug["SECOND BRAND"] && drug["SECOND BRAND"] !== "-" && drug["SECOND BRAND"].trim() !== "";
             const hasDose = (drug.Max_Dose_Adult && drug.Max_Dose_Adult.trim() !== "") || 
                           (drug.Max_Dose_Notes && drug.Max_Dose_Notes.trim() !== "");
 
+            // Price Helper
             const formatPrice = (price) => {
                 if (!price || price === "-" || price === "0") return "";
                 return `(₹${price})`;
@@ -249,7 +253,6 @@ document.addEventListener('DOMContentLoaded', () => {
             const price1 = formatPrice(drug["FIRST PRICE"]);
             const price2 = formatPrice(drug["SECOND PRICE"]);
 
-            // Build Card
             const card = document.createElement('div');
             card.className = 'drug-card';
 
