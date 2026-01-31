@@ -1,104 +1,304 @@
-console.log('Drug directory JS loaded');
-
-let drugs = [];
-
-/* ================= LOAD JSON ================= */
-
-fetch('/data/drugs.json')
-  .then(res => {
-    if (!res.ok) throw new Error('Failed to load drugs.json');
-    return res.json();
-  })
-  .then(data => {
-    drugs = data;
-    console.log('Drugs loaded:', drugs.length);
-  })
-  .catch(err => {
-    console.error('Drug JSON error:', err);
-  });
-
-/* ================= SEARCH ================= */
-
 document.addEventListener('DOMContentLoaded', () => {
-  const search = document.getElementById('drugSearch');
-  const results = document.getElementById('drugResults');
+    // 1. SELECTORS MATCHING YOUR HTML IDs
+    const searchInput = document.getElementById('drugSearch');
+    const container = document.getElementById('drugResults');
+    let allDrugs = [];
 
-  if (!search || !results) return;
+    // 2. DYNAMIC CSS INJECTION (Refined for better spacing)
+    const style = document.createElement('style');
+    style.innerHTML = `
+        :root {
+            --card-bg: #111316; /* Slightly darker for contrast */
+            --accent-color: #00e5ff; /* Sharp Cyan */
+            --border-color: #333;
+            --badge-bg: #2c3e50;
+            --text-secondary: #9ca3af;
+        }
 
-  search.addEventListener('input', () => {
-    const q = search.value.toLowerCase().trim();
-    results.innerHTML = '';
+        /* Results Grid */
+        #drugResults {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); /* Increased min-width slightly */
+            gap: 16px;
+            padding-bottom: 20px;
+            margin-top: 10px;
+        }
 
-    if (q.length < 2) return;
+        /* Drug Card */
+        .drug-card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 18px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+            transition: transform 0.2s, border-color 0.2s;
+        }
 
-    /* ===== PHASE 1: MOLECULE + BRAND ONLY ===== */
-    let matched = drugs
-      .map(d => {
-        let score = 0;
+        .drug-card:hover {
+            transform: translateY(-2px);
+            border-color: #555;
+        }
 
-        const molecule = (d.Active_Content || '').toLowerCase();
-        const ethical = (d.Ethical_Brand || '').toLowerCase();
-        const generic = (d.Generic_Brand || '').toLowerCase();
+        /* Header: Molecule Name + Category */
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 12px;
+        }
 
-        if (molecule.startsWith(q)) score += 20;
-        else if (molecule.includes(q)) score += 12;
+        .molecule-name {
+            font-size: 1.1rem;
+            font-weight: 800;
+            color: var(--accent-color);
+            line-height: 1.4;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            /* PREVENT MID-WORD WRAPPING */
+            word-break: normal; 
+            overflow-wrap: break-word;
+            hyphens: none;
+        }
 
-        if (ethical.startsWith(q)) score += 15;
-        else if (ethical.includes(q)) score += 8;
+        .category-badge {
+            background-color: var(--badge-bg);
+            color: #fff;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            white-space: nowrap;
+            flex-shrink: 0;
+            text-transform: uppercase;
+            height: fit-content;
+        }
 
-        if (generic.startsWith(q)) score += 14;
-        else if (generic.includes(q)) score += 7;
+        /* Brands Container */
+        .brands-container {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
+            background: #1a1d21;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid #2a2a2a;
+        }
 
-        return score > 0 ? { ...d, _score: score } : null;
-      })
-      .filter(Boolean)
-      .sort((a, b) => b._score - a._score);
+        .brands-container.has-two {
+            grid-template-columns: 1fr 1fr;
+        }
 
-    /* ===== PHASE 2: CATEGORY FALLBACK ONLY ===== */
-    if (matched.length === 0 && q.length >= 4) {
-      matched = drugs.filter(d =>
-        (d.Category || '').toLowerCase().includes(q)
-      );
-    }
+        /* Mobile Breakpoint for brands */
+        @media (max-width: 450px) {
+            .brands-container.has-two {
+                grid-template-columns: 1fr; 
+                gap: 16px;
+            }
+        }
 
-    if (matched.length === 0) {
-      results.innerHTML =
-        '<div class="monitor">No matching drugs found.</div>';
-      return;
-    }
+        .brand-item {
+            display: flex;
+            flex-direction: column;
+        }
 
-    /* ===== RENDER ===== */
-    matched.forEach(d => {
-      const card = document.createElement('div');
-      card.className = 'tool';
-      card.style.padding = '12px';
-      card.style.marginBottom = '10px';
+        .brand-label {
+            font-size: 0.65rem;
+            color: var(--text-secondary);
+            margin-bottom: 4px;
+            text-transform: uppercase;
+            font-weight: 600;
+            opacity: 0.7;
+        }
 
-      card.innerHTML = `
-        <div style="font-weight:700;font-size:0.95rem">
-          ${d.Active_Content}
-        </div>
+        .brand-name {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 2px;
+            word-break: break-word; /* Allow brand names to wrap if super long */
+        }
 
-        <div style="font-size:0.75rem;color:var(--muted)">
-          ${d.Category}
-        </div>
+        .brand-meta {
+            font-size: 0.8rem;
+            color: #888;
+            display: flex;
+            flex-direction: column; 
+            gap: 2px;
+        }
 
-        <div style="margin-top:6px;font-size:0.85rem">
-          <b>Ethical:</b> ${d.Ethical_Brand || '-'}
-          <span style="color:var(--muted)">
-            · ${d.Ethical_Mfg || '-'} · ₹${d.Ethical_Price || '-'}
-          </span>
-        </div>
+        .price-tag {
+            color: #4caf50; /* Green */
+            font-weight: 600;
+        }
 
-        <div style="margin-top:4px;font-size:0.85rem">
-          <b>Generic:</b> ${d.Generic_Brand || '-'}
-          <span style="color:var(--muted)">
-            · ${d.Generic_Mfg || '-'} · ₹${d.Generic_Price || '-'}
-          </span>
-        </div>
-      `;
+        /* Dosing Section - FIXED LAYOUT */
+        .dosing-section {
+            margin-top: auto;
+            padding-top: 12px;
+            border-top: 1px solid #2a2a2a;
+            font-size: 0.85rem;
+            color: #d1d5db;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
 
-      results.appendChild(card);
+        .dose-row {
+            /* Using Grid here ensures the label ('Max Dose') always gets enough space */
+            display: grid;
+            grid-template-columns: 75px 1fr; 
+            gap: 10px;
+            align-items: baseline;
+        }
+        
+        .dose-label {
+            font-weight: 700;
+            color: #6b7280; /* Muted gray for label */
+            white-space: nowrap; /* Prevents "Note" from splitting */
+        }
+
+        .dose-value {
+            line-height: 1.4;
+        }
+    `;
+    document.head.appendChild(style);
+
+
+    // 3. LOAD DATA
+    fetch('/data/drugs.json')
+        .then(response => {
+            if (!response.ok) throw new Error("Network response was not ok");
+            return response.json();
+        })
+        .then(data => {
+            allDrugs = Array.isArray(data) ? data : (data.drugs || []);
+        })
+        .catch(err => {
+            console.error("Error loading drugs:", err);
+            container.innerHTML = `<div style="text-align:center; padding:20px; color:#ff6b6b;">Error loading drug database. Check console.</div>`;
+        });
+
+
+    // 4. SMART SEARCH LOGIC
+    searchInput.addEventListener('input', (e) => {
+        const query = e.target.value.toLowerCase().trim();
+        
+        if (!query) {
+            container.innerHTML = '';
+            return;
+        }
+
+        const terms = query.split(/\s+/); 
+
+        const filtered = allDrugs.filter(drug => {
+            const searchString = `
+                ${drug.Active_Content || ''} 
+                ${drug["FIRST BRAND"] || ''} 
+                ${drug["SECOND BRAND"] || ''}
+                ${drug.Category || ''}
+            `.toLowerCase();
+
+            return terms.every(term => searchString.includes(term));
+        });
+
+        filtered.sort((a, b) => {
+            const nameA = (a.Active_Content || '').toLowerCase();
+            const nameB = (b.Active_Content || '').toLowerCase();
+            
+            const aStarts = nameA.startsWith(query);
+            const bStarts = nameB.startsWith(query);
+            if (aStarts && !bStarts) return -1;
+            if (!bStarts && aStarts) return 1;
+
+            const aCommas = (nameA.match(/,/g) || []).length;
+            const bCommas = (nameB.match(/,/g) || []).length;
+            if (aCommas !== bCommas) return aCommas - bCommas;
+            
+            return nameA.length - nameB.length;
+        });
+
+        renderDrugs(filtered);
     });
-  });
+
+
+    // 5. RENDER CARDS
+    function renderDrugs(drugs) {
+        container.innerHTML = '';
+
+        if (drugs.length === 0) {
+            container.innerHTML = `<div style="text-align:center; grid-column: 1/-1; padding:20px; color:#666;">No medicines found.</div>`;
+            return;
+        }
+
+        const fragment = document.createDocumentFragment();
+
+        drugs.forEach(drug => {
+            const hasBrand2 = drug["SECOND BRAND"] && drug["SECOND BRAND"] !== "-" && drug["SECOND BRAND"].trim() !== "";
+            const hasDose = (drug.Max_Dose_Adult && drug.Max_Dose_Adult.trim() !== "") || 
+                          (drug.Max_Dose_Notes && drug.Max_Dose_Notes.trim() !== "");
+
+            const formatPrice = (price) => {
+                if (!price || price === "-" || price === "0") return "";
+                return `(₹${price})`;
+            };
+
+            const price1 = formatPrice(drug["FIRST PRICE"]);
+            const price2 = formatPrice(drug["SECOND PRICE"]);
+
+            const card = document.createElement('div');
+            card.className = 'drug-card';
+
+            card.innerHTML = `
+                <div class="card-header">
+                    <div class="molecule-name">${drug.Active_Content || 'Unknown'}</div>
+                    <div class="category-badge">${drug.Category || 'Rx'}</div>
+                </div>
+
+                <div class="brands-container ${hasBrand2 ? 'has-two' : ''}">
+                    <div class="brand-item">
+                        <span class="brand-label">Primary Brand</span>
+                        <span class="brand-name">${drug["FIRST BRAND"] || '-'}</span>
+                        <div class="brand-meta">
+                            <span>${drug["FIRST MFG"] || ''}</span>
+                            <span class="price-tag">${price1}</span>
+                        </div>
+                    </div>
+
+                    ${hasBrand2 ? `
+                    <div class="brand-item" style="${hasBrand2 ? 'border-left:1px solid #333; padding-left: 12px;' : ''}">
+                        <span class="brand-label">Alternative</span>
+                        <span class="brand-name">${drug["SECOND BRAND"]}</span>
+                        <div class="brand-meta">
+                            <span>${drug["SECONF MFG"] || ''}</span>
+                            <span class="price-tag">${price2}</span>
+                        </div>
+                    </div>
+                    ` : ''}
+                </div>
+
+                ${hasDose ? `
+                <div class="dosing-section">
+                    ${drug.Max_Dose_Adult ? `
+                    <div class="dose-row">
+                        <span class="dose-label">Max Dose</span>
+                        <span class="dose-value">${drug.Max_Dose_Adult}</span>
+                    </div>` : ''}
+                    
+                    ${drug.Max_Dose_Notes ? `
+                    <div class="dose-row">
+                        <span class="dose-label">Note</span>
+                        <span class="dose-value">${drug.Max_Dose_Notes}</span>
+                    </div>` : ''}
+                </div>
+                ` : ''}
+            `;
+
+            fragment.appendChild(card);
+        });
+
+        container.appendChild(fragment);
+    }
 });
