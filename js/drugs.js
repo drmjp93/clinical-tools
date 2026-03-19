@@ -169,7 +169,7 @@ document.addEventListener('DOMContentLoaded', () => {
     document.head.appendChild(style);
 
     // --- 2. API LINK (Replace with your actual Netlify URL) ---
-    const netlifyAPI = "https://drugs-drmjp93.netlify.app/.netlify/functions/searchDrugs";
+    const netlifyAPI = "https://drugs.drmjp93.workers.dev";
 
     // --- 3. SECURE SEARCH ---
     searchInput.addEventListener('input', (e) => {
