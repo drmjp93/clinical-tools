@@ -1,0 +1,238 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>LDL Statin Calc (India)</title>
+  <style>
+    :root {
+      --bg: #0f1113;
+      --card: #16191d;
+      --inner: #0b0d10;
+      --border: #262a30;
+      --text: #e5e7eb;
+      --muted: #9ca3af;
+      --accent: #3b82f6;
+      --success: #064e3b;
+      --warn: #78350f;
+      --info: #1e3a8a;
+      --danger: #7a1b1b;
+    }
+    * { box-sizing: border-box; }
+    body {
+      font-family: system-ui, -apple-system, Segoe UI, Roboto;
+      background: var(--bg);
+      color: var(--text);
+      margin: 0;
+      padding: 16px;
+    }
+    .hd {
+      background: var(--card);
+      color: var(--text);
+      padding: 14px 16px;
+      border-radius: 14px;
+      margin-bottom: 16px;
+      font-weight: 700;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border: 1px solid var(--border);
+    }
+    .f1 {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 14px;
+    }
+    .c1 { flex: 1; }
+    .i {
+      width: 100%;
+      padding: 12px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: #0b0d10;
+      color: var(--text);
+      font-size: 1rem;
+    }
+    strong { display: block; margin: 10px 0 6px; }
+    .r {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+    .tog {
+      padding: 8px 12px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: var(--card);
+      color: var(--muted);
+      font-weight: 600;
+      cursor: pointer;
+      transition: all .15s ease;
+    }
+    .tog.act {
+      background: var(--accent);
+      color: #fff;
+      border-color: var(--accent);
+    }
+    .panel {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 14px;
+      margin-bottom: 14px;
+    }
+    .title { font-weight: 700; margin-bottom: 8px; }
+    .target {
+      padding: 14px;
+      border-radius: 12px;
+      font-weight: 800;
+      text-align: center;
+      margin-bottom: 8px;
+    }
+    .target.green { background: var(--success); color: #d1fae5; }
+    .target.amber { background: var(--warn); color: #fde68a; }
+    .target.red { background: var(--danger); color: #fee2e2; }
+    .target.tg { background: var(--info); color: #dbeafe; }
+    .rec { font-weight: 700; margin-top: 6px; }
+    .rat { font-size: .85rem; color: var(--muted); margin-top: 4px; }
+    footer {
+      margin-top: 16px;
+      padding-top: 10px;
+      border-top: 1px solid var(--border);
+      font-size: .75rem;
+      color: var(--muted);
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <header class="hd">
+    <span>LDL Statin Calc (India)</span>
+    <span id="visitorCount" style="font-size:14px;">👥 —</span>
+  </header>
+
+  <div class="f1">
+    <div class="c1"><input id="age" class="i" type="number" placeholder="Age"></div>
+    <div class="c1"><input id="ldl" class="i" type="number" placeholder="LDL (mg/dL)"></div>
+    <div class="c1"><input id="tg" class="i" type="number" placeholder="TG (mg/dL)"></div>
+  </div>
+
+  <strong>Risk factors / enhancers</strong>
+  <div class="r" id="pRow">
+    <div class="tog" data-id="ascvd">Clinical ASCVD</div>
+    <div class="tog" data-id="diabetes">Diabetes</div>
+    <div class="tog" data-id="dmorg">Diabetes — organ damage</div>
+    <div class="tog" data-id="ckd">CKD</div>
+    <div class="tog" data-id="htn">Hypertension</div>
+    <div class="tog" data-id="smoke">Current smoker</div>
+    <div class="tog" data-id="fh">Premature FH / family history</div>
+    <div class="tog" data-id="met">Metabolic syndrome</div>
+    <div class="tog" data-id="south">South Asian ethnicity</div>
+    <div class="tog" data-id="lpa">High Lp(a)</div>
+  </div>
+
+  <div class="panel">
+    <div class="title">LDL recommendation <small id="ldlStatusSmall" style="float:right;color:#6b7280;font-weight:600"></small></div>
+    <div id="ldlTarget" class="target">Target LDL: —</div>
+    <div id="ldlRec" class="rec">—</div>
+    <div id="ldlRationale" class="rat">—</div>
+  </div>
+
+  <div class="panel">
+    <div class="title">TG recommendation <small id="tgStatusSmall" style="float:right;color:#6b7280;font-weight:600"></small></div>
+    <div id="tgTarget" class="target tg">Target TG: —</div>
+    <div id="tgRec" class="rec">—</div>
+    <div id="tgRationale" class="rat">—</div>
+  </div>
+
+  <footer>
+    <div style="margin-bottom:4px;">
+      Sources: 
+      <a href="https://www.acc.org/latest-in-cardiology/ten-points-to-remember/2020/02/27/15/42/csi-lipid-guidelines" target="_blank" style="color:#3b82f6;text-decoration:none;">CSI</a>, 
+      <a href="https://lai.org.in/" target="_blank" style="color:#3b82f6;text-decoration:none;">LAI</a>
+    </div>
+    <div style="margin-bottom:6px;color:#666;">Disclaimer: Educational use only. Always confirm with official guidelines.</div>
+    <div style="color:#999;">Compiled by <a href="https://twitter.com/drmjp93" target="_blank" style="color:#3b82f6;text-decoration:none;">@drmjp93</a></div>
+  </footer>
+
+  <script>
+    // ==========================================
+    // ⚙️ CONFIGURATION & SECURITY
+    // ==========================================
+    const IS_LOCAL_TESTING = false; 
+    const API_URL = 'https://ldl.drmjp93.workers.dev';
+
+    (function() {
+      function S(id) { return document.getElementById(id); }
+      function setText(id, txt) { const el = S(id); if (el) el.innerText = txt; }
+      function isAct(id) { const el = document.querySelector('[data-id="' + id + '"]'); return el && el.classList.contains('act'); }
+
+      async function callServer() {
+        const flags = {
+          ascvd: isAct('ascvd'), diabetes: isAct('diabetes'), dmorg: isAct('dmorg'),
+          ckd: isAct('ckd'), htn: isAct('htn'), smoke: isAct('smoke'),
+          fh: isAct('fh'), met: isAct('met'), south: isAct('south'), lpa: isAct('lpa')
+        };
+        const payload = {
+          age: +S('age').value || 0,
+          ldl: +S('ldl').value || 0,
+          tg: +S('tg').value || 0,
+          flags: flags
+        };
+
+        try {
+          const r = await fetch(API_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+          });
+          const j = await r.json();
+
+          if (j && j.ok && j.result) {
+            const o = j.result;
+            setText('ldlTarget', 'Target LDL: ' + o.ldlTarget);
+            setText('ldlRec', o.ldlRec);
+            setText('ldlRationale', o.ldlRationale);
+            setText('ldlStatusSmall', o.ldlStatus);
+            setText('tgTarget', 'Target TG: ' + o.tgTarget);
+            setText('tgRec', o.tgRec);
+            setText('tgRationale', o.tgRationale);
+            setText('tgStatusSmall', o.tgStatus);
+
+            const lt = S('ldlTarget'), tt = S('tgTarget');
+            if (lt) { lt.className = 'target ' + (o.ldlLevel || ''); }
+            if (tt) { tt.className = 'target tg ' + (o.tgLevel || ''); }
+          }
+        } catch (e) {
+          setText('ldlRec', '(Connection error)');
+          setText('tgRec', '(Please check internet)');
+        }
+      }
+
+      function debounce(fn, ms) { let t; return (...a) => { clearTimeout(t); t = setTimeout(() => fn(...a), ms); }; }
+
+      function attach() {
+        document.querySelectorAll('.tog').forEach(p => {
+          p.addEventListener('click', () => { p.classList.toggle('act'); setTimeout(callServer, 50); });
+        });
+        ['age', 'ldl', 'tg'].forEach(id => {
+          const el = S(id);
+          if (el) { el.addEventListener('input', debounce(callServer, 300)); el.addEventListener('change', callServer); }
+        });
+      }
+
+      async function updateVisitorCount() {
+        try {
+          const r = await fetch('https://api.counterapi.dev/v1/drmjp93-ldlcal/visits/up');
+          const d = await r.json();
+          S('visitorCount').innerText = `👥 ${d.count}`;
+        } catch (e) {}
+      }
+
+      document.addEventListener('DOMContentLoaded', () => { attach(); updateVisitorCount(); callServer(); });
+    })();
+  </script>
+</body>
+</html>
