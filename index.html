@@ -1030,16 +1030,38 @@ function calcEGFR(sex,btn){
 <div class="step">
   <div class="step-title">Enter details</div>
 
-<div style="
-  display:grid;
-  grid-template-columns:repeat(2,minmax(0,1fr));
-  gap:12px
-">
+  <!-- HEIGHT MODE TOGGLE -->
+  <div style="display:flex; gap:8px; margin-bottom:12px;">
+    <button id="bmi-mode-cm" onclick="setBMIMode('cm')"
+      style="flex:1; padding:8px; border-radius:8px; border:1px solid var(--border);
+             background:var(--accent); color:#fff; font-weight:700; font-size:0.8rem; cursor:pointer;">
+      cm
+    </button>
+    <button id="bmi-mode-ft" onclick="setBMIMode('ft')"
+      style="flex:1; padding:8px; border-radius:8px; border:1px solid var(--border);
+             background:#0b0d0f; color:var(--text); font-weight:700; font-size:0.8rem; cursor:pointer;">
+      ft + in
+    </button>
+  </div>
+
+  <div style="display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px">
+    
+    <!-- WEIGHT — always visible -->
     <input id="bmi-weight" type="number" step="0.1" placeholder="Weight (kg)"
       style="padding:12px;border-radius:10px;border:1px solid var(--border);
              background:#0b0d0f;color:var(--text)">
-    <input id="bmi-height" type="number" step="0.1" placeholder="Height (cm)"
+
+    <!-- CM MODE -->
+    <input id="bmi-height-cm" type="number" step="0.1" placeholder="Height (cm)"
       style="padding:12px;border-radius:10px;border:1px solid var(--border);
+             background:#0b0d0f;color:var(--text)">
+
+    <!-- FEET MODE — hidden by default -->
+    <input id="bmi-height-ft" type="number" step="1" min="0" placeholder="Feet"
+      style="display:none; padding:12px;border-radius:10px;border:1px solid var(--border);
+             background:#0b0d0f;color:var(--text)">
+    <input id="bmi-height-in" type="number" step="0.1" min="0" max="11" placeholder="Inches"
+      style="display:none; padding:12px;border-radius:10px;border:1px solid var(--border);
              background:#0b0d0f;color:var(--text)">
   </div>
 
@@ -1054,37 +1076,79 @@ function calcEGFR(sex,btn){
 </details>
 
 <script>
-function calcBMI(){
-  const wt = parseFloat(document.getElementById('bmi-weight').value);
-  const htCm = parseFloat(document.getElementById('bmi-height').value);
+let bmiMode = 'cm';
+
+function setBMIMode(mode) {
+  bmiMode = mode;
+
+  const cmInput = document.getElementById('bmi-height-cm');
+  const ftInput = document.getElementById('bmi-height-ft');
+  const inInput = document.getElementById('bmi-height-in');
+  const btnCm   = document.getElementById('bmi-mode-cm');
+  const btnFt   = document.getElementById('bmi-mode-ft');
+
+  if (mode === 'cm') {
+    cmInput.style.display = 'block';
+    ftInput.style.display = 'none';
+    inInput.style.display = 'none';
+    btnCm.style.background = 'var(--accent)';
+    btnCm.style.color = '#fff';
+    btnFt.style.background = '#0b0d0f';
+    btnFt.style.color = 'var(--text)';
+  } else {
+    cmInput.style.display = 'none';
+    ftInput.style.display = 'block';
+    inInput.style.display = 'block';
+    btnFt.style.background = 'var(--accent)';
+    btnFt.style.color = '#fff';
+    btnCm.style.background = '#0b0d0f';
+    btnCm.style.color = 'var(--text)';
+  }
+
+  // clear result on mode switch
+  document.getElementById('bmi-result').className = 'hidden';
+}
+
+function calcBMI() {
+  const wt  = parseFloat(document.getElementById('bmi-weight').value);
   const res = document.getElementById('bmi-result');
 
-  if(!wt || !htCm){
+  let htCm;
+
+  if (bmiMode === 'cm') {
+    htCm = parseFloat(document.getElementById('bmi-height-cm').value);
+  } else {
+    const ft = parseFloat(document.getElementById('bmi-height-ft').value) || 0;
+    const inc = parseFloat(document.getElementById('bmi-height-in').value) || 0;
+    // convert feet+inches to cm
+    htCm = (ft * 30.48) + (inc * 2.54);
+  }
+
+  if (!wt || !htCm) {
     res.className = 'result warn';
     res.textContent = 'Please enter valid weight and height.';
     res.classList.remove('hidden');
     return;
   }
 
-  const htM = htCm / 100;
-  const bmi = wt / (htM * htM);
+  const htM   = htCm / 100;
+  const bmi   = wt / (htM * htM);
   const bmiVal = bmi.toFixed(1);
 
   let category = '';
   let cls = 'info';
 
   // Indian/WHO cutoffs
-  
-  if(bmi < 18.5){
+  if (bmi < 18.5) {
     category = 'Underweight';
     cls = 'warn';
-  } else if(bmi < 23){
+  } else if (bmi < 23) {
     category = 'Normal';
     cls = 'success';
-  } else if(bmi < 25){
+  } else if (bmi < 25) {
     category = 'Overweight (At risk – Indian cutoff)';
     cls = 'warn';
-  } else if(bmi < 30){
+  } else if (bmi < 30) {
     category = 'Obese (Class I)';
     cls = 'warn';
   } else {
@@ -1092,17 +1156,24 @@ function calcBMI(){
     cls = 'warn';
   }
 
+  // show converted height for reference
+  const htDisplay = bmiMode === 'ft'
+    ? `${document.getElementById('bmi-height-ft').value || 0}ft ${document.getElementById('bmi-height-in').value || 0}in → ${htCm.toFixed(1)} cm`
+    : `${htCm} cm`;
+
   res.className = 'result ' + cls;
   res.innerHTML = `
     BMI = <strong>${bmiVal} kg/m²</strong><br>
     Category: <b>${category}</b>
     <div style="margin-top:8px;font-size:0.8rem;color:#9ca3af">
+      Height used: ${htDisplay}<br>
       Indian risk threshold: BMI ≥ 23 kg/m²
     </div>
   `;
   res.classList.remove('hidden');
 }
 </script>
+
 
   <!-- ================= THYROXINE DOSE CALCULATOR ================= -->
 
