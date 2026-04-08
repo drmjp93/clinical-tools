@@ -1252,6 +1252,125 @@ function calcThyroxine(){
 }
 </script>
 
+  <!-- ================= THYROXINE DOSE CALCULATOR - TWO ================= -->
+
+  <details class="tool" data-system="endocrine">
+  <summary>
+    <div>
+      <div class="tool-title">Levothyroxine Initial Dose</div>
+      <div class="tool-sub">Weight-based dosing (Adult & Pregnancy)</div>
+    </div>
+    <div>▾</div>
+  </summary>
+
+  <div class="tool-body">
+
+    <div class="step">
+      <div class="step-title">Patient Status</div>
+      <div class="options">
+        <button class="selected" onclick="setLevoStatus('adult', this)">Adult (Non-pregnant)</button>
+        <button onclick="setLevoStatus('pregnant', this)">Pregnant</button>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-title">Severity</div>
+      <div class="options">
+        <button class="selected" onclick="setLevoSeverity('overt', this)">Overt Hypothyroidism</button>
+        <button onclick="setLevoSeverity('subclinical', this)">Subclinical</button>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-title">Weight (kg)</div>
+      <input id="levo-weight" type="number" step="0.1" placeholder="Enter weight in kg"
+        style="width:100%;padding:12px;border-radius:10px;border:1px solid var(--border);
+               background:#0b0d10;color:var(--text)">
+    </div>
+
+    <button class="primary-btn" onclick="calcLevothyroxine()">
+      Calculate Initial Dose
+    </button>
+
+    <div id="levo-result" class="result hidden"></div>
+
+    <div class="monitor">
+      <b>Guideline Notes (ATA/Endocrine Society):</b><br>
+      • <b>Elderly / Cardiac disease:</b> Start low (12.5 - 25 mcg/day) regardless of weight.<br>
+      • <b>Subclinical (Non-pregnant):</b> Often treated with fixed low doses (25 - 50 mcg/day). Weight-based calculation shown here uses conservative ~1.0 mcg/kg.<br>
+      • <b>Monitoring:</b> Recheck TSH in 4–6 weeks (every 4 weeks in pregnancy) and titrate by 12.5 - 25 mcg.<br>
+      • Take on an empty stomach 30–60 mins before breakfast.
+    </div>
+
+  </div>
+</details>
+
+<script>
+let levoStatus = 'adult';
+let levoSeverity = 'overt';
+
+function setLevoStatus(val, btn) {
+  levoStatus = val;
+  select(btn); // Uses your existing global select function
+  document.getElementById('levo-result').classList.add('hidden');
+}
+
+function setLevoSeverity(val, btn) {
+  levoSeverity = val;
+  select(btn);
+  document.getElementById('levo-result').classList.add('hidden');
+}
+
+function calcLevothyroxine() {
+  const wt = parseFloat(document.getElementById('levo-weight').value);
+  const res = document.getElementById('levo-result');
+
+  if (!wt || wt <= 0) {
+    res.className = 'result warn';
+    res.textContent = 'Please enter a valid weight.';
+    res.classList.remove('hidden');
+    return;
+  }
+
+  let dosePerKg = 0;
+  let exactDose = 0;
+  let message = "";
+
+  if (levoStatus === 'adult') {
+    if (levoSeverity === 'overt') {
+      dosePerKg = 1.6;
+      message = "Based on standard adult replacement (1.6 mcg/kg/day).";
+    } else {
+      dosePerKg = 1.0; 
+      message = "Based on ~1.0 mcg/kg/day (Note: Max 25-50 mcg/day flat dose is often preferred for adult subclinical).";
+    }
+  } else if (levoStatus === 'pregnant') {
+    if (levoSeverity === 'overt') {
+      dosePerKg = 1.6; // ATA guidelines state 1.6 - 1.8 for overt in pregnancy / TSH > 10
+      message = "Based on pregnancy overt (TSH &ge; 10) starting dose (1.6 mcg/kg/day).";
+    } else {
+      dosePerKg = 1.2; // ~1.0-1.2 is used for pregnant SCH / TSH < 10
+      message = "Based on pregnancy subclinical (TSH &lt; 10) starting dose (1.2 mcg/kg/day).";
+    }
+  }
+
+  exactDose = wt * dosePerKg;
+
+  // Practical rounding to nearest 12.5 mcg (half of a 25mcg tablet)
+  const roundedDose = Math.round(exactDose / 12.5) * 12.5;
+
+  res.className = 'result success';
+  res.innerHTML = `
+    Calculated Exact Dose: <b>${exactDose.toFixed(1)} mcg/day</b><br>
+    Practical Starting Dose: <strong style="font-size:1.1em">${roundedDose} mcg/day</strong>
+    <div style="margin-top:8px;font-size:0.85rem;opacity:0.9">
+      ${message}
+    </div>
+  `;
+  res.classList.remove('hidden');
+}
+</script>
+  
 <!-- ================= MAP TOOL ================= -->
 
 <details class="tool" data-system="cardio">
