@@ -1030,7 +1030,6 @@ function calcEGFR(sex,btn){
 <div class="step">
   <div class="step-title">Enter details</div>
 
-  <!-- HEIGHT MODE TOGGLE -->
   <div style="display:flex; gap:8px; margin-bottom:12px;">
     <button id="bmi-mode-cm" onclick="setBMIMode('cm')"
       style="flex:1; padding:8px; border-radius:8px; border:1px solid var(--border);
@@ -1046,31 +1045,29 @@ function calcEGFR(sex,btn){
 
   <div style="display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px">
     
-    <!-- WEIGHT — always visible -->
     <input id="bmi-weight" type="number" step="0.1" placeholder="Weight (kg)"
       style="padding:12px;border-radius:10px;border:1px solid var(--border);
-             background:#0b0d0f;color:var(--text)">
+             background:#0b0d0f;color:var(--text)"
+      oninput="calcBMI()">
 
-    <!-- CM MODE -->
     <input id="bmi-height-cm" type="number" step="0.1" placeholder="Height (cm)"
       style="padding:12px;border-radius:10px;border:1px solid var(--border);
-             background:#0b0d0f;color:var(--text)">
+             background:#0b0d0f;color:var(--text)"
+      oninput="calcBMI()">
 
-    <!-- FEET MODE — hidden by default -->
     <input id="bmi-height-ft" type="number" step="1" min="0" placeholder="Feet"
       style="display:none; padding:12px;border-radius:10px;border:1px solid var(--border);
-             background:#0b0d0f;color:var(--text)">
+             background:#0b0d0f;color:var(--text)"
+      oninput="calcBMI()">
     <input id="bmi-height-in" type="number" step="0.1" min="0" max="11" placeholder="Inches"
       style="display:none; padding:12px;border-radius:10px;border:1px solid var(--border);
-             background:#0b0d0f;color:var(--text)">
+             background:#0b0d0f;color:var(--text)"
+      oninput="calcBMI()">
   </div>
 
-  <div class="options" style="margin-top:12px">
-    <button onclick="calcBMI()">Calculate BMI</button>
-  </div>
 </div>
 
-<div id="bmi-result" class="hidden"></div>
+<div id="bmi-result" class="hidden" style="margin-top: 14px;"></div>
 
 </div>
 </details>
@@ -1105,28 +1102,50 @@ function setBMIMode(mode) {
     btnCm.style.color = 'var(--text)';
   }
 
-  // clear result on mode switch
-  document.getElementById('bmi-result').className = 'hidden';
+  // clear result and values on mode switch to prevent confusion
+  document.getElementById('bmi-result').classList.add('hidden');
 }
 
 function calcBMI() {
-  const wt  = parseFloat(document.getElementById('bmi-weight').value);
+  const wtInput = document.getElementById('bmi-weight').value;
   const res = document.getElementById('bmi-result');
 
   let htCm;
+  let isMissingData = false;
 
+  // Check if required fields are empty based on the current mode
   if (bmiMode === 'cm') {
-    htCm = parseFloat(document.getElementById('bmi-height-cm').value);
+    const cmInput = document.getElementById('bmi-height-cm').value;
+    if (wtInput === '' || cmInput === '') {
+      isMissingData = true;
+    } else {
+      htCm = parseFloat(cmInput);
+    }
   } else {
-    const ft = parseFloat(document.getElementById('bmi-height-ft').value) || 0;
-    const inc = parseFloat(document.getElementById('bmi-height-in').value) || 0;
-    // convert feet+inches to cm
-    htCm = (ft * 30.48) + (inc * 2.54);
+    const ftInput = document.getElementById('bmi-height-ft').value;
+    const inInput = document.getElementById('bmi-height-in').value;
+    // We require at least feet and weight to calculate
+    if (wtInput === '' || ftInput === '') {
+      isMissingData = true;
+    } else {
+      const ft = parseFloat(ftInput) || 0;
+      const inc = parseFloat(inInput) || 0;
+      // convert feet+inches to cm
+      htCm = (ft * 30.48) + (inc * 2.54);
+    }
   }
 
-  if (!wt || !htCm) {
+  // Silently hide the result box if user cleared the inputs
+  if (isMissingData) {
+    res.classList.add('hidden');
+    return;
+  }
+
+  const wt = parseFloat(wtInput);
+
+  if (wt <= 0 || htCm <= 0) {
     res.className = 'result warn';
-    res.textContent = 'Please enter valid weight and height.';
+    res.textContent = 'Please enter valid positive numbers.';
     res.classList.remove('hidden');
     return;
   }
@@ -1192,41 +1211,48 @@ function calcBMI() {
 <div class="step">
   <div class="step-title">Current prescription</div>
 
-<div style="
-  display:grid;
-  grid-template-columns:repeat(2,minmax(0,1fr));
-  gap:12px
-">
+  <div style="
+    display:grid;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:12px
+  ">
     <input id="thyroxine-strength" type="number" step="12.5"
       placeholder="Tablet strength (mcg)"
       style="padding:12px;border-radius:10px;border:1px solid var(--border);
-             background:#0b0d0f;color:var(--text)">
+             background:#0b0d0f;color:var(--text)"
+      oninput="calcThyroxine()">
 
     <input id="thyroxine-weekly" type="number" step="1"
       placeholder="Total tablets per week"
       style="padding:12px;border-radius:10px;border:1px solid var(--border);
-             background:#0b0d0f;color:var(--text)">
-  </div>
-
-  <div class="options" style="margin-top:12px">
-    <button onclick="calcThyroxine()">Calculate daily dose</button>
+             background:#0b0d0f;color:var(--text)"
+      oninput="calcThyroxine()">
   </div>
 </div>
 
-<div id="thyroxine-result" class="hidden"></div>
+<div id="thyroxine-result" class="hidden" style="margin-top: 14px;"></div>
 
 </div>
 </details>
 
 <script>
 function calcThyroxine(){
-  const strength = parseFloat(document.getElementById('thyroxine-strength').value);
-  const weeklyTabs = parseFloat(document.getElementById('thyroxine-weekly').value);
+  const strInput = document.getElementById('thyroxine-strength').value;
+  const weeklyInput = document.getElementById('thyroxine-weekly').value;
   const res = document.getElementById('thyroxine-result');
 
-  if(!strength || !weeklyTabs){
+  // Silently hide the result if either field is empty while typing
+  if(strInput === '' || weeklyInput === ''){
+    res.classList.add('hidden');
+    return;
+  }
+
+  const strength = parseFloat(strInput);
+  const weeklyTabs = parseFloat(weeklyInput);
+
+  if(strength <= 0 || weeklyTabs <= 0){
     res.className = 'result warn';
-    res.textContent = 'Please enter valid tablet strength and weekly tablet count.';
+    res.textContent = 'Please enter valid positive numbers.';
     res.classList.remove('hidden');
     return;
   }
@@ -1251,7 +1277,7 @@ function calcThyroxine(){
   res.classList.remove('hidden');
 }
 </script>
-
+  
   <!-- ================= THYROXINE DOSE CALCULATOR - TWO ================= -->
 
   <details class="tool" data-system="endocrine">
@@ -1285,14 +1311,11 @@ function calcThyroxine(){
       <div class="step-title">Weight (kg)</div>
       <input id="levo-weight" type="number" step="0.1" placeholder="Enter weight in kg"
         style="width:100%;padding:12px;border-radius:10px;border:1px solid var(--border);
-               background:#0b0d10;color:var(--text)">
+               background:#0b0d10;color:var(--text)"
+        oninput="calcLevothyroxine()">
     </div>
 
-    <button class="primary-btn" onclick="calcLevothyroxine()">
-      Calculate Initial Dose
-    </button>
-
-    <div id="levo-result" class="result hidden"></div>
+    <div id="levo-result" class="result hidden" style="margin-top: 14px;"></div>
 
     <div class="monitor">
       <b>Guideline Notes (ATA/Endocrine Society):</b><br>
@@ -1311,19 +1334,27 @@ let levoSeverity = 'overt';
 
 function setLevoStatus(val, btn) {
   levoStatus = val;
-  select(btn); // Uses your existing global select function
-  document.getElementById('levo-result').classList.add('hidden');
+  select(btn); 
+  calcLevothyroxine(); // Recalculate instantly if weight is already entered
 }
 
 function setLevoSeverity(val, btn) {
   levoSeverity = val;
   select(btn);
-  document.getElementById('levo-result').classList.add('hidden');
+  calcLevothyroxine(); // Recalculate instantly if weight is already entered
 }
 
 function calcLevothyroxine() {
-  const wt = parseFloat(document.getElementById('levo-weight').value);
+  const wtInput = document.getElementById('levo-weight').value;
   const res = document.getElementById('levo-result');
+
+  // Hide the result box if the user clears the input field
+  if (wtInput === '') {
+    res.classList.add('hidden');
+    return;
+  }
+
+  const wt = parseFloat(wtInput);
 
   if (!wt || wt <= 0) {
     res.className = 'result warn';
@@ -1346,17 +1377,15 @@ function calcLevothyroxine() {
     }
   } else if (levoStatus === 'pregnant') {
     if (levoSeverity === 'overt') {
-      dosePerKg = 1.6; // ATA guidelines state 1.6 - 1.8 for overt in pregnancy / TSH > 10
+      dosePerKg = 1.6; 
       message = "Based on pregnancy overt (TSH &ge; 10) starting dose (1.6 mcg/kg/day).";
     } else {
-      dosePerKg = 1.2; // ~1.0-1.2 is used for pregnant SCH / TSH < 10
+      dosePerKg = 1.2; 
       message = "Based on pregnancy subclinical (TSH &lt; 10) starting dose (1.2 mcg/kg/day).";
     }
   }
 
   exactDose = wt * dosePerKg;
-
-  // Practical rounding to nearest 12.5 mcg (half of a 25mcg tablet)
   const roundedDose = Math.round(exactDose / 12.5) * 12.5;
 
   res.className = 'result success';
@@ -1609,7 +1638,6 @@ function calculateGCS(){
 
   <div class="tool-body">
 
-    <!-- INPUT -->
     <div class="step">
       <div class="step-title">Enter CBC Values</div>
 
@@ -1620,6 +1648,7 @@ function calculateGCS(){
           placeholder="MCV (fL)"
           style="flex:1;padding:12px;border-radius:10px;
           border:1px solid var(--border);background:#0b0d10;color:var(--text)"
+          oninput="calcMentzer()"
         >
 
         <input
@@ -1629,57 +1658,13 @@ function calculateGCS(){
           placeholder="RBC (million/µL)"
           style="flex:1;padding:12px;border-radius:10px;
           border:1px solid var(--border);background:#0b0d10;color:var(--text)"
+          oninput="calcMentzer()"
         >
       </div>
-
-      <button
-        onclick="(function(){
-          const mcv = Number(document.getElementById('mentzer-mcv').value);
-          const rbc = Number(document.getElementById('mentzer-rbc').value);
-          const result = document.getElementById('mentzer-result');
-
-          if(!mcv || !rbc || rbc <= 0){
-            result.className = 'result warn';
-            result.textContent = 'Please enter valid MCV and RBC values.';
-            result.classList.remove('hidden');
-            return;
-          }
-
-          const index = (mcv / rbc).toFixed(1);
-
-          if(index < 13){
-            result.className = 'result success';
-            result.innerHTML =
-              '<strong>Mentzer Index = ' + index +
-              '</strong><br>Suggestive of <b>Thalassemia trait</b>';
-          } else {
-            result.className = 'result warn';
-            result.innerHTML =
-              '<strong>Mentzer Index = ' + index +
-              '</strong><br>Suggestive of <b>Iron Deficiency Anemia</b>';
-          }
-
-          result.classList.remove('hidden');
-        })()"
-        style="
-          margin-top:14px;
-          width:100%;
-          padding:12px;
-          border-radius:10px;
-          border:none;
-          background:var(--accent);
-          color:#fff;
-          font-weight:700;
-          cursor:pointer
-        ">
-        Calculate Mentzer Index
-      </button>
     </div>
 
-    <!-- RESULT -->
-    <div id="mentzer-result" class="result hidden"></div>
+    <div id="mentzer-result" class="result hidden" style="margin-top: 14px;"></div>
 
-    <!-- INTERPRETATION -->
     <div class="monitor">
       <b>Formula:</b> MCV ÷ RBC count<br><br>
 
@@ -1693,6 +1678,46 @@ function calculateGCS(){
 
   </div>
 </details>
+
+<script>
+function calcMentzer(){
+  const mcvInput = document.getElementById('mentzer-mcv').value;
+  const rbcInput = document.getElementById('mentzer-rbc').value;
+  const result = document.getElementById('mentzer-result');
+
+  // Silently hide the result if either field is empty while typing
+  if(mcvInput === '' || rbcInput === ''){
+    result.classList.add('hidden');
+    return;
+  }
+
+  const mcv = Number(mcvInput);
+  const rbc = Number(rbcInput);
+
+  if(mcv <= 0 || rbc <= 0){
+    result.className = 'result warn';
+    result.textContent = 'Please enter valid positive values.';
+    result.classList.remove('hidden');
+    return;
+  }
+
+  const index = (mcv / rbc).toFixed(1);
+
+  if(index < 13){
+    result.className = 'result success';
+    result.innerHTML =
+      '<strong>Mentzer Index = ' + index +
+      '</strong><br>Suggestive of <b>Thalassemia trait</b>';
+  } else {
+    result.className = 'result warn';
+    result.innerHTML =
+      '<strong>Mentzer Index = ' + index +
+      '</strong><br>Suggestive of <b>Iron Deficiency Anemia</b>';
+  }
+
+  result.classList.remove('hidden');
+}
+</script>
 
 
 
@@ -1831,46 +1856,30 @@ function calcO2Time(){
 
   <div class="tool-body">
 
-    <!-- INPUT -->
     <div class="step">
       <div class="step-title">Enter ABG values</div>
 
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
         <input id="abg_ph" type="number" step="0.01" placeholder="pH"
           style="padding:12px;border-radius:10px;border:1px solid var(--border);
-          background:#0b0d10;color:var(--text)">
+          background:#0b0d10;color:var(--text)" oninput="interpretABGAdvanced()">
 
         <input id="abg_paco2" type="number" step="1" placeholder="PaCO₂ (mmHg)"
           style="padding:12px;border-radius:10px;border:1px solid var(--border);
-          background:#0b0d10;color:var(--text)">
+          background:#0b0d10;color:var(--text)" oninput="interpretABGAdvanced()">
 
         <input id="abg_hco3" type="number" step="1" placeholder="HCO₃⁻ (mEq/L)"
           style="padding:12px;border-radius:10px;border:1px solid var(--border);
-          background:#0b0d10;color:var(--text)">
+          background:#0b0d10;color:var(--text)" oninput="interpretABGAdvanced()">
 
         <input id="abg_pao2" type="number" step="1" placeholder="PaO₂ (mmHg)"
           style="padding:12px;border-radius:10px;border:1px solid var(--border);
-          background:#0b0d10;color:var(--text)">
+          background:#0b0d10;color:var(--text)" oninput="interpretABGAdvanced()">
       </div>
-
-      <button onclick="interpretABGAdvanced()" style="
-        margin-top:14px;
-        width:100%;
-        padding:12px;
-        border-radius:10px;
-        border:none;
-        background:var(--accent);
-        color:#fff;
-        font-weight:700;
-        cursor:pointer">
-        Interpret ABG
-      </button>
     </div>
 
-    <!-- RESULT -->
-    <div id="abg_result" class="result hidden"></div>
+    <div id="abg_result" class="result hidden" style="margin-top: 14px;"></div>
 
-    <!-- INFO -->
     <div class="monitor">
       <b>Normal reference:</b><br>
       • pH: 7.35 – 7.45<br>
@@ -1887,11 +1896,22 @@ function calcO2Time(){
 <script>
 function interpretABGAdvanced() {
 
-  const ph = parseFloat(document.getElementById('abg_ph').value);
-  const co2 = parseFloat(document.getElementById('abg_paco2').value);
-  const hco3 = parseFloat(document.getElementById('abg_hco3').value);
-  const o2 = parseFloat(document.getElementById('abg_pao2').value);
+  const phInput = document.getElementById('abg_ph').value;
+  const co2Input = document.getElementById('abg_paco2').value;
+  const hco3Input = document.getElementById('abg_hco3').value;
+  const o2Input = document.getElementById('abg_pao2').value;
   const res = document.getElementById('abg_result');
+
+  // Silently hide result if required fields (pH, CO2, HCO3) are empty while typing
+  if (phInput === '' || co2Input === '' || hco3Input === '') {
+    res.classList.add('hidden');
+    return;
+  }
+
+  const ph = parseFloat(phInput);
+  const co2 = parseFloat(co2Input);
+  const hco3 = parseFloat(hco3Input);
+  const o2 = parseFloat(o2Input);
 
   if (isNaN(ph) || isNaN(co2) || isNaN(hco3)) {
     res.className = 'result warn';
@@ -1955,7 +1975,7 @@ function interpretABGAdvanced() {
 
   /* STEP 4: OXYGENATION */
   let oxygenation = '';
-  if (!isNaN(o2)) {
+  if (o2Input !== '' && !isNaN(o2)) {
     if (o2 >= 80) oxygenation = 'Normal oxygenation';
     else if (o2 >= 60) oxygenation = 'Mild hypoxemia';
     else oxygenation = 'Severe hypoxemia';
@@ -2408,15 +2428,14 @@ details[open] .em-arrow{
   📌 View common ICU infusion doses
 </button>
 
-    <!-- DRUG PREPARATION -->
     <div class="form-card">
       <div class="form-section-title">Drug preparation</div>
 
       <div class="form-group">
         <span class="form-label">Strength per mL</span>
         <div class="form-row">
-          <input id="inf-strength" type="number" step="0.01" class="form-input">
-          <select id="inf-unit" class="form-select">
+          <input id="inf-strength" type="number" step="0.01" class="form-input" oninput="calcInfusion()">
+          <select id="inf-unit" class="form-select" onchange="calcInfusion()">
             <option value="mg">mg/mL</option>
             <option value="mcg">µg/mL</option>
           </select>
@@ -2426,30 +2445,29 @@ details[open] .em-arrow{
       <div class="form-row-2" style="margin-top:12px">
         <div class="form-group">
           <span class="form-label">Ampoule volume (mL)</span>
-          <input id="inf-amp-vol" type="number" step="0.1" class="form-input">
+          <input id="inf-amp-vol" type="number" step="0.1" class="form-input" oninput="calcInfusion()">
         </div>
 
         <div class="form-group">
           <span class="form-label">Total number of ampoules</span>
-          <input id="inf-amp-count" type="number" step="1" class="form-input">
+          <input id="inf-amp-count" type="number" step="1" class="form-input" oninput="calcInfusion()">
         </div>
       </div>
 
       <div class="form-group" style="margin-top:12px">
         <span class="form-label">Final dilution volume (mL)</span>
-        <input id="inf-dilution" type="number" step="1" class="form-input">
+        <input id="inf-dilution" type="number" step="1" class="form-input" oninput="calcInfusion()">
       </div>
     </div>
 
-    <!-- DOSE -->
     <div class="form-card">
       <div class="form-section-title">Dose to be administered</div>
 
       <div class="form-group">
         <span class="form-label">Prescribed dose</span>
         <div class="form-row">
-          <input id="inf-dose" type="number" step="0.01" class="form-input">
-          <select id="inf-dose-unit" class="form-select">
+          <input id="inf-dose" type="number" step="0.01" class="form-input" oninput="calcInfusion()">
+          <select id="inf-dose-unit" class="form-select" onchange="calcInfusion()">
             <option value="mg_hr">mg/hr</option>
             <option value="mg_kg_hr">mg/kg/hr</option>
             <option value="mcg_min">µg/min</option>
@@ -2460,20 +2478,12 @@ details[open] .em-arrow{
 
       <div class="form-group" style="margin-top:12px">
         <span class="form-label">Patient weight (kg)</span>
-        <input id="inf-weight" type="number" step="0.1" class="form-input">
+        <input id="inf-weight" type="number" step="0.1" class="form-input" oninput="calcInfusion()">
       </div>
     </div>
 
-    <!-- ACTION -->
-   
-    <button onclick="calcInfusion()" class="primary-btn">
-      Calculate Infusion Rate
-    </button>
+    <div id="inf-result" class="result hidden" style="margin-top: 14px;"></div>
 
-    <!-- RESULT -->
-    <div id="inf-result" class="result hidden"></div>
-
-    <!-- NOTES -->
     <div class="monitor">
       <b>Clinical notes:</b><br>
       • Uses actual ampoule volume × count<br>
@@ -2487,20 +2497,44 @@ details[open] .em-arrow{
 
 <script>
 function calcInfusion(){
-  const strength = Number(document.getElementById('inf-strength').value);
+  const strInput = document.getElementById('inf-strength').value;
   const unit = document.getElementById('inf-unit').value;
-  const ampVol = Number(document.getElementById('inf-amp-vol').value);
-  const ampCount = Number(document.getElementById('inf-amp-count').value);
-  const dilution = Number(document.getElementById('inf-dilution').value);
+  const ampVolInput = document.getElementById('inf-amp-vol').value;
+  const ampCountInput = document.getElementById('inf-amp-count').value;
+  const dilutionInput = document.getElementById('inf-dilution').value;
 
-  const dose = Number(document.getElementById('inf-dose').value);
+  const doseInput = document.getElementById('inf-dose').value;
   const doseUnit = document.getElementById('inf-dose-unit').value;
-  const weight = Number(document.getElementById('inf-weight').value);
+  const weightInput = document.getElementById('inf-weight').value;
 
   const res = document.getElementById('inf-result');
 
-  if(!strength || !ampVol || !ampCount || !dilution || !dose){
-    showError("Please fill all required fields.");
+  // Check if weight is required based on the selected dose unit
+  const weightRequired = (doseUnit === 'mg_kg_hr' || doseUnit === 'mcg_kg_min');
+
+  // Silently hide result if any basic required fields are empty
+  if(!strInput || !ampVolInput || !ampCountInput || !dilutionInput || !doseInput) {
+    res.classList.add('hidden');
+    return;
+  }
+
+  // Silently hide if weight is required but empty
+  if(weightRequired && !weightInput) {
+    res.classList.add('hidden');
+    return;
+  }
+
+  const strength = Number(strInput);
+  const ampVol = Number(ampVolInput);
+  const ampCount = Number(ampCountInput);
+  const dilution = Number(dilutionInput);
+  const dose = Number(doseInput);
+  const weight = Number(weightInput);
+
+  if(strength <= 0 || ampVol <= 0 || ampCount <= 0 || dilution <= 0 || dose <= 0 || (weightRequired && weight <= 0)){
+    res.className = 'result warn';
+    res.textContent = "Please enter valid positive numbers.";
+    res.classList.remove('hidden');
     return;
   }
 
@@ -2514,12 +2548,10 @@ function calcInfusion(){
   if(doseUnit === 'mg_hr'){
     requiredMgHr = dose;
   } else if(doseUnit === 'mg_kg_hr'){
-    if(!weight) return showError("Weight required for kg-based dosing.");
     requiredMgHr = dose * weight;
   } else if(doseUnit === 'mcg_min'){
     requiredMgHr = (dose * 60) / 1000;
   } else if(doseUnit === 'mcg_kg_min'){
-    if(!weight) return showError("Weight required for kg-based dosing.");
     requiredMgHr = (dose * weight * 60) / 1000;
   }
 
@@ -2532,14 +2564,9 @@ function calcInfusion(){
     Final concentration: <b>${concentration.toFixed(4)} mg/mL</b>
   `;
   res.classList.remove('hidden');
-
-  function showError(msg){
-    res.className = 'result warn';
-    res.textContent = msg;
-    res.classList.remove('hidden');
-  }
 }
 </script>
+  
   <!-- ================= INSTALL AS APP ================= -->
 
 <details class="tool install-tool">
