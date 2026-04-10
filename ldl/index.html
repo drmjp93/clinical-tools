@@ -225,7 +225,7 @@
 
       async function updateVisitorCount() {
         try {
-          const r = await fetch('https://api.counterapi.dev/v1/drmjp93-ldlcal/visits/up');
+          const r = await fetch('https://visits.drmjp93.workers.dev/?tool=ldl');
           const d = await r.json();
           S('visitorCount').innerText = `👥 ${d.count}`;
         } catch (e) {}
