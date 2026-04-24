@@ -121,6 +121,9 @@
     <div class="tog" data-id="met">Metabolic Syndrome</div>
     <div class="tog" data-id="south">South Asian Ethnicity</div>
     <div class="tog" data-id="lpa">High Lp(a) ≥50 mg/dL</div>
+    <div class="tog" data-id="cac0">CAC = 0</div>
+    <div class="tog" data-id="cac1">CAC 1–99</div>
+    <div class="tog" data-id="cac100">CAC ≥100</div>
   </div>
 
   <!-- ASCVD CALCULATOR -->
@@ -139,7 +142,7 @@
         </div>
       </div>
       <div class="ascvd-note">
-        ⚠️ <strong>ACC/AHA 2026 uses PREVENT-ASCVD equations</strong> — the old Pooled Cohort Equations (PCE) have been <strong>retired</strong>. This calculator uses PCE as an approximation only. For accurate PREVENT score: <a href="https://www.heart.org/PREVENT" target="_blank" style="color:#60a5fa;">heart.org/PREVENT</a>. CSI 2023 uses risk factor counting rather than equations.
+        ⚠️ <strong>ACC/AHA 2026 introduces PREVENT-ASCVD equations</strong>. This calculator uses PCE as an approximation only. For accurate PREVENT score: <a href="https://www.heart.org/PREVENT" target="_blank" style="color:#60a5fa;">heart.org/PREVENT</a>. CSI 2023 uses risk factor counting rather than equations.
       </div>
       <div id="ascvdResult" class="ascvd-score-box">Enter values above</div>
     </div>
@@ -192,9 +195,20 @@
       calcASCVD();
     };
 
-    document.querySelectorAll('.tog:not([data-id="male"]):not([data-id="female"])').forEach(p => {
-      p.addEventListener('click', () => { p.classList.toggle('act'); setTimeout(callServer, 50); });
-    });
+   document.querySelectorAll('.tog:not([data-id="male"]):not([data-id="female"])').forEach(p => {
+  p.addEventListener('click', () => {
+
+    // --- CAC group exclusivity ---
+    if (p.dataset.id.startsWith('cac')) {
+      document.querySelectorAll('[data-id^="cac"]').forEach(el => el.classList.remove('act'));
+      p.classList.add('act');
+    } else {
+      p.classList.toggle('act');
+    }
+
+    setTimeout(callServer, 50);
+  });
+});
 
     function isAct(id) { const el = document.querySelector(`[data-id="${id}"]`); return el && el.classList.contains('act'); }
 
@@ -270,11 +284,18 @@
 
       // Map to PREVENT-equivalent categories (2026 guideline tiers)
       let cat, catClass;
-      if (score10 >= 10)      { cat = 'High ≥10%';          catClass = 'high'; }
-      else if (score10 >= 5)  { cat = 'Intermediate 5–10%'; catClass = 'intermediate'; }
-      else if (score10 >= 3)  { cat = 'Borderline 3–5%';    catClass = 'borderline'; }
-      else                    { cat = 'Low <3%';             catClass = 'low'; }
-
+     if (score10 >= 20) {
+  cat = 'High ≥20%'; catClass = 'high';
+}
+else if (score10 >= 7.5) {
+  cat = 'Intermediate 7.5–20%'; catClass = 'intermediate';
+}
+else if (score10 >= 5) {
+  cat = 'Borderline 5–7.5%'; catClass = 'borderline';
+}
+else {
+  cat = 'Low <5%'; catClass = 'low';
+}
       badge.textContent = `${score10.toFixed(1)}% — ${cat}`;
       el.className = `ascvd-score-box ${catClass}`;
       el.innerHTML = `${score10.toFixed(1)}% 10-Year ASCVD Risk (PCE approx.)<div class="ascvd-sub">${cat} · Goff et al. JACC 2014<br>⚠️ ACC/AHA 2026 uses PREVENT — see note above</div>`;
@@ -356,11 +377,17 @@
     // API CALL
     // ==========================================
     async function callServer() {
-      const flags = {
-        ascvd: isAct('ascvd'), diabetes: isAct('diabetes'), dmorg: isAct('dmorg'),
-        ckd: isAct('ckd'), htn: isAct('htn'), smoke: isAct('smoke'),
-        fh: isAct('fh'), met: isAct('met'), south: isAct('south'), lpa: isAct('lpa')
-      };
+     let cac = null;
+      if (isAct('cac0')) cac = 0;
+      else if (isAct('cac1')) cac = 1;   // just means >0
+      else if (isAct('cac100')) cac = 100;
+
+const flags = {
+  ascvd: isAct('ascvd'), diabetes: isAct('diabetes'), dmorg: isAct('dmorg'),
+  ckd: isAct('ckd'), htn: isAct('htn'), smoke: isAct('smoke'),
+  fh: isAct('fh'), met: isAct('met'), south: isAct('south'), lpa: isAct('lpa'),
+  cac: cac
+};
       const payload = {
         age: +document.getElementById('age').value || 0,
         ldl: +document.getElementById('ldl').value || 0,
