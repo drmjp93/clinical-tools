@@ -227,6 +227,16 @@
   // ── TOGGLE PILLS ──────────────────────────────────────
   document.querySelectorAll('.tog:not([data-id="male"]):not([data-id="female"])').forEach(pill => {
     pill.addEventListener('click', () => {
+      
+      const id = pill.dataset.id;
+
+// If factor affects PCE → recalc
+if (id === 'smoke' || id === 'diabetes') {
+  setTimeout(calcASCVD, 50);
+} else {
+  setTimeout(callServer, 50);
+}
+      
       if (pill.dataset.id.startsWith('cac')) {
         // CAC is mutually exclusive — deselect others first
         document.querySelectorAll('[data-id^="cac"]').forEach(e => e.classList.remove('act'));
@@ -485,13 +495,18 @@
     return (...a) => { clearTimeout(t); t = setTimeout(() => fn(...a), ms); };
   }
 
-  ['age','ldl','tg'].forEach(id => {
-    const el = document.getElementById(id);
-    if (el) {
-      el.addEventListener('input',  debounce(callServer, 300));
+ ['age','ldl','tg'].forEach(id => {
+  const el = document.getElementById(id);
+  if (el) {
+    if (id === 'age') {
+      el.addEventListener('input', debounce(calcASCVD, 300));
+      el.addEventListener('change', calcASCVD);
+    } else {
+      el.addEventListener('input', debounce(callServer, 300));
       el.addEventListener('change', callServer);
     }
-  });
+  }
+});
 
   ['tc','hdl','sbp','bpRx'].forEach(id => {
     const el = document.getElementById(id);
