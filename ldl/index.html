@@ -6,243 +6,79 @@
   <title>LDL Statin Calc (India)</title>
   <style>
     :root {
-      --bg: #0f1113;
-      --card: #16191d;
-      --inner: #0b0d10;
-      --border: #262a30;
-      --text: #e5e7eb;
-      --muted: #9ca3af;
-      --accent: #3b82f6;
-      --success: #064e3b;
-      --warn: #78350f;
-      --info: #1e3a8a;
-      --danger: #7a1b1b;
-      --csi: #1d4ed8;
-      --lai: #7c3aed;
-      --both: #0f766e;
+      --bg: #0f1113; --card: #16191d; --inner: #0b0d10; --border: #262a30;
+      --text: #e5e7eb; --muted: #9ca3af; --accent: #3b82f6;
+      --success: #064e3b; --warn: #78350f; --info: #1e3a8a; --danger: #7a1b1b;
+      --csi: #1d4ed8; --aha: #b91c1c; --both: #0f766e;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      font-family: system-ui, -apple-system, Segoe UI, Roboto;
-      background: var(--bg);
-      color: var(--text);
-      padding: 14px;
-      font-size: 15px;
-    }
+    body { font-family: system-ui,-apple-system,Segoe UI,Roboto; background: var(--bg); color: var(--text); padding: 14px; font-size: 15px; }
 
-    /* HEADER */
-    .hd {
-      background: var(--card);
-      padding: 12px 14px;
-      border-radius: 12px;
-      margin-bottom: 12px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      border: 1px solid var(--border);
-    }
+    .hd { background: var(--card); padding: 12px 14px; border-radius: 12px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; border: 1px solid var(--border); }
     .hd-title { font-weight: 800; font-size: 1rem; }
-    .hd-right { display: flex; align-items: center; gap: 10px; font-size: 13px; color: var(--muted); }
 
-    /* GUIDELINE SELECTOR */
-    .gl-bar {
-      display: flex;
-      gap: 6px;
-      margin-bottom: 12px;
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 6px;
-    }
-    .gl-btn {
-      flex: 1;
-      padding: 8px 6px;
-      border-radius: 8px;
-      border: none;
-      font-weight: 700;
-      font-size: 13px;
-      cursor: pointer;
-      background: transparent;
-      color: var(--muted);
-      transition: all .15s;
-      text-align: center;
-    }
+    .gl-bar { display: flex; gap: 6px; margin-bottom: 12px; background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 6px; }
+    .gl-btn { flex: 1; padding: 8px 6px; border-radius: 8px; border: none; font-weight: 700; font-size: 13px; cursor: pointer; background: transparent; color: var(--muted); transition: all .15s; text-align: center; }
     .gl-btn.act-csi { background: var(--csi); color: #fff; }
-    .gl-btn.act-lai { background: var(--lai); color: #fff; }
+    .gl-btn.act-aha { background: var(--aha); color: #fff; }
     .gl-btn.act-both { background: var(--both); color: #fff; }
 
-    /* INPUTS */
     .f1 { display: flex; gap: 8px; margin-bottom: 10px; flex-wrap: wrap; }
     .c1 { flex: 1; min-width: 80px; }
     .lbl { font-size: 11px; color: var(--muted); margin-bottom: 3px; }
-    .i {
-      width: 100%;
-      padding: 10px 10px;
-      border-radius: 8px;
-      border: 1px solid var(--border);
-      background: var(--inner);
-      color: var(--text);
-      font-size: 1rem;
-    }
+    .i { width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border); background: var(--inner); color: var(--text); font-size: 1rem; }
     .i:focus { outline: 1px solid var(--accent); }
 
-    /* SECTION LABEL */
-    .sec-lbl {
-      font-weight: 700;
-      font-size: 12px;
-      color: var(--muted);
-      text-transform: uppercase;
-      letter-spacing: .05em;
-      margin: 10px 0 6px;
-    }
-
-    /* TOGGLE PILLS */
+    .sec-lbl { font-weight: 700; font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; margin: 10px 0 6px; }
     .r { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
-    .tog {
-      padding: 6px 11px;
-      border-radius: 999px;
-      border: 1px solid var(--border);
-      background: var(--card);
-      color: var(--muted);
-      font-weight: 600;
-      font-size: 13px;
-      cursor: pointer;
-      transition: all .12s;
-      user-select: none;
-    }
+    .tog { padding: 6px 11px; border-radius: 999px; border: 1px solid var(--border); background: var(--card); color: var(--muted); font-weight: 600; font-size: 13px; cursor: pointer; transition: all .12s; user-select: none; }
     .tog.act { background: var(--accent); color: #fff; border-color: var(--accent); }
 
-    /* ASCVD CALCULATOR PANEL */
-    .ascvd-panel {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      margin-bottom: 12px;
-      overflow: hidden;
-    }
-    .ascvd-hdr {
-      padding: 10px 14px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      cursor: pointer;
-      border-bottom: 1px solid transparent;
-      transition: border-color .15s;
-    }
+    /* ASCVD panel */
+    .ascvd-panel { background: var(--card); border: 1px solid var(--border); border-radius: 12px; margin-bottom: 12px; overflow: hidden; }
+    .ascvd-hdr { padding: 10px 14px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; border-bottom: 1px solid transparent; transition: border-color .15s; }
     .ascvd-hdr.open { border-bottom-color: var(--border); }
     .ascvd-hdr-title { font-weight: 700; font-size: 14px; }
-    .ascvd-badge {
-      font-size: 12px;
-      font-weight: 700;
-      padding: 3px 9px;
-      border-radius: 999px;
-      background: var(--info);
-      color: #bfdbfe;
-    }
+    .ascvd-badge { font-size: 12px; font-weight: 700; padding: 3px 9px; border-radius: 999px; background: var(--info); color: #bfdbfe; }
     .ascvd-body { display: none; padding: 12px 14px; }
     .ascvd-body.open { display: block; }
-    .ascvd-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-    .ascvd-score-box {
-      margin-top: 10px;
-      padding: 10px 14px;
-      border-radius: 10px;
-      text-align: center;
-      font-weight: 800;
-      font-size: 1.1rem;
-      background: var(--inner);
-      border: 1px solid var(--border);
-    }
+    .ascvd-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px; }
+    .ascvd-note { font-size: 11px; color: #f59e0b; background: #1c1408; border: 1px solid #78350f; border-radius: 8px; padding: 7px 10px; margin-top: 6px; line-height: 1.5; }
+    .ascvd-score-box { margin-top: 10px; padding: 10px 14px; border-radius: 10px; text-align: center; font-weight: 800; font-size: 1.1rem; background: var(--inner); border: 1px solid var(--border); }
     .ascvd-score-box.low { border-color: #064e3b; color: #6ee7b7; }
+    .ascvd-score-box.borderline { border-color: #1e3a8a; color: #93c5fd; }
     .ascvd-score-box.intermediate { border-color: #92400e; color: #fcd34d; }
     .ascvd-score-box.high { border-color: #7f1d1d; color: #fca5a5; }
     .ascvd-sub { font-size: 12px; font-weight: 500; color: var(--muted); margin-top: 3px; }
 
-    /* RESULT PANEL */
-    .panel {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 12px 14px;
-      margin-bottom: 10px;
-    }
+    /* Result panels */
+    .panel { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 12px 14px; margin-bottom: 10px; }
     .panel-title { font-weight: 700; font-size: 13px; color: var(--muted); margin-bottom: 8px; display: flex; justify-content: space-between; }
-    .target {
-      padding: 12px 14px;
-      border-radius: 10px;
-      font-weight: 800;
-      font-size: 1rem;
-      margin-bottom: 8px;
-    }
+    .target { padding: 12px 14px; border-radius: 10px; font-weight: 800; font-size: 1rem; margin-bottom: 8px; }
     .target.green { background: var(--success); color: #d1fae5; }
     .target.amber { background: var(--warn); color: #fde68a; }
     .target.red { background: var(--danger); color: #fee2e2; }
     .target.tg { background: var(--info); color: #dbeafe; }
-    .risk-cat {
-      display: inline-block;
-      font-size: 11px;
-      font-weight: 700;
-      padding: 2px 8px;
-      border-radius: 999px;
-      background: #1f2937;
-      color: var(--muted);
-      margin-bottom: 6px;
-    }
+    .risk-cat { display: inline-block; font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 999px; background: #1f2937; color: var(--muted); margin-bottom: 6px; }
     .rec { font-weight: 600; font-size: 14px; margin-bottom: 4px; }
     .rat { font-size: 12px; color: var(--muted); line-height: 1.5; }
     .non-hdl { font-size: 12px; color: #93c5fd; margin-top: 4px; font-weight: 600; }
-    .statin-pill {
-      display: inline-block;
-      margin-top: 6px;
-      font-size: 11px;
-      font-weight: 700;
-      padding: 2px 9px;
-      border-radius: 999px;
-    }
+    .statin-pill { display: inline-block; margin-top: 6px; font-size: 11px; font-weight: 700; padding: 2px 9px; border-radius: 999px; }
     .statin-yes { background: #064e3b; color: #6ee7b7; }
     .statin-no { background: #1f2937; color: #9ca3af; }
     .statin-shared { background: #78350f; color: #fcd34d; }
 
-    /* COMPARISON VIEW */
+    /* Comparison */
     .compare-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-    .compare-col { }
-    .compare-hdr {
-      font-size: 12px;
-      font-weight: 800;
-      padding: 5px 10px;
-      border-radius: 8px;
-      margin-bottom: 6px;
-      text-align: center;
-    }
+    .compare-hdr { font-size: 12px; font-weight: 800; padding: 5px 10px; border-radius: 8px; margin-bottom: 6px; text-align: center; }
     .compare-hdr.csi { background: var(--csi); color: #fff; }
-    .compare-hdr.lai { background: var(--lai); color: #fff; }
-    .compare-item {
-      background: var(--inner);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 8px 10px;
-      margin-bottom: 6px;
-    }
+    .compare-hdr.aha { background: var(--aha); color: #fff; }
+    .compare-item { background: var(--inner); border: 1px solid var(--border); border-radius: 8px; padding: 8px 10px; margin-bottom: 6px; }
     .compare-item .lbl { font-size: 10px; }
     .compare-item .val { font-weight: 700; font-size: 13px; }
-    .diff-badge {
-      font-size: 10px;
-      font-weight: 700;
-      padding: 1px 6px;
-      border-radius: 999px;
-      background: #7c3aed22;
-      color: #a78bfa;
-      margin-left: 4px;
-    }
+    .diff-badge { font-size: 10px; font-weight: 700; padding: 1px 6px; border-radius: 999px; background: #7c3aed22; color: #a78bfa; margin-left: 4px; }
 
-    footer {
-      margin-top: 14px;
-      padding-top: 10px;
-      border-top: 1px solid var(--border);
-      font-size: 11px;
-      color: var(--muted);
-      text-align: center;
-      line-height: 1.8;
-    }
+    footer { margin-top: 14px; padding-top: 10px; border-top: 1px solid var(--border); font-size: 11px; color: var(--muted); text-align: center; line-height: 1.8; }
     footer a { color: var(--accent); text-decoration: none; }
   </style>
 </head>
@@ -250,43 +86,30 @@
 
   <header class="hd">
     <span class="hd-title">🫀 LDL Statin Calc — India</span>
-    <div class="hd-right">
-      <span id="visitorCount">👥 —</span>
-    </div>
+    <span id="visitorCount" style="font-size:13px;color:var(--muted);">👥 —</span>
   </header>
 
   <!-- GUIDELINE SELECTOR -->
   <div class="gl-bar">
     <button class="gl-btn act-csi" data-gl="csi" onclick="setGL('csi')">CSI 2023</button>
-    <button class="gl-btn" data-gl="lai" onclick="setGL('lai')">LAI 2023</button>
+    <button class="gl-btn" data-gl="aha" onclick="setGL('aha')">ACC/AHA 2026</button>
     <button class="gl-btn" data-gl="both" onclick="setGL('both')">Compare Both</button>
   </div>
 
   <!-- PATIENT INPUTS -->
   <div class="f1">
-    <div class="c1">
-      <div class="lbl">Age (yrs)</div>
-      <input id="age" class="i" type="number" placeholder="e.g. 52">
-    </div>
-    <div class="c1">
-      <div class="lbl">LDL (mg/dL)</div>
-      <input id="ldl" class="i" type="number" placeholder="e.g. 130">
-    </div>
-    <div class="c1">
-      <div class="lbl">TG (mg/dL)</div>
-      <input id="tg" class="i" type="number" placeholder="e.g. 180">
-    </div>
+    <div class="c1"><div class="lbl">Age (yrs)</div><input id="age" class="i" type="number" placeholder="e.g. 52"></div>
+    <div class="c1"><div class="lbl">LDL (mg/dL)</div><input id="ldl" class="i" type="number" placeholder="e.g. 130"></div>
+    <div class="c1"><div class="lbl">TG (mg/dL)</div><input id="tg" class="i" type="number" placeholder="e.g. 180"></div>
   </div>
 
-  <!-- SEX (for ASCVD score) -->
   <div class="sec-lbl">Sex</div>
   <div class="r">
     <div class="tog act" data-id="male" onclick="setSex('male')">Male</div>
     <div class="tog" data-id="female" onclick="setSex('female')">Female</div>
   </div>
 
-  <!-- RISK FLAGS -->
-  <div class="sec-lbl">Risk factors / Enhancers</div>
+  <div class="sec-lbl">Risk Factors / Enhancers</div>
   <div class="r" id="pRow">
     <div class="tog" data-id="ascvd">Clinical ASCVD</div>
     <div class="tog" data-id="diabetes">Diabetes</div>
@@ -303,37 +126,27 @@
   <!-- ASCVD CALCULATOR -->
   <div class="ascvd-panel">
     <div class="ascvd-hdr" id="ascvdHdr" onclick="toggleASCVD()">
-      <span class="ascvd-hdr-title">🧮 ASCVD 10-Year Risk Calculator</span>
+      <span class="ascvd-hdr-title">🧮 10-Year ASCVD Risk Calculator</span>
       <span class="ascvd-badge" id="ascvdBadge">Tap to open</span>
     </div>
     <div class="ascvd-body" id="ascvdBody">
       <div class="ascvd-grid">
-        <div>
-          <div class="lbl">Total Cholesterol (mg/dL)</div>
-          <input id="tc" class="i" type="number" placeholder="e.g. 200">
+        <div><div class="lbl">Total Cholesterol (mg/dL)</div><input id="tc" class="i" type="number" placeholder="e.g. 200"></div>
+        <div><div class="lbl">HDL-C (mg/dL)</div><input id="hdl" class="i" type="number" placeholder="e.g. 45"></div>
+        <div><div class="lbl">Systolic BP (mmHg)</div><input id="sbp" class="i" type="number" placeholder="e.g. 130"></div>
+        <div><div class="lbl">On BP Treatment?</div>
+          <select id="bpRx" class="i"><option value="0">No</option><option value="1">Yes</option></select>
         </div>
-        <div>
-          <div class="lbl">HDL-C (mg/dL)</div>
-          <input id="hdl" class="i" type="number" placeholder="e.g. 45">
-        </div>
-        <div>
-          <div class="lbl">Systolic BP (mmHg)</div>
-          <input id="sbp" class="i" type="number" placeholder="e.g. 130">
-        </div>
-        <div>
-          <div class="lbl">BP Treatment</div>
-          <select id="bpRx" class="i">
-            <option value="0">Not on treatment</option>
-            <option value="1">On BP treatment</option>
-          </select>
-        </div>
+      </div>
+      <div class="ascvd-note">
+        ⚠️ <strong>ACC/AHA 2026 uses PREVENT-ASCVD equations</strong> — the old Pooled Cohort Equations (PCE) have been <strong>retired</strong>. This calculator uses PCE as an approximation only. For accurate PREVENT score: <a href="https://www.heart.org/PREVENT" target="_blank" style="color:#60a5fa;">heart.org/PREVENT</a>. CSI 2023 uses risk factor counting rather than equations.
       </div>
       <div id="ascvdResult" class="ascvd-score-box">Enter values above</div>
     </div>
   </div>
 
-  <!-- LDL RESULT -->
-  <div id="ldlPanel" class="panel">
+  <!-- RESULTS -->
+  <div class="panel">
     <div class="panel-title">
       <span>LDL Recommendation</span>
       <span id="ldlStatusSmall" style="color:#6b7280;font-weight:600;font-size:12px;"></span>
@@ -341,7 +154,6 @@
     <div id="ldlContent">—</div>
   </div>
 
-  <!-- TG RESULT -->
   <div class="panel">
     <div class="panel-title">
       <span>Triglyceride Recommendation</span>
@@ -351,12 +163,12 @@
   </div>
 
   <footer>
-    Sources: 
+    Sources:
     <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC11019331/" target="_blank">CSI 2023</a> (Indian Heart Journal) &nbsp;|&nbsp;
-    <a href="https://www.sciencedirect.com/science/article/pii/S1933287424000060" target="_blank">LAI 2023</a> (Consensus IV)<br>
-    ASCVD: ACC/AHA Pooled Cohort Equations (PCE)<br>
-    <span style="color:#6b7280;">Educational use only. Always confirm with current guidelines.</span><br>
-    Compiled by <a href="https://twitter.com/drmjp93" target="_blank">@drmjp93</a>
+    <a href="https://doi.org/10.1161/CIR.0000000000001423" target="_blank">ACC/AHA 2026</a> (Circulation)<br>
+    PREVENT-ASCVD: <a href="https://www.heart.org/PREVENT" target="_blank">heart.org/PREVENT</a> (replaces old PCE in 2026 guideline)<br>
+    <span style="color:#6b7280;">Educational use only. Always verify with current guidelines.</span><br>
+    <a href="https://twitter.com/drmjp93" target="_blank">@drmjp93</a>
   </footer>
 
   <script>
@@ -366,21 +178,13 @@
     let currentSex = 'male';
     let ascvd10yr = null;
 
-    // ==========================================
-    // GUIDELINE SELECTOR
-    // ==========================================
     window.setGL = function (gl) {
       currentGL = gl;
-      document.querySelectorAll('.gl-btn').forEach(b => {
-        b.classList.remove('act-csi', 'act-lai', 'act-both');
-      });
+      document.querySelectorAll('.gl-btn').forEach(b => b.classList.remove('act-csi','act-aha','act-both'));
       document.querySelector(`[data-gl="${gl}"]`).classList.add(`act-${gl}`);
       callServer();
     };
 
-    // ==========================================
-    // SEX SELECTOR
-    // ==========================================
     window.setSex = function (sex) {
       currentSex = sex;
       document.querySelectorAll('[data-id="male"],[data-id="female"]').forEach(el => el.classList.remove('act'));
@@ -388,21 +192,12 @@
       calcASCVD();
     };
 
-    // ==========================================
-    // TOGGLE PILLS
-    // ==========================================
     document.querySelectorAll('.tog:not([data-id="male"]):not([data-id="female"])').forEach(p => {
       p.addEventListener('click', () => { p.classList.toggle('act'); setTimeout(callServer, 50); });
     });
 
-    function isAct(id) {
-      const el = document.querySelector(`[data-id="${id}"]`);
-      return el && el.classList.contains('act');
-    }
+    function isAct(id) { const el = document.querySelector(`[data-id="${id}"]`); return el && el.classList.contains('act'); }
 
-    // ==========================================
-    // ASCVD CALCULATOR TOGGLE
-    // ==========================================
     window.toggleASCVD = function () {
       const body = document.getElementById('ascvdBody');
       const hdr = document.getElementById('ascvdHdr');
@@ -411,228 +206,154 @@
     };
 
     // ==========================================
-    // ASCVD POOLED COHORT EQUATIONS (ACC/AHA)
-    // Race-specific: White and AA versions
-    // We use White coefficients as default for Indian (no India-specific PCE exists)
-    // Per LAI: multiply result × 1.5 for South Asian
+    // PCE Calculator (Pooled Cohort Equations)
+    // Used as APPROXIMATION only.
+    // ACC/AHA 2026 mandates PREVENT-ASCVD instead.
+    // Categories mapped to PREVENT tiers:
+    //   Low <3% / Borderline 3–<5% / Intermediate 5–<10% / High ≥10%
     // ==========================================
     function calcASCVD() {
       const age = +document.getElementById('age').value;
-      const tc = +document.getElementById('tc').value;
+      const tc  = +document.getElementById('tc').value;
       const hdl = +document.getElementById('hdl').value;
       const sbp = +document.getElementById('sbp').value;
       const bpRx = +document.getElementById('bpRx').value;
       const smoke = isAct('smoke') ? 1 : 0;
-      const dm = isAct('diabetes') ? 1 : 0;
+      const dm    = isAct('diabetes') ? 1 : 0;
 
-      const el = document.getElementById('ascvdResult');
+      const el    = document.getElementById('ascvdResult');
       const badge = document.getElementById('ascvdBadge');
 
-      if (!age || !tc || !hdl || !sbp) {
+      if (!age || !tc || !hdl || !sbp || age < 20 || age > 99) {
         el.className = 'ascvd-score-box';
         el.innerHTML = 'Enter age, TC, HDL, SBP above';
-        ascvd10yr = null;
-        callServer();
-        return;
+        ascvd10yr = null; callServer(); return;
       }
 
-      // Pooled Cohort Equations coefficients
-      // Source: Goff DC et al. JACC 2014; 63(25 Pt B):2935-59
       const lnAge = Math.log(age);
-      const lnTC = Math.log(tc);
+      const lnTC  = Math.log(tc);
       const lnHDL = Math.log(hdl);
       const lnSBP = Math.log(sbp);
-
       let score10;
 
       if (currentSex === 'male') {
-        // White Male
-        const sum =
-          12.344 * lnAge +
-          11.853 * lnTC +
-          (-2.664) * Math.log(age) * lnTC +
-          (-7.990) * lnHDL +
-          1.769 * lnAge * lnHDL +
-          (bpRx ? 1.764 : 1.797) * lnSBP +
-          7.837 * smoke +
-          (-1.795) * lnAge * smoke +
-          0.658 * dm +
-          (-29.799);
+        // White Male PCE coefficients (Goff DC et al. JACC 2014)
+        const sum = 12.344 * lnAge
+          + 11.853 * lnTC
+          - 2.664 * lnAge * lnTC
+          - 7.990 * lnHDL
+          + 1.769 * lnAge * lnHDL
+          + (bpRx ? 1.764 : 1.797) * lnSBP
+          + 7.837 * smoke
+          - 1.795 * lnAge * smoke
+          + 0.658 * dm
+          - 29.799;
         score10 = (1 - Math.pow(0.9144, Math.exp(sum - 61.18))) * 100;
       } else {
-        // White Female
-        const sum =
-          (-7.574) * lnAge +
-          0.661 * lnAge * lnAge + // note: female PCE uses lnAge^2
-          (-2.664) * Math.log(age) * lnTC + // reused for structure; female uses different
-          (-2.664) * Math.log(age) * lnTC;
-        // Use correct female white coefficients
-        const sumF =
-          (-7.574) * lnAge +
-          0.661 * Math.pow(lnAge, 2) +
-          0 + // no lnAge^2 in some implementations; use full PCE
-          17.1141 * lnTC +
-          (-0.9396) * lnAge * lnTC +
-          (-18.920) * lnHDL +
-          4.4748 * lnAge * lnHDL +
-          (bpRx ? 29.291 : 27.819) * lnSBP +
-          (bpRx ? (-6.432) : (-6.087)) * lnAge * lnSBP +
-          0.8738 * smoke +
-          0.8738 * smoke * 0 + // placeholder
-          0.8738 * smoke +
-          0.8594 * dm +
-          (-172.300);
-        score10 = (1 - Math.pow(0.9665, Math.exp(sumF - (-29.799)))) * 100;
-        // Simplified female PCE (validated approach):
-        // Use established shorthand
-        const female_sum =
-          -7.574 * lnAge +
-          0.661 * lnAge * lnAge +
-          17.114 * lnTC +
-          -0.940 * lnAge * lnTC +
-          -18.920 * lnHDL +
-          4.475 * lnAge * lnHDL +
-          (bpRx ? 29.291 * lnSBP - 6.432 * lnAge * lnSBP : 27.819 * lnSBP - 6.087 * lnAge * lnSBP) +
-          0.874 * smoke +
-          0.859 * dm - 172.300;
-        score10 = (1 - Math.pow(0.9665, Math.exp(female_sum))) * 100;
+        // White Female PCE coefficients
+        const sum = -7.574 * lnAge
+          + 0.661 * lnAge * lnAge
+          + 17.114 * lnTC
+          - 0.940 * lnAge * lnTC
+          - 18.920 * lnHDL
+          + 4.475 * lnAge * lnHDL
+          + (bpRx ? 29.291 * lnSBP - 6.432 * lnAge * lnSBP
+                  : 27.819 * lnSBP - 6.087 * lnAge * lnSBP)
+          + 0.874 * smoke
+          + 0.859 * dm
+          - 172.300;
+        score10 = (1 - Math.pow(0.9665, Math.exp(sum))) * 100;
       }
 
       score10 = Math.max(0, Math.min(100, score10));
+      ascvd10yr = score10;
 
-      // South Asian multiplier per LAI 2023
-      let displayScore = score10;
-      let saNote = '';
-      if (isAct('south')) {
-        displayScore = Math.min(100, score10 * 1.5);
-        saNote = ` (×1.5 SA adj: ${displayScore.toFixed(1)}%)`;
-      }
-
-      ascvd10yr = score10; // raw; server applies SA multiplier
-
+      // Map to PREVENT-equivalent categories (2026 guideline tiers)
       let cat, catClass;
-      if (displayScore >= 20) { cat = 'High Risk'; catClass = 'high'; }
-      else if (displayScore >= 10) { cat = 'Intermediate Risk'; catClass = 'intermediate'; }
-      else { cat = 'Low Risk'; catClass = 'low'; }
+      if (score10 >= 10)      { cat = 'High ≥10%';          catClass = 'high'; }
+      else if (score10 >= 5)  { cat = 'Intermediate 5–10%'; catClass = 'intermediate'; }
+      else if (score10 >= 3)  { cat = 'Borderline 3–5%';    catClass = 'borderline'; }
+      else                    { cat = 'Low <3%';             catClass = 'low'; }
 
-      badge.textContent = `${displayScore.toFixed(1)}% — ${cat}`;
+      badge.textContent = `${score10.toFixed(1)}% — ${cat}`;
       el.className = `ascvd-score-box ${catClass}`;
-      el.innerHTML = `${displayScore.toFixed(1)}% 10-Year ASCVD Risk${saNote}<div class="ascvd-sub">${cat} · PCE (ACC/AHA 2013)</div>`;
+      el.innerHTML = `${score10.toFixed(1)}% 10-Year ASCVD Risk (PCE approx.)<div class="ascvd-sub">${cat} · Goff et al. JACC 2014<br>⚠️ ACC/AHA 2026 uses PREVENT — see note above</div>`;
 
       callServer();
     }
 
     // ==========================================
-    // RENDER HELPERS
+    // RENDER
     // ==========================================
-    function renderSingle(data, gl) {
-      const ldlBox = document.getElementById('ldlContent');
-      const tgBox = document.getElementById('tgContent');
+    function statinPill(s) {
+      if (s === true)  return '<span class="statin-pill statin-yes">✓ Statin Indicated</span>';
+      if (s === false) return '<span class="statin-pill statin-no">✗ Lifestyle First</span>';
+      return '<span class="statin-pill statin-shared">⚖ Shared Decision</span>';
+    }
+
+    function renderSingle(data) {
       document.getElementById('ldlStatusSmall').textContent = data.ldlStatus || '';
-      document.getElementById('tgStatusSmall').textContent = data.tgStatus || '';
+      document.getElementById('tgStatusSmall').textContent  = data.tgStatus  || '';
 
-      const statinPill = data.statin === true
-        ? '<span class="statin-pill statin-yes">✓ Statin Indicated</span>'
-        : data.statin === false
-        ? '<span class="statin-pill statin-no">Lifestyle First</span>'
-        : '<span class="statin-pill statin-shared">⚖ Shared Decision</span>';
+      const nonHDL = data.nonHDLTarget ? `<div class="non-hdl">Non-HDL target: ${data.nonHDLTarget}</div>` : '';
 
-      const nonHDL = data.nonHDLTarget
-        ? `<div class="non-hdl">Non-HDL target: ${data.nonHDLTarget}</div>`
-        : '';
-
-      ldlBox.innerHTML = `
+      document.getElementById('ldlContent').innerHTML = `
         <span class="risk-cat">${data.riskCategory || '—'}</span>
         <div class="target ${data.ldlLevel || 'green'}">Target LDL: ${data.ldlTarget}</div>
         <div class="rec">${data.ldlRec}</div>
         ${nonHDL}
         <div class="rat">${data.ldlRationale}</div>
-        ${statinPill}
+        ${statinPill(data.statin)}
       `;
 
-      tgBox.innerHTML = `
-        <div class="target tg ${data.tgLevel || 'green'}">Target TG: ${data.tgTarget}</div>
+      document.getElementById('tgContent').innerHTML = `
+        <div class="target tg">Target TG: ${data.tgTarget}</div>
         <div class="rec">${data.tgRec}</div>
         <div class="rat">${data.tgRationale}</div>
       `;
     }
 
-    function renderComparison(csi, lai) {
-      const ldlBox = document.getElementById('ldlContent');
-      const tgBox = document.getElementById('tgContent');
-      document.getElementById('ldlStatusSmall').textContent = 'CSI vs LAI';
-      document.getElementById('tgStatusSmall').textContent = '';
+    function renderComparison(csi, aha) {
+      document.getElementById('ldlStatusSmall').textContent = 'CSI 2023 vs ACC/AHA 2026';
+      document.getElementById('tgStatusSmall').textContent  = csi.tgStatus || '';
 
-      const ldlDiff = csi.ldlTarget !== lai.ldlTarget
-        ? '<span class="diff-badge">DIFFER</span>' : '';
-      const riskDiff = csi.riskCategory !== lai.riskCategory
-        ? '<span class="diff-badge">DIFFER</span>' : '';
-      const statinDiff = csi.statin !== lai.statin
-        ? '<span class="diff-badge">DIFFER</span>' : '';
+      const ldlDiff   = csi.ldlTarget !== aha.ldlTarget ? '<span class="diff-badge">DIFFER</span>' : '';
+      const riskDiff  = csi.riskCategory !== aha.riskCategory ? '<span class="diff-badge">DIFFER</span>' : '';
+      const statinDiff= csi.statin !== aha.statin ? '<span class="diff-badge">DIFFER</span>' : '';
 
-      function statinLabel(s) {
-        if (s === true) return '✓ Yes';
-        if (s === false) return '✗ No';
-        return '⚖ Shared';
-      }
+      function sl(s) { return s === true ? '✓ Yes' : s === false ? '✗ No' : '⚖ Shared'; }
 
-      ldlBox.innerHTML = `
+      document.getElementById('ldlContent').innerHTML = `
         <div class="compare-grid">
-          <div class="compare-col">
+          <div>
             <div class="compare-hdr csi">CSI 2023</div>
-            <div class="compare-item">
-              <div class="lbl">Risk Category</div>
-              <div class="val">${csi.riskCategory}</div>
-            </div>
-            <div class="compare-item">
-              <div class="lbl">LDL Target</div>
-              <div class="val">${csi.ldlTarget}</div>
-            </div>
-            <div class="compare-item">
-              <div class="lbl">Statin</div>
-              <div class="val">${statinLabel(csi.statin)}</div>
-            </div>
+            <div class="compare-item"><div class="lbl">Risk Category</div><div class="val">${csi.riskCategory}</div></div>
+            <div class="compare-item"><div class="lbl">LDL Target</div><div class="val">${csi.ldlTarget}</div></div>
             ${csi.nonHDLTarget ? `<div class="compare-item"><div class="lbl">Non-HDL</div><div class="val">${csi.nonHDLTarget}</div></div>` : ''}
-            <div class="compare-item">
-              <div class="lbl">Rationale</div>
-              <div class="val" style="font-size:11px;font-weight:500;color:var(--muted)">${csi.ldlRationale}</div>
-            </div>
+            <div class="compare-item"><div class="lbl">Statin</div><div class="val">${sl(csi.statin)}</div></div>
+            <div class="compare-item"><div class="lbl" style="color:var(--muted)">Rationale</div><div class="val" style="font-size:11px;font-weight:500;color:var(--muted)">${csi.ldlRationale}</div></div>
           </div>
-          <div class="compare-col">
-            <div class="compare-hdr lai">LAI 2023</div>
-            <div class="compare-item">
-              <div class="lbl">Risk Category ${riskDiff}</div>
-              <div class="val">${lai.riskCategory}</div>
-            </div>
-            <div class="compare-item">
-              <div class="lbl">LDL Target ${ldlDiff}</div>
-              <div class="val">${lai.ldlTarget}</div>
-            </div>
-            <div class="compare-item">
-              <div class="lbl">Statin ${statinDiff}</div>
-              <div class="val">${statinLabel(lai.statin)}</div>
-            </div>
-            ${lai.nonHDLTarget ? `<div class="compare-item"><div class="lbl">Non-HDL</div><div class="val">${lai.nonHDLTarget}</div></div>` : ''}
-            <div class="compare-item">
-              <div class="lbl">Rationale</div>
-              <div class="val" style="font-size:11px;font-weight:500;color:var(--muted)">${lai.ldlRationale}</div>
-            </div>
+          <div>
+            <div class="compare-hdr aha">ACC/AHA 2026</div>
+            <div class="compare-item"><div class="lbl">Risk Category ${riskDiff}</div><div class="val">${aha.riskCategory}</div></div>
+            <div class="compare-item"><div class="lbl">LDL Target ${ldlDiff}</div><div class="val">${aha.ldlTarget}</div></div>
+            ${aha.nonHDLTarget ? `<div class="compare-item"><div class="lbl">Non-HDL</div><div class="val">${aha.nonHDLTarget}</div></div>` : ''}
+            <div class="compare-item"><div class="lbl">Statin ${statinDiff}</div><div class="val">${sl(aha.statin)}</div></div>
+            <div class="compare-item"><div class="lbl" style="color:var(--muted)">Rationale</div><div class="val" style="font-size:11px;font-weight:500;color:var(--muted)">${aha.ldlRationale}</div></div>
           </div>
         </div>
         <div class="rat" style="margin-top:8px;">TG management is identical across both guidelines.</div>
       `;
 
-      // TG from either (same logic)
-      tgBox.innerHTML = `
-        <div class="target tg ${csi.tgLevel || 'green'}">Target TG: ${csi.tgTarget}</div>
+      document.getElementById('tgContent').innerHTML = `
+        <div class="target tg">Target TG: ${csi.tgTarget}</div>
         <div class="rec">${csi.tgRec}</div>
         <div class="rat">${csi.tgRationale}</div>
       `;
-      document.getElementById('tgStatusSmall').textContent = csi.tgStatus || '';
     }
 
     // ==========================================
-    // SERVER CALL
+    // API CALL
     // ==========================================
     async function callServer() {
       const flags = {
@@ -643,56 +364,34 @@
       const payload = {
         age: +document.getElementById('age').value || 0,
         ldl: +document.getElementById('ldl').value || 0,
-        tg: +document.getElementById('tg').value || 0,
-        flags,
-        guideline: currentGL,
-        ascvd10yr: ascvd10yr
+        tg:  +document.getElementById('tg').value  || 0,
+        flags, guideline: currentGL, ascvd10yr
       };
 
       try {
-        const r = await fetch(API_URL, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload)
-        });
+        const r = await fetch(API_URL, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(payload) });
         const j = await r.json();
-
         if (j && j.ok && j.result) {
-          if (j.result.comparison) {
-            renderComparison(j.result.csi, j.result.lai);
-          } else {
-            renderSingle(j.result, j.guideline);
-          }
+          if (j.result.comparison) renderComparison(j.result.csi, j.result.aha);
+          else renderSingle(j.result);
         }
       } catch (e) {
         document.getElementById('ldlContent').innerHTML = '<div class="rat" style="color:#f87171;">Connection error — check internet</div>';
       }
     }
 
-    // ==========================================
-    // INPUT LISTENERS
-    // ==========================================
     function debounce(fn, ms) { let t; return (...a) => { clearTimeout(t); t = setTimeout(() => fn(...a), ms); }; }
 
-    ['age', 'ldl', 'tg'].forEach(id => {
+    ['age','ldl','tg'].forEach(id => {
       const el = document.getElementById(id);
-      if (el) {
-        el.addEventListener('input', debounce(callServer, 300));
-        el.addEventListener('change', callServer);
-      }
+      if (el) { el.addEventListener('input', debounce(callServer, 300)); el.addEventListener('change', callServer); }
     });
 
-    ['tc', 'hdl', 'sbp', 'bpRx'].forEach(id => {
+    ['tc','hdl','sbp','bpRx'].forEach(id => {
       const el = document.getElementById(id);
-      if (el) {
-        el.addEventListener('input', debounce(calcASCVD, 300));
-        el.addEventListener('change', calcASCVD);
-      }
+      if (el) { el.addEventListener('input', debounce(calcASCVD, 300)); el.addEventListener('change', calcASCVD); }
     });
 
-    // ==========================================
-    // VISITOR COUNT
-    // ==========================================
     async function updateVisitorCount() {
       try {
         const r = await fetch('https://visits.drmjp93.workers.dev/?tool=ldl');
@@ -701,11 +400,7 @@
       } catch (e) {}
     }
 
-    document.addEventListener('DOMContentLoaded', () => {
-      callServer();
-      updateVisitorCount();
-    });
-
+    document.addEventListener('DOMContentLoaded', () => { callServer(); updateVisitorCount(); });
   })();
   </script>
 </body>
