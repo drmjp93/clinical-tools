@@ -252,19 +252,7 @@ window.setGL = function (gl) {
     }
   });
 });
-      
-      if (pill.dataset.id.startsWith('cac')) {
-        // CAC is mutually exclusive — deselect others first
-        document.querySelectorAll('[data-id^="cac"]').forEach(e => e.classList.remove('act'));
-        pill.classList.add('act');   // toggle OFF if already active: re-click
-        // Allow deselect: if we just re-added to the already-active one, remove it
-        // Actually simpler: add always; user must pick another CAC to change
-      } else {
-        pill.classList.toggle('act');
-      }
-      setTimeout(callServer, 50);
-    });
-  });
+    
 
   // Fix: allow CAC deselect by clicking same pill twice
   document.querySelectorAll('[data-id^="cac"]').forEach(pill => {
