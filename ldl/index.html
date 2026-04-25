@@ -318,17 +318,18 @@ window.setGL = function (gl) {
 
     if (currentSex === 'male') {
       // White Male PCE (Goff 2014, Appendix 7)
-      const IndSum = 12.344  * lnAge
-                   + 11.853  * lnTC
-                   -  2.664  * lnAge * lnTC
-                   -  7.990  * lnHDL
-                   +  1.769  * lnAge * lnHDL
-                   + (bpRx ? 1.764 : 1.797) * lnSBP
-                   +  7.837  * smoke
-                   -  1.795  * lnAge * smoke
-                   +  0.658  * dm
-                   - 29.799;
-      score10 = (1 - Math.pow(0.9144, Math.exp(IndSum - 61.18))) * 100;
+      const IndSum =
+  12.344 * lnAge +
+  11.853 * lnTC -
+  2.664 * lnAge * lnTC -
+  7.990 * lnHDL +
+  1.769 * lnAge * lnHDL +
+  (bpRx ? 1.764 : 1.797) * lnSBP +
+  7.837 * smoke -
+  1.795 * lnAge * smoke +
+  0.658 * dm;
+
+score10 = (1 - Math.pow(0.9144, Math.exp(IndSum - 61.18))) * 100;
     } else {
       // White Female PCE (Goff 2014, Appendix 7)
       const IndSum = -7.574  * lnAge
