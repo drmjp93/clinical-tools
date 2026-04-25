@@ -348,7 +348,16 @@ score10 = (1 - Math.pow(0.9144, Math.exp(IndSum - 61.18))) * 100;
     }
 
     score10 = Math.max(0, Math.min(100, score10));
-    ascvd10yr = score10;
+
+      // 🔧 display correction (do NOT alter actual value)
+      let displayScore;
+      if (score10 > 0 && score10 < 0.1) {
+        displayScore = "<0.1";
+      } else {
+        displayScore = score10.toFixed(1);
+      }
+      
+      ascvd10yr = score10;
 
     // 2026 PREVENT tiers (NOT 2018 PCE tiers)
     let cat, catClass;
@@ -359,10 +368,10 @@ score10 = (1 - Math.pow(0.9144, Math.exp(IndSum - 61.18))) * 100;
 
     const saSuffix = isAct('south') ? ' (South Asian: consider ×1.5 ≈ ' + Math.min(100, score10 * 1.5).toFixed(1) + '%)' : '';
 
-    badge.textContent = `${score10.toFixed(1)}% — ${cat}`;
+    badge.textContent = `${displayScore}% — ${cat}`;
     el.className = `ascvd-score-box ${catClass}`;
     el.innerHTML = `
-      ${score10.toFixed(1)}% 10-Year ASCVD Risk (PCE approx.)${saSuffix}
+      ${displayScore}% 10-Year ASCVD Risk (PCE approx.)${saSuffix}
       <div class="ascvd-sub">${cat} · White coeff. · Goff et al. JACC 2014<br>⚠️ PCE retired in 2026 — use PREVENT for guideline accuracy</div>
     `;
 
