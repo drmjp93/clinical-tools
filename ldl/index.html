@@ -209,12 +209,20 @@
   let ascvd10yr  = null;
 
   // ── GUIDELINE SELECTOR ────────────────────────────────
-  window.setGL = function (gl) {
-    currentGL = gl;
-    document.querySelectorAll('.gl-btn').forEach(b => b.classList.remove('act-csi','act-aha','act-both'));
-    document.querySelector(`[data-gl="${gl}"]`).classList.add(`act-${gl}`);
-    callServer();
-  };
+  
+window.setGL = function (gl) {
+  currentGL = gl;
+  document.querySelectorAll('.gl-btn').forEach(b => b.classList.remove('act-csi','act-aha','act-both'));
+  document.querySelector(`[data-gl="${gl}"]`).classList.add(`act-${gl}`);
+
+  // Auto-open ASCVD panel when AHA/Both selected (score required for primary prevention)
+  if (gl === 'aha' || gl === 'both') {
+    document.getElementById('ascvdBody').classList.add('open');
+    document.getElementById('ascvdHdr').classList.add('open');
+  }
+
+  callServer();
+};
 
   // ── SEX SELECTOR ──────────────────────────────────────
   window.setSex = function (sex) {
@@ -226,16 +234,24 @@
 
   // ── TOGGLE PILLS ──────────────────────────────────────
   document.querySelectorAll('.tog:not([data-id="male"]):not([data-id="female"])').forEach(pill => {
-    pill.addEventListener('click', () => {
-      
-      const id = pill.dataset.id;
+  pill.addEventListener('click', () => {
+    const id = pill.dataset.id;
 
-// If factor affects PCE → recalc
-if (id === 'smoke' || id === 'diabetes') {
-  setTimeout(calcASCVD, 50);
-} else {
-  setTimeout(callServer, 50);
-}
+    if (id.startsWith('cac')) {
+      document.querySelectorAll('[data-id^="cac"]').forEach(e => e.classList.remove('act'));
+      pill.classList.add('act');
+    } else {
+      pill.classList.toggle('act');
+    }
+
+    // smoke/diabetes affect PCE score → recalc score which then calls server
+    if (id === 'smoke' || id === 'diabetes') {
+      setTimeout(calcASCVD, 50);
+    } else {
+      setTimeout(callServer, 50);
+    }
+  });
+});
       
       if (pill.dataset.id.startsWith('cac')) {
         // CAC is mutually exclusive — deselect others first
