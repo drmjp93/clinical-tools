@@ -14,33 +14,27 @@
     *{box-sizing:border-box;margin:0;padding:0;}
     body{font-family:system-ui,-apple-system,Segoe UI,Roboto;background:var(--bg);color:var(--text);padding:14px;font-size:15px;}
 
-    /* header */
     .hd{background:var(--card);padding:12px 14px;border-radius:12px;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center;border:1px solid var(--border);}
     .hd-title{font-weight:800;font-size:1rem;}
 
-    /* guideline bar */
     .gl-bar{display:flex;gap:6px;margin-bottom:12px;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:6px;}
     .gl-btn{flex:1;padding:8px 6px;border-radius:8px;border:none;font-weight:700;font-size:13px;cursor:pointer;background:transparent;color:var(--muted);transition:all .15s;text-align:center;}
     .gl-btn.act-csi{background:var(--csi);color:#fff;}
     .gl-btn.act-aha{background:var(--aha);color:#fff;}
     .gl-btn.act-both{background:var(--both);color:#fff;}
 
-    /* inputs */
     .f1{display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap;}
     .c1{flex:1;min-width:80px;}
     .lbl{font-size:11px;color:var(--muted);margin-bottom:3px;}
     .i{width:100%;padding:10px;border-radius:8px;border:1px solid var(--border);background:var(--inner);color:var(--text);font-size:1rem;}
     .i:focus{outline:1px solid var(--accent);}
 
-    /* section label */
     .sec-lbl{font-weight:700;font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin:10px 0 6px;}
 
-    /* toggle pills */
     .r{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px;}
     .tog{padding:6px 11px;border-radius:999px;border:1px solid var(--border);background:var(--card);color:var(--muted);font-weight:600;font-size:13px;cursor:pointer;transition:all .12s;user-select:none;}
     .tog.act{background:var(--accent);color:#fff;border-color:var(--accent);}
 
-    /* ASCVD panel */
     .ascvd-panel{background:var(--card);border:1px solid var(--border);border-radius:12px;margin-bottom:12px;overflow:hidden;}
     .ascvd-hdr{padding:10px 14px;display:flex;justify-content:space-between;align-items:center;cursor:pointer;border-bottom:1px solid transparent;transition:border-color .15s;}
     .ascvd-hdr.open{border-bottom-color:var(--border);}
@@ -57,7 +51,6 @@
     .ascvd-score-box.high   {border-color:#7f1d1d;color:#fca5a5;}
     .ascvd-sub{font-size:12px;font-weight:500;color:var(--muted);margin-top:3px;}
 
-    /* result panels */
     .panel{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:12px 14px;margin-bottom:10px;}
     .panel-title{font-weight:700;font-size:13px;color:var(--muted);margin-bottom:8px;display:flex;justify-content:space-between;}
     .target{padding:12px 14px;border-radius:10px;font-weight:800;font-size:1rem;margin-bottom:8px;}
@@ -74,7 +67,6 @@
     .statin-no    {background:#1f2937;color:#9ca3af;}
     .statin-shared{background:#78350f;color:#fcd34d;}
 
-    /* comparison */
     .compare-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
     .compare-hdr{font-size:12px;font-weight:800;padding:5px 10px;border-radius:8px;margin-bottom:6px;text-align:center;}
     .compare-hdr.csi{background:var(--csi);color:#fff;}
@@ -95,14 +87,12 @@
   <span id="visitorCount" style="font-size:13px;color:var(--muted);">👥 —</span>
 </header>
 
-<!-- GUIDELINE SELECTOR -->
 <div class="gl-bar">
   <button class="gl-btn act-csi" data-gl="csi"  onclick="setGL('csi')">CSI 2023</button>
   <button class="gl-btn"         data-gl="aha"  onclick="setGL('aha')">ACC/AHA 2026</button>
   <button class="gl-btn"         data-gl="both" onclick="setGL('both')">Compare Both</button>
 </div>
 
-<!-- PATIENT INPUTS -->
 <div class="f1">
   <div class="c1"><div class="lbl">Age (yrs)</div><input id="age" class="i" type="number" placeholder="e.g. 52" min="20" max="99"></div>
   <div class="c1"><div class="lbl">LDL (mg/dL)</div><input id="ldl" class="i" type="number" placeholder="e.g. 130"></div>
@@ -113,6 +103,13 @@
 <div class="r">
   <div class="tog act" data-id="male"   onclick="setSex('male')">Male</div>
   <div class="tog"     data-id="female" onclick="setSex('female')">Female</div>
+</div>
+
+<!-- ── RACE (used by PCE calculator) ── -->
+<div class="sec-lbl">Race <span style="font-weight:400;font-size:10px;color:var(--muted)">(for ASCVD score — Indian patients use White/Other)</span></div>
+<div class="r">
+  <div class="tog act" data-id="race-white" onclick="setRace('white')">White / Other (default for Indians)</div>
+  <div class="tog"     data-id="race-aa"    onclick="setRace('aa')">African American</div>
 </div>
 
 <div class="sec-lbl">Risk Factors / Enhancers</div>
@@ -136,7 +133,6 @@
   <div class="tog" data-id="cac100">CAC ≥ 100</div>
 </div>
 
-<!-- ASCVD CALCULATOR -->
 <div class="ascvd-panel">
   <div class="ascvd-hdr" id="ascvdHdr" onclick="toggleASCVD()">
     <span class="ascvd-hdr-title">🧮 10-Year ASCVD Risk Calculator</span>
@@ -151,26 +147,18 @@
         <select id="bpRx" class="i"><option value="0">No</option><option value="1">Yes</option></select>
       </div>
     </div>
-    <!--
-      PCE coefficients used: White Male / White Female (Goff DC et al. JACC 2014).
-      For Indian patients, White coefficients are the closest validated approximation.
-      PCE is known to UNDERESTIMATE risk in South Asians (Image 1 of MDCalc evidence confirms this).
-      ACC/AHA 2026: Pooled Cohort Equations RETIRED — PREVENT-ASCVD is now mandated.
-      Risk categories displayed follow 2026 PREVENT tiers: <3% / 3–5% / 5–10% / ≥10%
-    -->
     <div class="ascvd-note">
       ⚠️ <strong>Uses PCE (Goff 2014) as approximation.</strong>
       PCE may <strong>underestimate risk in South Asians</strong>.
       ACC/AHA 2026 has <strong>retired PCE</strong> — use PREVENT equations at
       <a href="https://www.heart.org/PREVENT" target="_blank" style="color:#60a5fa;">heart.org/PREVENT</a>
       for guideline-compliant risk calculation.
-      Risk categories below follow 2026 PREVENT tiers (not old 2018 PCE tiers).
+      Risk categories follow 2026 PREVENT tiers (≥10% / 5–10% / 3–5% / &lt;3%).
     </div>
     <div id="ascvdResult" class="ascvd-score-box">Enter values above</div>
   </div>
 </div>
 
-<!-- RESULTS -->
 <div class="panel">
   <div class="panel-title">
     <span>LDL Recommendation</span>
@@ -193,8 +181,8 @@
   (Indian Heart Journal) &nbsp;|&nbsp;
   <a href="https://doi.org/10.1161/CIR.0000000000001423" target="_blank">ACC/AHA 2026</a>
   (Circulation, Blumenthal et al.)<br>
-  PREVENT-ASCVD: <a href="https://www.heart.org/PREVENT" target="_blank">heart.org/PREVENT</a>
-  (replaces PCE in 2026 guideline)<br>
+  PCE: <a href="https://doi.org/10.1016/j.jacc.2013.11.005" target="_blank">Goff DC et al. JACC 2014</a> &nbsp;|&nbsp;
+  PREVENT: <a href="https://www.heart.org/PREVENT" target="_blank">heart.org/PREVENT</a><br>
   <span style="color:#6b7280;">Educational use only. Verify with current guidelines and clinical judgement.</span><br>
   <a href="https://twitter.com/drmjp93" target="_blank">@drmjp93</a>
 </footer>
@@ -206,25 +194,22 @@
   const API_URL  = 'https://ldl.drmjp93.workers.dev';
   let currentGL  = 'csi';
   let currentSex = 'male';
+  let currentRace = 'white';
   let ascvd10yr  = null;
 
   // ── GUIDELINE SELECTOR ────────────────────────────────
-  
-window.setGL = function (gl) {
-  currentGL = gl;
-  document.querySelectorAll('.gl-btn').forEach(b => b.classList.remove('act-csi','act-aha','act-both'));
-  document.querySelector(`[data-gl="${gl}"]`).classList.add(`act-${gl}`);
+  window.setGL = function (gl) {
+    currentGL = gl;
+    document.querySelectorAll('.gl-btn').forEach(b => b.classList.remove('act-csi','act-aha','act-both'));
+    document.querySelector(`[data-gl="${gl}"]`).classList.add(`act-${gl}`);
+    if (gl === 'aha' || gl === 'both') {
+      document.getElementById('ascvdBody').classList.add('open');
+      document.getElementById('ascvdHdr').classList.add('open');
+    }
+    callServer();
+  };
 
-  // Auto-open ASCVD panel when AHA/Both selected (score required for primary prevention)
-  if (gl === 'aha' || gl === 'both') {
-    document.getElementById('ascvdBody').classList.add('open');
-    document.getElementById('ascvdHdr').classList.add('open');
-  }
-
-  callServer();
-};
-
-  // ── SEX SELECTOR ──────────────────────────────────────
+  // ── SEX SELECTOR ─────────────────────────────────────
   window.setSex = function (sex) {
     currentSex = sex;
     document.querySelectorAll('[data-id="male"],[data-id="female"]').forEach(e => e.classList.remove('act'));
@@ -232,38 +217,30 @@ window.setGL = function (gl) {
     calcASCVD();
   };
 
+  // ── RACE SELECTOR ─────────────────────────────────────
+  window.setRace = function (race) {
+    currentRace = race;
+    document.querySelectorAll('[data-id^="race-"]').forEach(e => e.classList.remove('act'));
+    document.querySelector(`[data-id="race-${race}"]`).classList.add('act');
+    calcASCVD();
+  };
+
   // ── TOGGLE PILLS ──────────────────────────────────────
-  document.querySelectorAll('.tog:not([data-id="male"]):not([data-id="female"])').forEach(pill => {
-  pill.addEventListener('click', () => {
-    const id = pill.dataset.id;
-
-    if (id.startsWith('cac')) {
-      document.querySelectorAll('[data-id^="cac"]').forEach(e => e.classList.remove('act'));
-      pill.classList.add('act');
-    } else {
-      pill.classList.toggle('act');
-    }
-
-    // smoke/diabetes affect PCE score → recalc score which then calls server
-    if (id === 'smoke' || id === 'diabetes') {
-      setTimeout(calcASCVD, 50);
-    } else {
-      setTimeout(callServer, 50);
-    }
-  });
-});
-    
-
-  // Fix: allow CAC deselect by clicking same pill twice
-  document.querySelectorAll('[data-id^="cac"]').forEach(pill => {
-    // Track if it was active before click
-    pill.addEventListener('mousedown', () => { pill._wasActive = pill.classList.contains('act'); });
+  document.querySelectorAll('.tog:not([data-id="male"]):not([data-id="female"]):not([data-id^="race-"])').forEach(pill => {
     pill.addEventListener('click', () => {
-      if (pill._wasActive) {
-        // Was already active — deselect (turn off all CAC)
+      const id = pill.dataset.id;
+      if (id.startsWith('cac')) {
+        const wasActive = pill.classList.contains('act');
         document.querySelectorAll('[data-id^="cac"]').forEach(e => e.classList.remove('act'));
+        if (!wasActive) pill.classList.add('act');
+      } else {
+        pill.classList.toggle('act');
       }
-      setTimeout(callServer, 50);
+      if (id === 'smoke' || id === 'diabetes') {
+        setTimeout(calcASCVD, 50);
+      } else {
+        setTimeout(callServer, 50);
+      }
     });
   });
 
@@ -272,7 +249,7 @@ window.setGL = function (gl) {
     return !!(el && el.classList.contains('act'));
   }
 
-  // ── ASCVD PANEL TOGGLE ───────────────────────────────
+  // ── ASCVD PANEL TOGGLE ────────────────────────────────
   window.toggleASCVD = function () {
     const body = document.getElementById('ascvdBody');
     const hdr  = document.getElementById('ascvdHdr');
@@ -280,22 +257,89 @@ window.setGL = function (gl) {
     hdr.classList.toggle('open', open);
   };
 
-  // ── PCE CALCULATOR ───────────────────────────────────
-  // Source: Goff DC et al. JACC 2014 (Appendix 7)
-  // White Male and White Female coefficients used.
-  // Closest validated proxy for South Asian Indian patients.
-  // PCE known to underestimate South Asian risk → apply ×1.5 mental multiplier.
-  // Risk categories follow ACC/AHA 2026 PREVENT tiers:
-  //   Low <3% / Borderline 3–<5% / Intermediate 5–<10% / High ≥10%
-  // (NOT the old 2018 tiers of <5/5–7.5/7.5–20/≥20)
+  // ── PCE FUNCTION — Goff DC et al. JACC 2014, Table A7 ──
+  // All 4 demographic groups with correct coefficients.
+  // Validated reference outputs:
+  //   WM55 TC213 HDL50 SBP120 clean = 5.4%
+  //   WM55 + smoke                  = 10.0%
+  //   WF55 TC213 HDL50 SBP120 clean = 2.1%
+  //   WF55 + smoke                  = 5.0%
+  //   WF65 TC200 HDL45 SBP130 clean = 6.2%
+  //   WF65 + smoke                  = 11.3%
+  function calculatePCE({ age, tc, hdl, sbp, bpRx, smoke, dm, gender, race }) {
+    const lnAge = Math.log(age);
+    const lnTC  = Math.log(tc);
+    const lnHDL = Math.log(hdl);
+    const lnSBP = Math.log(sbp);
+    const s = smoke ? 1 : 0;
+    const d = dm    ? 1 : 0;
+    let IndSum = 0, MeanSum = 0, S0 = 0;
+    const isAA = (race === 'aa');
+
+    if (gender === 'f') {
+      if (isAA) {
+        // African American Female (Goff 2014 Table A7)
+        IndSum = 17.114 * lnAge
+               +  0.940 * lnTC
+               - 18.920 * lnHDL
+               +  4.475 * lnAge * lnHDL
+               + (bpRx ? 29.291 * lnSBP - 6.432 * lnAge * lnSBP
+                       : 27.820 * lnSBP - 6.087 * lnAge * lnSBP)
+               +  0.691 * s
+               +  0.874 * d;
+        MeanSum = 86.61; S0 = 0.9533;
+      } else {
+        // White Female (Goff 2014 Table A7)
+        // Validated: F55 clean=2.1%, F55 smoke=5.0%, F65 clean=6.2%, F65 smoke=11.3%
+        IndSum = -29.799 * lnAge
+               +   4.884 * lnAge * lnAge
+               +  13.540 * lnTC
+               -   3.114 * lnAge * lnTC
+               -  13.578 * lnHDL
+               +   3.149 * lnAge * lnHDL
+               + (bpRx ? 2.019 * lnSBP : 1.957 * lnSBP)
+               +   7.574 * s
+               -   1.665 * lnAge * s
+               +   0.661 * d;
+        MeanSum = -29.18; S0 = 0.9665;
+      }
+    } else {
+      if (isAA) {
+        // African American Male (Goff 2014 Table A7)
+        IndSum = 2.469 * lnAge
+               + 0.302 * lnTC
+               - 0.307 * lnHDL
+               + (bpRx ? 1.916 * lnSBP : 1.809 * lnSBP)
+               + 0.549 * s
+               + 0.645 * d;
+        MeanSum = 19.54; S0 = 0.8954;
+      } else {
+        // White Male (Goff 2014 Table A7)
+        // Validated: M55 clean=5.4%, M55 smoke=10.0%
+        IndSum = 12.344 * lnAge
+               + 11.853 * lnTC
+               -  2.664 * lnAge * lnTC
+               -  7.990 * lnHDL
+               +  1.769 * lnAge * lnHDL
+               + (bpRx ? 1.797 * lnSBP : 1.764 * lnSBP)
+               +  7.837 * s
+               -  1.795 * lnAge * s
+               +  0.658 * d;
+        MeanSum = 61.18; S0 = 0.9144;
+      }
+    }
+    return Math.max(0, Math.min(100, (1 - Math.pow(S0, Math.exp(IndSum - MeanSum))) * 100));
+  }
+
+  // ── ASCVD CALC + DISPLAY ──────────────────────────────
   function calcASCVD() {
     const age  = +document.getElementById('age').value;
     const tc   = +document.getElementById('tc').value;
     const hdl  = +document.getElementById('hdl').value;
     const sbp  = +document.getElementById('sbp').value;
-    const bpRx = +document.getElementById('bpRx').value;
-    const smoke = isAct('smoke')    ? 1 : 0;
-    const dm    = isAct('diabetes') ? 1 : 0;
+    const bpRx = !!+document.getElementById('bpRx').value;
+    const smoke = isAct('smoke');
+    const dm    = isAct('diabetes');
 
     const el    = document.getElementById('ascvdResult');
     const badge = document.getElementById('ascvdBadge');
@@ -310,75 +354,39 @@ window.setGL = function (gl) {
       return;
     }
 
-    const lnAge = Math.log(age);
-    const lnTC  = Math.log(tc);
-    const lnHDL = Math.log(hdl);
-    const lnSBP = Math.log(sbp);
-    let score10;
+    const score10 = calculatePCE({
+      age, tc, hdl, sbp, bpRx, smoke, dm,
+      gender: currentSex === 'male' ? 'm' : 'f',
+      race:   currentRace
+    });
 
-    if (currentSex === 'male') {
-      // White Male PCE (Goff 2014, Appendix 7)
-      const IndSum =
-  12.344 * lnAge +
-  11.853 * lnTC -
-  2.664 * lnAge * lnTC -
-  7.990 * lnHDL +
-  1.769 * lnAge * lnHDL +
-  (bpRx ? 1.764 : 1.797) * lnSBP +
-  7.837 * smoke -
-  1.795 * lnAge * smoke +
-  0.658 * dm;
+    ascvd10yr = score10;
 
-score10 = (1 - Math.pow(0.9144, Math.exp(IndSum - 61.18))) * 100;
-    } else {
-      // White Female PCE (Goff 2014, Appendix 7)
-      const IndSum = -7.574  * lnAge
-                   +  0.661  * lnAge * lnAge
-                   + 17.114  * lnTC
-                   -  0.940  * lnAge * lnTC
-                   - 18.920  * lnHDL
-                   +  4.475  * lnAge * lnHDL
-                   + (bpRx
-                       ? 29.291 * lnSBP - 6.432 * lnAge * lnSBP
-                       : 27.819 * lnSBP - 6.087 * lnAge * lnSBP)
-                   +  0.874  * smoke
-                   +  0.859  * dm
-                   - 172.300;
-      score10 = (1 - Math.pow(0.9665, Math.exp(IndSum))) * 100;
-    }
+    // South Asian ×1.5 display note (does NOT alter the actual score sent to worker)
+    const saNote = isAct('south')
+      ? ` (SA ×1.5 ≈ ${Math.min(100, score10 * 1.5).toFixed(1)}%)`
+      : '';
 
-    score10 = Math.max(0, Math.min(100, score10));
-
-      // 🔧 display correction (do NOT alter actual value)
-      let displayScore;
-      if (score10 > 0 && score10 < 0.1) {
-        displayScore = "<0.1";
-      } else {
-        displayScore = score10.toFixed(1);
-      }
-      
-      ascvd10yr = score10;
-
-    // 2026 PREVENT tiers (NOT 2018 PCE tiers)
     let cat, catClass;
-    if      (score10 >= 10) { cat = 'High ≥10%';           catClass = 'high'; }
-    else if (score10 >=  5) { cat = 'Intermediate 5–10%';  catClass = 'intermediate'; }
-    else if (score10 >=  3) { cat = 'Borderline 3–5%';     catClass = 'borderline'; }
-    else                    { cat = 'Low <3%';              catClass = 'low'; }
+    if      (score10 >= 10) { cat = 'High ≥10%';          catClass = 'high'; }
+    else if (score10 >=  5) { cat = 'Intermediate 5–10%'; catClass = 'intermediate'; }
+    else if (score10 >=  3) { cat = 'Borderline 3–5%';    catClass = 'borderline'; }
+    else                    { cat = 'Low <3%';             catClass = 'low'; }
 
-    const saSuffix = isAct('south') ? ' (South Asian: consider ×1.5 ≈ ' + Math.min(100, score10 * 1.5).toFixed(1) + '%)' : '';
+    const raceLabel = currentRace === 'aa' ? 'AA' : 'White';
+    const sexLabel  = currentSex === 'male' ? 'M' : 'F';
 
-    badge.textContent = `${displayScore}% — ${cat}`;
+    badge.textContent = `${score10.toFixed(1)}% — ${cat}`;
     el.className = `ascvd-score-box ${catClass}`;
     el.innerHTML = `
-      ${displayScore}% 10-Year ASCVD Risk (PCE approx.)${saSuffix}
-      <div class="ascvd-sub">${cat} · White coeff. · Goff et al. JACC 2014<br>⚠️ PCE retired in 2026 — use PREVENT for guideline accuracy</div>
+      ${score10.toFixed(1)}% 10-Year ASCVD Risk${saNote}
+      <div class="ascvd-sub">${cat} · PCE ${raceLabel} ${sexLabel} · Goff et al. JACC 2014<br>⚠️ PCE retired in 2026 — use PREVENT for guideline accuracy</div>
     `;
 
     callServer();
   }
 
-  // ── RENDER: single guideline ──────────────────────────
+  // ── RENDER: single ────────────────────────────────────
   function statinPill(s) {
     if (s === true)  return '<span class="statin-pill statin-yes">✓ Statin Indicated</span>';
     if (s === false) return '<span class="statin-pill statin-no">✗ Lifestyle First</span>';
@@ -388,10 +396,8 @@ score10 = (1 - Math.pow(0.9144, Math.exp(IndSum - 61.18))) * 100;
   function renderSingle(data) {
     document.getElementById('ldlStatusSmall').textContent = data.ldlStatus || '';
     document.getElementById('tgStatusSmall').textContent  = data.tgStatus  || '';
-
     const nonHDL = data.nonHDLTarget
       ? `<div class="non-hdl">Non-HDL target: ${data.nonHDLTarget}</div>` : '';
-
     document.getElementById('ldlContent').innerHTML = `
       <span class="risk-cat">${data.riskCategory || '—'}</span>
       <div class="target ${data.ldlLevel || 'green'}">Target LDL: ${data.ldlTarget || '—'}</div>
@@ -400,7 +406,6 @@ score10 = (1 - Math.pow(0.9144, Math.exp(IndSum - 61.18))) * 100;
       <div class="rat">${data.ldlRationale || ''}</div>
       ${statinPill(data.statin)}
     `;
-
     document.getElementById('tgContent').innerHTML = `
       <div class="target tg ${data.tgLevel || 'green'}">Target TG: ${data.tgTarget || '< 150 mg/dL'}</div>
       <div class="rec">${data.tgRec || ''}</div>
@@ -412,16 +417,13 @@ score10 = (1 - Math.pow(0.9144, Math.exp(IndSum - 61.18))) * 100;
   function renderComparison(csi, aha) {
     document.getElementById('ldlStatusSmall').textContent = 'CSI 2023 vs ACC/AHA 2026';
     document.getElementById('tgStatusSmall').textContent  = csi.tgStatus || '';
-
     const ldlDiff    = csi.ldlTarget    !== aha.ldlTarget    ? '<span class="diff-badge">DIFFER</span>' : '';
     const riskDiff   = csi.riskCategory !== aha.riskCategory ? '<span class="diff-badge">DIFFER</span>' : '';
     const statinDiff = String(csi.statin) !== String(aha.statin) ? '<span class="diff-badge">DIFFER</span>' : '';
-
     function sl(s) { return s === true ? '✓ Yes' : s === false ? '✗ No' : '⚖ Shared'; }
     function ci(label, val, badge) {
       return `<div class="compare-item"><div class="lbl">${label} ${badge||''}</div><div class="val">${val}</div></div>`;
     }
-
     document.getElementById('ldlContent').innerHTML = `
       <div class="compare-grid">
         <div>
@@ -441,9 +443,8 @@ score10 = (1 - Math.pow(0.9144, Math.exp(IndSum - 61.18))) * 100;
           ${ci('Recommendation', `<span style="font-size:11px;font-weight:500;color:var(--muted)">${aha.ldlRec||''}</span>`)}
         </div>
       </div>
-      <div class="rat" style="margin-top:8px;">TG management identical across both guidelines. Differences shown for LDL/statin only.</div>
+      <div class="rat" style="margin-top:8px;">TG management identical across both guidelines.</div>
     `;
-
     document.getElementById('tgContent').innerHTML = `
       <div class="target tg ${csi.tgLevel||'green'}">Target TG: ${csi.tgTarget||'< 150 mg/dL'}</div>
       <div class="rec">${csi.tgRec||''}</div>
@@ -453,7 +454,6 @@ score10 = (1 - Math.pow(0.9144, Math.exp(IndSum - 61.18))) * 100;
 
   // ── SERVER CALL ───────────────────────────────────────
   async function callServer() {
-    // CAC: null | 0 | 1 | 100
     let cac = null;
     if (isAct('cac0'))   cac = 0;
     if (isAct('cac1'))   cac = 1;
@@ -470,7 +470,7 @@ score10 = (1 - Math.pow(0.9144, Math.exp(IndSum - 61.18))) * 100;
       met:     isAct('met'),
       south:   isAct('south'),
       lpa:     isAct('lpa'),
-      cac:     cac
+      cac
     };
 
     const payload = {
@@ -478,7 +478,7 @@ score10 = (1 - Math.pow(0.9144, Math.exp(IndSum - 61.18))) * 100;
       ldl:      +document.getElementById('ldl').value || 0,
       tg:       +document.getElementById('tg').value  || 0,
       flags,
-      guideline: currentGL,   // 'csi' | 'aha' | 'both' — worker handles all three
+      guideline: currentGL,
       ascvd10yr
     };
 
@@ -489,13 +489,9 @@ score10 = (1 - Math.pow(0.9144, Math.exp(IndSum - 61.18))) * 100;
         body:    JSON.stringify(payload)
       });
       const j = await resp.json();
-
       if (j && j.ok && j.result) {
-        if (j.result.comparison) {
-          renderComparison(j.result.csi, j.result.aha);
-        } else {
-          renderSingle(j.result);
-        }
+        if (j.result.comparison) renderComparison(j.result.csi, j.result.aha);
+        else renderSingle(j.result);
       }
     } catch (e) {
       document.getElementById('ldlContent').innerHTML =
@@ -509,18 +505,15 @@ score10 = (1 - Math.pow(0.9144, Math.exp(IndSum - 61.18))) * 100;
     return (...a) => { clearTimeout(t); t = setTimeout(() => fn(...a), ms); };
   }
 
- ['age','ldl','tg'].forEach(id => {
-  const el = document.getElementById(id);
-  if (el) {
-    if (id === 'age') {
-      el.addEventListener('input', debounce(calcASCVD, 300));
-      el.addEventListener('change', calcASCVD);
-    } else {
-      el.addEventListener('input', debounce(callServer, 300));
-      el.addEventListener('change', callServer);
+  ['age','ldl','tg'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) {
+      // age changes affect PCE score
+      const fn = id === 'age' ? calcASCVD : callServer;
+      el.addEventListener('input',  debounce(fn, 300));
+      el.addEventListener('change', fn);
     }
-  }
-});
+  });
 
   ['tc','hdl','sbp','bpRx'].forEach(id => {
     const el = document.getElementById(id);
